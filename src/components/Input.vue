@@ -1,15 +1,17 @@
 <template>
     <div>
         <input v-model="textytext" placeholder="Empty">
-        <h3>My entry:</h3>
-        <p>{{ textytext }}</p>
+        <h3>My entry: {{textytext}}</h3>
+        <!-- <p>{{ textytext }}</p> -->
     </div>
 </template>
 
 <script>
 export default {
     data() {
-        return {}
+        return {
+            textytext: ""
+        }
     }
 }
 </script>

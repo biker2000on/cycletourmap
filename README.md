@@ -24,3 +24,12 @@ npm run test
 ```
 npm run lint
 ```
+## Mapbox Component
+`vue-mapbox` is the npm package used.
+
+* https://soal.github.io/vue-mapbox/#/
+* https://www.mapbox.com/api-documentation
+* https://www.mapbox.com/help/how-access-tokens-work/
+
+
+Must define a height and width for the mapbox display or it will not show up. Also, the default `position: absolute` did not work, so changed to `position: relative` and it works fine now. 
