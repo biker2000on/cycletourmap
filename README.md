@@ -33,3 +33,10 @@ npm run lint
 
 
 Must define a height and width for the mapbox display or it will not show up. Also, the default `position: absolute` did not work, so changed to `position: relative` and it works fine now. 
+
+## Todos
+
+* Add popups with summary stats of each ride.
+* Add link to blog posts from rides
+* Add lines to map and select whethere they come up with popups or all displayed.
+* pull correct rides from Strava
