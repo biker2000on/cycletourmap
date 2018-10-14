@@ -2,6 +2,7 @@
     <div>
         <input v-model="textytext" placeholder="Empty">
         <h3>My entry: {{textytext}}</h3>
+        <p>{{ test }}</p>
         <!-- <p>{{ textytext }}</p> -->
     </div>
 </template>
@@ -11,6 +12,11 @@ export default {
     data() {
         return {
             textytext: ""
+        }
+    },
+    computed: {
+        test() {
+            return this.$store.state.start
         }
     }
 }
