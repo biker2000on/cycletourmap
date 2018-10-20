@@ -34,6 +34,12 @@ npm run lint
 
 Must define a height and width for the mapbox display or it will not show up. Also, the default `position: absolute` did not work, so changed to `position: relative` and it works fine now. 
 
+## A different Mapbox Component
+
+`vue-mapbox` is having alignment issues, so going to try `mapbox-gl-vue`.
+
+* https://www.npmjs.com/package/mapbox-gl-vue
+
 ## Todos
 
 * Add popups with summary stats of each ride.
