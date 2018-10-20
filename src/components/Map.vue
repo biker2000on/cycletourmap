@@ -9,8 +9,11 @@
     <!-- <mgl-popup :coordinates="popupCoordinates">
       <span>Hello world!</span>
     </mgl-popup> -->
-    <mgl-marker v-for="(coordinate,index) in coordinates" :coordinates="coordinate" :key="index" color="blue"></mgl-marker>
-    <mgl-marker v-for="(start, index) in rides" :coordinates="start" :key="index" color="red"></mgl-marker>
+    <mgl-marker v-for="(start, index) in rides" :coordinates="start" :key="index" color="red">
+      <mgl-popup slot="popup">
+        <div>Hello I'm a popup</div>
+      </mgl-popup>
+    </mgl-marker>
   </mgl-map>
 </div>
 </template>
@@ -55,6 +58,6 @@ div {
   text-align: center;
 }
 canvas {
-  position: relative;
+  position: relative !important;
 }
 </style>
