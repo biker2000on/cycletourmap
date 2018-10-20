@@ -11,6 +11,7 @@
     "@mapbox/polyline": "^1.0.0",
     "axios": "^0.18.0",
     "mapbox-gl": "^0.50.0",
+    "mapbox-gl-vue": "^1.9.0",
     "vue": "^2.5.17",
     "vue-axios": "^2.1.4",
     "vue-mapbox": "0.0.34",

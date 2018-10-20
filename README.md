@@ -34,6 +34,8 @@ npm run lint
 
 Must define a height and width for the mapbox display or it will not show up. Also, the default `position: absolute` did not work, so changed to `position: relative` and it works fine now. 
 
+If you take out `text-align: center` from the default CSS from `vue-cli` then the map centers just fine. Seems to be a problem with Webpack. Solution suggested [here](https://github.com/phegman/vue-mapbox-gl/issues/11).
+
 ## A different Mapbox Component
 
 `vue-mapbox` is having alignment issues, so going to try `mapbox-gl-vue`.

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>Strava Info Test</h3>
-    <h4>Hello {{ strava.firstname + ' ' + strava.lastname}}</h4>
+    <h4>Hello {{ this.$store.state.athlete.firstname + ' ' + this.$store.state.athlete.lastname}}</h4>
     <!-- <p>You have {{ strava.bikes.length ? strava.bikes.length : 0 }} bikes</p> -->
     <button v-on:click="getStrava">Fetch Strava</button>
     <button v-on:click="getActivities">Fetch Activities</button>
@@ -10,11 +10,6 @@
       <input type="date" v-model="start">
       <label for="end">End Date: </label>
       <input type="date" v-model="end">
-      <label for="vuex-start">Vuex Start Date: </label>
-      <input type="date" :value="vuexStart" @change="updateStart" >
-    </div>
-    <div>
-      {{ this.$store.state.athlete }}
     </div>
     <div>
       <br>
@@ -29,7 +24,6 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      start: '',
       strava: '',
       activities: []
     }
@@ -68,6 +62,14 @@ export default {
       },
       set (value) {
         this.$store.commit('setEnd', value)
+      }
+    },
+    start: {
+      get () {
+        return this.$store.state.start
+      },
+      set (value) {
+        this.$store.commit('setStart', value)
       }
     }
   }

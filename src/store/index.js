@@ -6,14 +6,14 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    vuexStart: '',
+    start: '',
     end: '',
     athlete: '',
     activities: [],
   },
   mutations: {
     setStart (state, startdate) {
-      state.vuexStart = startdate
+      state.start = startdate
     },
     setEnd (state, enddate) {
       state.end = enddate
