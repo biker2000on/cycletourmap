@@ -6,9 +6,6 @@
   >
     <mgl-navigation-control position="top-left" />
     <mgl-geolocate-control position="top-left" />
-    <!-- <mgl-popup :coordinates="popupCoordinates">
-      <span>Hello world!</span>
-    </mgl-popup> -->
     <mgl-marker v-for="(start, index) in rides" :coordinates="start" :key="index" color="red">
       <mgl-popup slot="popup">
         <div>Hello I'm a popup</div>
@@ -39,8 +36,6 @@ export default {
     return {
       accessToken: process.env.VUE_APP_MAPBOX_KEY, // your access token. Needed if you using Mapbox maps
       mapStyle: 'mapbox://styles/mapbox/light-v9',  // your map style
-      popupCoordinates: [10,10],
-      coordinates: [[-110,35],[-90,37],[110,22]],
     }
   },
   computed: {
