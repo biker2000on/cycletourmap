@@ -23,11 +23,6 @@ export default {
   components: {
     Strava, HelloWorld, Map
   },
-  data() {
-    return {
-      accessToken: process.env.VUE_APP_MAPBOX_KEY,
-    }
-  }
 }
 </script>
 
