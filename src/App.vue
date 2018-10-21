@@ -5,22 +5,23 @@
     <!-- <Input /> -->
     <Strava />
     <hello-world />
+    <Map />
   </div>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 // import Input from './components/Input.vue'
-// import Map from './components/Map.vue'
 import Strava from './components/Strava.vue'
 import HelloWorld from './components/Mapbox.vue'
+import Map from './components/Map.vue'
 import store from './store/index'
 
 export default {
   name: 'app',
   store,
   components: {
-    Strava, HelloWorld,
+    Strava, HelloWorld, Map
   },
   data() {
     return {
@@ -35,12 +36,9 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
+  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 10px;
 }
-#map, #map-container {
-  width: 100%;
-  height: 75vh;
-}
+
 </style>

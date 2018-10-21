@@ -4,8 +4,8 @@
     :accessToken="accessToken"
     :mapStyle.sync="mapStyle"
   >
-    <!-- <mgl-navigation-control position="top-left" /> -->
-    <!-- <mgl-geolocate-control position="top-left" /> -->
+    <mgl-navigation-control position="top-left" />
+    <mgl-geolocate-control position="top-left" />
     <!-- <mgl-popup :coordinates="popupCoordinates">
       <span>Hello world!</span>
     </mgl-popup> -->
@@ -55,9 +55,7 @@ export default {
 div {
   width:100%;
   height: 75vh;
-  text-align: center;
-}
-canvas {
-  position: relative !important;
+  text-align: justify;
+  margin-top: 2em;
 }
 </style>

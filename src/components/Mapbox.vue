@@ -38,9 +38,6 @@ export default {
 div {
   width:100%;
   height: 75vh;
-  text-align: center;
-}
-canvas {
-  position: relative !important;
+  text-align: justify;
 }
 </style>
