@@ -23,6 +23,10 @@ export default new Vuex.Store({
     },
     setActivities (state, activities) {
       state.activities = activities
+    },
+    addActivities (state, activities) {
+      // should update to check if activity is already in state.
+      state.activities = state.activities.append(activities)
     }
   }
 })

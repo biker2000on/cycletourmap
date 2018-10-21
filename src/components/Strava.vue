@@ -5,6 +5,7 @@
     <!-- <p>You have {{ strava.bikes.length ? strava.bikes.length : 0 }} bikes</p> -->
     <button v-on:click="getStrava">Fetch Strava</button>
     <button v-on:click="getActivities">Fetch Activities</button>
+    <button v-on:click="getAllActivities">Fetch All Activities</button>
     <div>
       <label for="start">Start Date: </label>
       <input type="date" v-model="start">
@@ -20,6 +21,7 @@
 
 <script>
 import axios from 'axios'
+import strava from 'strava-v3'
 
 export default {
   data() {
@@ -48,8 +50,26 @@ export default {
         })
         .catch((err) => {console.log(err)})
     },
-    updateStart (e) {
-      this.$store.commit('setStart', e.target.value)
+    getAllActivities: function () {
+      let page = 1
+      while (page > 0) {
+        axios.get('https://www.strava.com/api/v3/athletes/7594/activities?per_page=50&page='
+        + page + '&access_token=' + process.env.VUE_APP_STRAVA_TOKEN)
+          .then((response) => {
+            if (response.data != []) {
+              this.$store.commit('addActivities', response.data)
+              page++
+            }
+            page = -1
+          })
+          .catch((err) => {
+            console.log(err)
+            page = -1
+            })
+      }
+    },
+    getParitalActivities: function () {
+      strava.athlete.listActivities()
     }
   }, 
   mounted() {
