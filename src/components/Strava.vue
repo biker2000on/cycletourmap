@@ -1,11 +1,16 @@
 <template>
-  <div>
+  <div id="strava">
     <h3>Strava Info Test</h3>
     <h4>Hello {{ this.$store.state.athlete.firstname + ' ' + this.$store.state.athlete.lastname}}</h4>
     <!-- <p>You have {{ strava.bikes.length ? strava.bikes.length : 0 }} bikes</p> -->
     <button v-on:click="getStrava">Fetch Strava</button>
     <button v-on:click="getActivities">Fetch Activities</button>
     <button v-on:click="getAllActivities">Fetch All Activities</button>
+    <a :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
+              '&redirect_uri=' + redirect_uri +
+              '&response_type=' + 'code' +
+              '&approval_prompt=' + 'auto' +
+              '&scope=' + 'read,profile:read_all,activity:read'">Authorize App</a>
     <div>
       <label for="start">Start Date: </label>
       <input type="date" v-model="start">
@@ -27,7 +32,10 @@ export default {
   data() {
     return {
       strava: '',
-      activities: []
+      activities: [],
+      auth_token: '',
+      refresh_token: '',
+      redirect_uri: 'http://localhost:8080'
     }
   },
   methods: {
@@ -70,8 +78,18 @@ export default {
     },
     getParitalActivities: function () {
       strava.athlete.listActivities()
+    },
+    getAuth: function() {
+      var data = {
+        client_id: process.env.VUE_APP_STRAVA_CLIENTID,
+        redirect_uri: 'localhost:8080',
+        response_type: 'code',
+        approval_prompt: 'auto',
+        scope: 'read,profile:read_all,activity:read'
+      }
+      axios.get('https://www.strava.com/oauth/authorize', )
     }
-  }, 
+  },
   mounted() {
     console.log('Strava mounted.')
   },
@@ -96,6 +114,8 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+  #strava {
+    text-align: center;
+  }
 </style>

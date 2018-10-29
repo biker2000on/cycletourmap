@@ -1,5 +1,5 @@
 <template>
-<div>
+<div id="vue-map">
   <mgl-map
     :accessToken="accessToken"
     :mapStyle.sync="mapStyle"
@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import { 
-  MglMap, 
-  MglNavigationControl, 
-  MglGeolocateControl, 
+import {
+  MglMap,
+  MglNavigationControl,
+  MglGeolocateControl,
   MglPopup,
   MglMarker,
   } from 'vue-mapbox'
@@ -30,7 +30,7 @@ import {
 export default {
   components: {
     'mgl-map': MglMap,
-    'mgl-navigation-control': MglNavigationControl, 
+    'mgl-navigation-control': MglNavigationControl,
     'mgl-geolocate-control': MglGeolocateControl,
     'mgl-popup': MglPopup,
     'mgl-marker': MglMarker
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <style scoped>
-div {
+#vue-map {
   width:100%;
   height: 75vh;
   text-align: justify;
