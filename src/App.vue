@@ -6,6 +6,7 @@
     <Strava />
     <hello-world />
     <Map />
+    <Leaflet />
   </div>
 </template>
 
@@ -15,13 +16,14 @@
 import Strava from './components/Strava.vue'
 import HelloWorld from './components/Mapbox.vue'
 import Map from './components/Map.vue'
+import Leaflet from './components/Leaflet.vue'
 import store from './store/index'
 
 export default {
   name: 'app',
   store,
   components: {
-    Strava, HelloWorld, Map
+    Strava, HelloWorld, Map, Leaflet
   },
 }
 </script>

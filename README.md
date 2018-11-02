@@ -32,7 +32,7 @@ npm run lint
 * https://www.mapbox.com/help/how-access-tokens-work/
 
 
-Must define a height and width for the mapbox display or it will not show up. Also, the default `position: absolute` did not work, so changed to `position: relative` and it works fine now. 
+Must define a height and width for the mapbox display or it will not show up. Also, the default `position: absolute` did not work, so changed to `position: relative` and it works fine now.
 
 If you take out `text-align: center` from the default CSS from `vue-cli` then the map centers just fine. Seems to be a problem with Webpack. Solution suggested [here](https://github.com/phegman/vue-mapbox-gl/issues/11).
 
@@ -42,9 +42,13 @@ If you take out `text-align: center` from the default CSS from `vue-cli` then th
 
 * https://www.npmjs.com/package/mapbox-gl-vue
 
+## Change to Leaflet from mapbox
+
+Changed to [Leaflet](https://github.com/KoRiGaN/Vue2Leaflet/issues/157) because it is open source and doesn't require a API key. As well, it is based simply on OSM and other tiles can be pulled in if I want to. It seems to work good and renders with little effort by me.
+
 ## Strava Integration
 
-I am using Strava to pull activity data. [This is a good resource](https://codepen.io/alyda/pen/zGERzL?editors=0010) for the Strava API and how to use it with JS. 
+I am using Strava to pull activity data. [This is a good resource](https://codepen.io/alyda/pen/zGERzL?editors=0010) for the Strava API and how to use it with JS.
 
 ### Other Resources
 
@@ -54,5 +58,8 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 
 * Add popups with summary stats of each ride.
 * Add link to blog posts from rides
-* Add lines to map and select whethere they come up with popups or all displayed.
+* Add lines to map and select whether they come up with popups or all displayed.
 * pull correct rides from Strava
+* Save rides to local database (mongodb via Loopback)
+* user authentication
+* Finish Strava authentication dance

@@ -17,6 +17,7 @@
     "vue-axios": "^2.1.4",
     "vue-mapbox": "0.0.34",
     "vue-router": "^3.0.1",
+    "vue2-leaflet": "^1.1.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
