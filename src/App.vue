@@ -4,8 +4,8 @@
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <!-- <Input /> -->
     <Strava />
-    <hello-world />
-    <Map />
+    <!-- <hello-world /> -->
+    <!-- <Map /> -->
     <Leaflet />
   </div>
 </template>
@@ -14,8 +14,8 @@
 // import HelloWorld from './components/HelloWorld.vue'
 // import Input from './components/Input.vue'
 import Strava from './components/Strava.vue'
-import HelloWorld from './components/Mapbox.vue'
-import Map from './components/Map.vue'
+// import HelloWorld from './components/Mapbox.vue'
+// import Map from './components/Map.vue'
 import Leaflet from './components/Leaflet.vue'
 import store from './store/index'
 
@@ -23,7 +23,7 @@ export default {
   name: 'app',
   store,
   components: {
-    Strava, HelloWorld, Map, Leaflet
+    Strava, Leaflet
   },
 }
 </script>

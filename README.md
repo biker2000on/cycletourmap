@@ -44,7 +44,10 @@ If you take out `text-align: center` from the default CSS from `vue-cli` then th
 
 ## Change to Leaflet from mapbox
 
-Changed to [Leaflet](https://github.com/KoRiGaN/Vue2Leaflet/issues/157) because it is open source and doesn't require a API key. As well, it is based simply on OSM and other tiles can be pulled in if I want to. It seems to work good and renders with little effort by me.
+Changed to [Leaflet](https://www.npmjs.com/package/vue2-leaflet) because it is open source and doesn't require a API key. As well, it is based simply on OSM and other tiles can be pulled in if I want to. It seems to work good and renders with little effort by me.
+
+* [This link](https://github.com/KoRiGaN/Vue2Leaflet/issues/157) explains how to fix rendering issues.
+* [This link](https://github.com/KoRiGaN/Vue2Leaflet/issues/96) explains how to get markers to render.
 
 ## Strava Integration
 
