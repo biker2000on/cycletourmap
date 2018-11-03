@@ -5,7 +5,7 @@
       <l-marker :lat-lng="marker"></l-marker>
       <l-marker :lat-lng="[47,-1]"></l-marker>
       <l-marker v-for="(start, idx) in rides" :lat-lng="start" :key="idx"></l-marker>
-      <l-polyline v-for="(line, idx) in polylines" :lat-lngs="line" :key="idx"></l-polyline>
+      <l-polyline v-for="(line, idx) in polylines" :lat-lngs="line" :key="idx" fill="false"></l-polyline>
     </l-map>
   </div>
 </template>

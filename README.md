@@ -48,6 +48,7 @@ Changed to [Leaflet](https://www.npmjs.com/package/vue2-leaflet) because it is o
 
 * [This link](https://github.com/KoRiGaN/Vue2Leaflet/issues/157) explains how to fix rendering issues.
 * [This link](https://github.com/KoRiGaN/Vue2Leaflet/issues/96) explains how to get markers to render.
+* https://leafletjs.com/
 
 ## Strava Integration
 
