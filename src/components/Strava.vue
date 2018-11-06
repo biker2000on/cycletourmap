@@ -58,8 +58,32 @@ export default {
         })
         .catch((err) => {console.log(err)})
     },
-    getAllActivities: function () {
-      let page = 1
+    getAllActivities: async function () {
+        const start = new Date('1/1/2018')
+        let page = 1
+        let acts = []
+        let activities = ''
+        do {
+          let strava = await fetch('https://www.strava.com/api/v3/athletes/7594/activities?access_token=641c02aede2bd589ccf83096c9ea706c2fd3a1ec&per_page=50&page=' + page)
+          activities = await strava.json()
+          let dates = activities.reduce((a,c)=>{
+            let rideStart = new Date(c.start_date)
+            if (start > rideStart) {
+              return true
+            } else { return a }
+          }, false)
+          acts = acts.concat(activities)
+          if (dates) {
+            this.$store.commit('setActivities', acts)
+            return
+          }
+          page++
+        } while (activities != '')
+        this.$store.commit('setActivities', acts)
+        return
+      },
+
+      /*let page = 1
       while (page > 0) {
         axios.get('https://www.strava.com/api/v3/athletes/7594/activities?per_page=50&page='
         + page + '&access_token=' + process.env.VUE_APP_STRAVA_TOKEN)
@@ -74,8 +98,8 @@ export default {
             console.log(err)
             page = -1
             })
-      }
-    },
+      }*/
+
     getParitalActivities: function () {
       strava.athlete.listActivities()
     },
