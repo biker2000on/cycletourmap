@@ -64,6 +64,6 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 * Add link to blog posts from rides
 * Add lines to map and select whether they come up with popups or all displayed.
 * pull correct rides from Strava
-* Save rides to local database (mongodb via Loopback)
+* Save rides to local database (mongodb via Loopback) **possible**
 * user authentication
 * Finish Strava authentication dance
