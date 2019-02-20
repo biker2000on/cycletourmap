@@ -60,10 +60,11 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 
 ## Todos
 
-* Add popups with summary stats of each ride.
-* Add link to blog posts from rides
-* Add lines to map and select whether they come up with popups or all displayed.
 * pull correct rides from Strava
-* Save rides to local database (mongodb via Loopback) **possible**
-* user authentication
-* Finish Strava authentication dance
+* Add link to blog posts from rides
+* Table based on [vue-table-component](https://vuejsexamples.com/a-straight-to-the-point-vue-component-to-display-tables/)
+* DONE Add lines to map and select whether they come up with popups or all displayed.
+* DONE Add popups with summary stats of each ride.
+* CANCEL Save rides to local database (mongodb via Loopback) **possible**
+* LATER user authentication
+* LATER Finish Strava authentication dance

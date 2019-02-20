@@ -12,10 +12,10 @@
               '&approval_prompt=' + 'auto' +
               '&scope=' + 'read,profile:read_all,activity:read'">Authorize App</a>
     <div>
-      <label for="start">Start Date: </label>
-      <input type="date" v-model="start">
-      <label for="end">End Date: </label>
-      <input type="date" v-model="end">
+      <label for="data.start">Start Date: </label>
+      <input type="date" value="start" v-model="start">
+      <label for="data.end">End Date: </label>
+      <input type="date" value="end" v-model="end">
     </div>
     <div>
       <br>
@@ -31,6 +31,8 @@ import strava from 'strava-v3'
 export default {
   data() {
     return {
+      start: '01/01/2018',
+      end: '',
       strava: '',
       activities: [],
       auth_token: '',
@@ -40,7 +42,7 @@ export default {
   },
   methods: {
     getStrava: function () {
-      axios.get('https://www.strava.com/api/v3/athletes/7594?access_token=' + process.env.VUE_APP_STRAVA_TOKEN)
+      axios.get('https://www.strava.com/api/v3/athletes/7594?access_token=641c02aede2bd589ccf83096c9ea706c2fd3a1ec')
         .then((response) => {
           self.strava = response.data
           this.$store.commit('setAthlete',response.data)
@@ -50,7 +52,7 @@ export default {
     },
     getActivities: function () {
       let self = this
-      axios.get('https://www.strava.com/api/v3/athletes/7594/activities?access_token=' + process.env.VUE_APP_STRAVA_TOKEN)
+      axios.get('https://www.strava.com/api/v3/athletes/7594/activities?access_token=641c02aede2bd589ccf83096c9ea706c2fd3a1ec&per_page=50')
         .then((response) => {
           self.activities = response.data
           this.$store.commit('setActivities', response.data)
@@ -59,7 +61,7 @@ export default {
         .catch((err) => {console.log(err)})
     },
     getAllActivities: async function () {
-        const start = new Date('1/1/2018')
+        const start = new Date(this.$store.state.start)
         let page = 1
         let acts = []
         let activities = ''
@@ -111,29 +113,29 @@ export default {
         approval_prompt: 'auto',
         scope: 'read,profile:read_all,activity:read'
       }
-      axios.get('https://www.strava.com/oauth/authorize', )
+      axios.get('https://www.strava.com/oauth/authorize', data)
     }
   },
   mounted() {
     console.log('Strava mounted.')
   },
   computed: {
-    end: {
-      get () {
-        return this.$store.state.end
-      },
-      set (value) {
-        this.$store.commit('setEnd', value)
-      }
-    },
-    start: {
-      get () {
-        return this.$store.state.start
-      },
-      set (value) {
-        this.$store.commit('setStart', value)
-      }
-    }
+    // end: {
+    //   get () {
+    //     return this.$store.state.end
+    //   },
+    //   set (value) {
+    //     this.$store.commit('setEnd', value)
+    //   }
+    // },
+    // start: {
+    //   get () {
+    //     return this.$store.state.start
+    //   },
+    //   set (value) {
+    //     this.$store.commit('setStart', value)
+    //   }
+    // }
   }
 }
 </script>
