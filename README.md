@@ -60,9 +60,10 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 
 ## Todos
 
+* after import of rides, zoom to fit
 * pull correct rides from Strava
 * Add link to blog posts from rides
-* Table based on [vue-table-component](https://vuejsexamples.com/a-straight-to-the-point-vue-component-to-display-tables/)
+* DONE Table based on `vue-virtual-table`
 * DONE Add lines to map and select whether they come up with popups or all displayed.
 * DONE Add popups with summary stats of each ride.
 * CANCEL Save rides to local database (mongodb via Loopback) **possible**
