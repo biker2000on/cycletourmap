@@ -58,3 +58,7 @@ let m = (test%3600/60)
 m
 let s = (test%60)
 s
+let test2 = new Date("2019-02-18T15:52:20Z").toISOString().slice(0,10)
+test2
+let test3 = "(GMT-06:00)".slice(1,4)
+test3

@@ -75,7 +75,8 @@ export default {
 
 <style lang="css">
 #leaflet-comp {
-  height: 90vh;
-  margin: 0;
+  height: 75vh;
+  width: 800px;
+  margin: auto;
 }
 </style>
