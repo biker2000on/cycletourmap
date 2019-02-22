@@ -26,7 +26,7 @@
 
 <script>
 import axios from 'axios'
-import strava from 'strava-v3'
+// import strava from 'strava-v3'
 
 export default {
   data() {
@@ -74,6 +74,10 @@ export default {
               return true
             } else { return a }
           }, false)
+          activities = activities.filter(c => {
+            let rideStart = new Date(c.start_date)
+            return rideStart >= start
+          })
           acts = acts.concat(activities)
           if (dates) {
             this.$store.commit('setActivities', acts)
@@ -102,9 +106,9 @@ export default {
             })
       }*/
 
-    getParitalActivities: function () {
-      strava.athlete.listActivities()
-    },
+    // getParitalActivities: function () {
+    //   strava.athlete.listActivities()
+    // },
     getAuth: function() {
       var data = {
         client_id: process.env.VUE_APP_STRAVA_CLIENTID,

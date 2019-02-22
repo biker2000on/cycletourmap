@@ -6,7 +6,7 @@
     :itemHeight="40"
     :minWidth="800"
     :enableExport="true"
-    :language="en"
+    language="en"
   >
   </vue-virtual-table>
 </template>

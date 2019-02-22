@@ -3,10 +3,11 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <!-- <Input /> -->
-    <Strava />
+    <!-- <Strava /> -->
     <!-- <hello-world /> -->
     <!-- <Map /> -->
     <Leaflet />
+    <h2>All Rides</h2>
     <Vuetable />
   </div>
 </template>
@@ -14,7 +15,7 @@
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 // import Input from './components/Input.vue'
-import Strava from './components/Strava.vue'
+// import Strava from './components/Strava.vue'
 // import HelloWorld from './components/Mapbox.vue'
 // import Map from './components/Map.vue'
 import Leaflet from './components/Leaflet.vue'
@@ -25,7 +26,7 @@ export default {
   name: 'app',
   store,
   components: {
-    Strava, Leaflet, Vuetable,
+    Leaflet, Vuetable,
   },
 }
 </script>
@@ -37,6 +38,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 10px;
+}
+h2 {
+  text-align: center;
 }
 
 </style>

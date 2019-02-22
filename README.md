@@ -61,8 +61,8 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 ## Todos
 
 * after import of rides, zoom to fit
-* pull correct rides from Strava
 * Add link to blog posts from rides
+* DONE pull correct rides from Strava
 * DONE Table based on `vue-virtual-table`
 * DONE Add lines to map and select whether they come up with popups or all displayed.
 * DONE Add popups with summary stats of each ride.
