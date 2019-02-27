@@ -27,29 +27,23 @@ export default {
         {prop: 'elapsed_time', name: 'Elapsed Time (hrs)', summary: 'SUM', sortable: true, },
         {prop: 'total_elevation_gain', name: 'Climbed (m)', summary: 'SUM', sortable: true, },
         {prop: 'type', name: 'Type', searchable: true, sortable: true},
-        
       ],
-          tableData: [
-            {user: 'a1', age: 20},
-            {user: 'a2', age: 21},
-            {user: 'a3', age: 23}
-          ],
-      }
+    }
   },
   computed: {
-      tableData2() {
-          return this.$store.state.activities.map(c => {
-              return {
-                  date: c.start_date_local.slice(0,10),
-                  name: c.name,
-                  distance: (c.distance / 1000).toFixed(2),
-                  moving_time: (c.moving_time / 3600).toFixed(2),
-                  elapsed_time: (c.elapsed_time / 3600).toFixed(2),
-                  total_elevation_gain: c.total_elevation_gain,
-                  type: c.type,
-              }
-          })
-      }
+    tableData2() {
+      return this.$store.state.activities.map(c => {
+        return {
+          date: c.start_date_local.slice(0,10),
+          name: c.name,
+          distance: (c.distance / 1000).toFixed(2),
+          moving_time: (c.moving_time / 3600).toFixed(2),
+          elapsed_time: (c.elapsed_time / 3600).toFixed(2),
+          total_elevation_gain: c.total_elevation_gain,
+          type: c.type,
+        }
+      })
+    }
   }
 }
 </script>
