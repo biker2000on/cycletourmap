@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    start: '12/1/2018',
+    start: '12/22/2018',
     end: '',
     athlete: '',
     activities: [],

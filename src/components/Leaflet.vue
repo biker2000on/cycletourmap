@@ -2,12 +2,10 @@
   <div id="leaflet-comp">
     <l-map :zoom="zoom" :center="center">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-      <!-- <l-marker :lat-lng="marker"></l-marker> -->
-      <!-- <l-marker :lat-lng="[47,-1]"></l-marker> -->
       <l-marker v-for="(start, idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
       </l-marker>
-      <!-- <l-polyline v-for="(line, idx) in polylines" :lat-lngs="line" :key="'line' + idx" :fill="false"></l-polyline> -->
+      <l-polyline v-for="(line, idx) in polylines" :lat-lngs="line" :key="'line' + idx" :fill="false"></l-polyline>
       <!-- <l-polyline :lat-lngs="route" :fill="false"></l-polyline> -->
     </l-map>
   </div>
@@ -51,14 +49,11 @@ export default {
       return this.$store.state.activities.map(activity => {
         let poly = omnivore.polyline.parse(activity.map.summary_polyline)
         let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
-        console.log(coords)
-        // let finalcoords = coords.map(point => point.reverse())
+        // console.log(coords)
+        let finalcoords = coords.map(point => point.reverse())
         // console.log(coords)
         if (coords) {
           return coords
-        } else {
-          console.log(coords)
-          return
         }
       })
     },
@@ -72,10 +67,45 @@ export default {
     },
     // route() {
     //   let gpx = omnivore.gpx('/2019_Trans-Asia_Tour.gpx')
-    //   let coords = gpx._layers
-    //   return coords
+    //   // let coords = gpx._layers
+    //   return gpx
     // }
   }, 
+  watch: {
+    rides(vals) {
+      //reduces to bounding box of values
+      let box = vals.reduce((a,c,i) => {
+        if (JSON.stringify(a) == '[]') {
+          a = [c,c]
+          return a
+        } 
+        let minLat = a[0][0]
+        let maxLat = a[1][0]
+        let minLong = a[0][1]
+        let maxLong = a[1][1]
+        if (isNaN(c[0]) || isNaN(c[1])) {
+          return a
+        }
+        if (c[0] < a[0][0]) {
+          minLat = c[0]
+        } 
+        if (c[0] > a[1][0]) {
+          maxLat = c[0]
+        }
+        if (c[1] < a[0][1]) {
+          minLong = c[1]
+        }
+        if (c[1] > a[1][1]) {
+          maxLong = c[1]
+        }
+        a = [[minLat,minLong],[maxLat,maxLong]]
+        return a
+      },[])
+      let centerLat = (box[0][0] + box[1][0]) / 2
+      let centerLong = (box[0][1] + box[1][1]) / 2
+      this.center = [centerLat, centerLong]
+    }
+  },
   methods: {
     getAllActivities: async function () {
       const start = new Date(this.$store.state.start)
@@ -115,7 +145,7 @@ export default {
 <style lang="css">
 #leaflet-comp {
   height: 75vh;
-  width: 800px;
+  width: 100%;
   margin: auto;
 }
 </style>
