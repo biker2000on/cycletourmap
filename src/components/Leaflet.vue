@@ -1,6 +1,12 @@
 <template lang="html">
   <div id="leaflet-comp">
-    <l-map :zoom="zoom" :center="center">
+    <l-map 
+      :zoom="zoom" 
+      :center="center"
+      :bounds="bounds"
+      @update:zoom="zoomUpdated"
+      @update:center="centerUpdated"
+      @update:bounds="boundsUpdated">
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
       <l-marker v-for="(start, idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
@@ -37,6 +43,7 @@ export default {
     return {
       zoom:2,
       center: [0,0],
+      bounds: null,
       url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     }
@@ -115,6 +122,7 @@ export default {
       do {
         let strava = await fetch('https://www.strava.com/api/v3/athletes/7594/activities?access_token=641c02aede2bd589ccf83096c9ea706c2fd3a1ec&per_page=50&page=' + page)
         activities = await strava.json()
+        // console.log(activities)
         let dates = activities.reduce((a,c)=>{
           let rideStart = new Date(c.start_date)
           if (start > rideStart) {
@@ -135,6 +143,15 @@ export default {
       this.$store.commit('setActivities', acts)
       return
     },
+    zoomUpdated (zoom) {
+      this.zoom = zoom;
+    },
+    centerUpdated (center) {
+      this.center = center;
+    },
+    boundsUpdated (bounds) {
+      this.bounds = bounds;
+    }
   },
   mounted() {
     this.$nextTick(this.getAllActivities())
