@@ -57,6 +57,7 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 ### Other Resources
 
 * [Strava API Reference](https://developers.strava.com/docs/reference/)
+* [Leaflet map layer possibilities](https://leaflet-extras.github.io/leaflet-providers/preview/)
 
 ## Todos
 
