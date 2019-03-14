@@ -1,12 +1,13 @@
 <template lang="html">
   <div id="leaflet-comp">
     <l-map 
+      :bounds="bounds"
       :zoom="zoom" 
       :center="center"
-      :bounds="bounds"
+      :maxBounds="maxBounds"
       @update:zoom="zoomUpdated"
-      @update:center="centerUpdated"
-      @update:bounds="boundsUpdated">
+      :inertia="false"
+      >
       <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
       <l-marker v-for="(start, idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
@@ -21,7 +22,6 @@
 import { LMap, LTileLayer, LMarker, LPolyline, LPopup } from 'vue2-leaflet'
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
-// import polyUtil from 'polyline-encoded'
 import omnivore from "@mapbox/leaflet-omnivore";
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -44,6 +44,7 @@ export default {
       zoom:2,
       center: [0,0],
       bounds: null,
+      maxBounds: null,
       url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     }
@@ -56,9 +57,6 @@ export default {
       return this.$store.state.activities.map(activity => {
         let poly = omnivore.polyline.parse(activity.map.summary_polyline)
         let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
-        // console.log(coords)
-        let finalcoords = coords.map(point => point.reverse())
-        // console.log(coords)
         if (coords) {
           return coords
         }
@@ -81,7 +79,7 @@ export default {
   watch: {
     rides(vals) {
       //reduces to bounding box of values
-      let box = vals.reduce((a,c,i) => {
+      let box = vals.reduce((a,c) => {
         if (JSON.stringify(a) == '[]') {
           a = [c,c]
           return a
@@ -111,7 +109,10 @@ export default {
       let centerLat = (box[0][0] + box[1][0]) / 2
       let centerLong = (box[0][1] + box[1][1]) / 2
       this.center = [centerLat, centerLong]
-    }
+      let bounds = [[box[0][0]-1, box[0][1]-1],
+                    [box[1][0]+1, box[1][1]+1]]
+      setTimeout(() => {this.bounds = bounds},500)
+    },
   },
   methods: {
     getAllActivities: async function () {
@@ -122,7 +123,6 @@ export default {
       do {
         let strava = await fetch('https://www.strava.com/api/v3/athletes/7594/activities?access_token=641c02aede2bd589ccf83096c9ea706c2fd3a1ec&per_page=50&page=' + page)
         activities = await strava.json()
-        // console.log(activities)
         let dates = activities.reduce((a,c)=>{
           let rideStart = new Date(c.start_date)
           if (start > rideStart) {
@@ -146,15 +146,9 @@ export default {
     zoomUpdated (zoom) {
       this.zoom = zoom;
     },
-    centerUpdated (center) {
-      this.center = center;
-    },
-    boundsUpdated (bounds) {
-      this.bounds = bounds;
-    }
   },
   mounted() {
-    this.$nextTick(this.getAllActivities())
+    this.getAllActivities()
   }
 }
 </script>
