@@ -58,6 +58,7 @@ export default {
         let poly = omnivore.polyline.parse(activity.map.summary_polyline)
         let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
         if (coords) {
+          coords = coords.map(c => c.reverse())
           return coords
         }
       })
@@ -106,9 +107,9 @@ export default {
         a = [[minLat,minLong],[maxLat,maxLong]]
         return a
       },[])
-      let centerLat = (box[0][0] + box[1][0]) / 2
-      let centerLong = (box[0][1] + box[1][1]) / 2
-      this.center = [centerLat, centerLong]
+      // let centerLat = (box[0][0] + box[1][0]) / 2
+      // let centerLong = (box[0][1] + box[1][1]) / 2
+      // this.center = [centerLat, centerLong]
       let bounds = [[box[0][0]-1, box[0][1]-1],
                     [box[1][0]+1, box[1][1]+1]]
       setTimeout(() => {this.bounds = bounds},500)
