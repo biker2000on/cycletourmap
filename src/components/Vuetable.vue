@@ -3,8 +3,8 @@
     :config="tableConfig"
     :data="tableData2"
     :height="500"
-    :itemHeight="40"
     :minWidth="800"
+    :itemHeight="80"
     :enableExport="true"
     language="en"
   >
@@ -26,7 +26,6 @@ export default {
         {prop: 'moving_time', name: 'Moving Time (hrs)', summary: 'SUM', sortable: true, },
         {prop: 'elapsed_time', name: 'Elapsed Time (hrs)', summary: 'SUM', sortable: true, },
         {prop: 'total_elevation_gain', name: 'Climbed (m)', summary: 'SUM', sortable: true, },
-        {prop: 'type', name: 'Type', searchable: true, sortable: true},
       ],
     }
   },
@@ -40,10 +39,19 @@ export default {
           moving_time: (c.moving_time / 3600).toFixed(2),
           elapsed_time: (c.elapsed_time / 3600).toFixed(2),
           total_elevation_gain: c.total_elevation_gain,
-          type: c.type,
         }
       })
     }
   }
 }
 </script>
+
+<style>
+  .item-cell-inner {
+    word-break: normal !important
+  }
+  .item-line {
+    height: auto !important
+  }
+
+</style>
