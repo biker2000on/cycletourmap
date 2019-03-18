@@ -1,32 +1,23 @@
 <template>
   <div id="app">
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <!-- <Input /> -->
-    <!-- <Strava /> -->
-    <!-- <hello-world /> -->
-    <!-- <Map /> -->
     <Leaflet />
+    <Summary />
     <h2>All Rides</h2>
     <Vuetable />
   </div>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
-// import Input from './components/Input.vue'
-// import Strava from './components/Strava.vue'
-// import HelloWorld from './components/Mapbox.vue'
-// import Map from './components/Map.vue'
 import Leaflet from './components/Leaflet.vue'
 import Vuetable from './components/Vuetable.vue'
+import Summary from './components/Summary.vue'
 import store from './store/index'
 
 export default {
   name: 'app',
   store,
   components: {
-    Leaflet, Vuetable,
+    Leaflet, Vuetable, Summary
   },
 }
 </script>

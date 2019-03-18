@@ -67,7 +67,8 @@ export default {
       return this.$store.state.activities.map(activity => {
         return [activity.start_latlng, 
                "<p>" + activity.name + "<br>" + (activity.distance / 1000).toFixed(2) + " km " + activity.type + "<br>" + 
-               (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p>"
+               (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p><br>" +
+               '<a href="https://www.strava.com/activities/' + activity.id + '" target="_blank">View on Strava</a>'
                ] 
       })
     },
