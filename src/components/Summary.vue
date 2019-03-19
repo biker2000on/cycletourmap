@@ -74,7 +74,7 @@ export default {
     flex-wrap: wrap;
   }
   .container div {
-    margin: 2rem;
+    margin: 1rem 2rem;
   }
 </style>
 
