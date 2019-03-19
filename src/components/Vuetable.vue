@@ -21,6 +21,7 @@ export default {
     return {
       tableConfig: [
         {prop: 'date', name: 'Date', sortable: true, summary: 'COUNT'},
+        {prop: 'time', name: 'Start Time', sortable: true},
         {prop: 'name', name: 'Name', searchable: true, },
         {prop: 'distance', name: 'Distance (km)', summary: 'SUM', sortable: true, },
         {prop: 'moving_time', name: 'Moving Time (hrs)', summary: 'SUM', sortable: true, },
@@ -34,6 +35,7 @@ export default {
       return this.$store.state.activities.map(c => {
         return {
           date: c.start_date_local.slice(0,10),
+          time: c.start_date_local.slice(11,16),
           name: c.name,
           distance: (c.distance / 1000).toFixed(2),
           moving_time: (c.moving_time / 3600).toFixed(2),
@@ -47,11 +49,12 @@ export default {
 </script>
 
 <style>
-  .item-cell-inner {
-    word-break: normal !important
+  .item-cell-inner, .header-cell-inner {
+    word-break: normal !important;
+    text-align: center;
   }
   .item-line {
-    height: auto !important
+    height: fit-content !important
   }
 
 </style>
