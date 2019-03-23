@@ -4,11 +4,11 @@
     <div class="container">
       <div>
         <strong>Average Riding Speed: </strong><br>
-        <h3>{{ (summaryStats.distance / 1000 / summaryStats.moving_time * 3600).toFixed(2) }} kph</h3>
+        <h3>{{ ((isMetric ? summaryStats.distance / 1000 : summaryStats.distance / 0.0254 / 12 / 5280 ) / summaryStats.moving_time * 3600).toFixed(2) }}{{ isMetric ? " kph" : " mph" }}</h3>
       </div>
       <div>
         <strong>Average Speed w/ Stops: </strong><br> 
-        <h3>{{ (summaryStats.distance / 1000 / summaryStats.elapsed_time * 3600).toFixed(2) }} kph</h3>
+        <h3>{{ ((isMetric ? summaryStats.distance / 1000 : summaryStats.distance / 0.0254 / 12 / 5280 ) / summaryStats.elapsed_time * 3600).toFixed(2) }} {{ isMetric ? " kph" : " mph" }}</h3>
       </div>
       <div>
         <strong>Days Riding</strong><br> 
@@ -28,7 +28,7 @@
       </div>
       <div>
         <strong>Total Distance</strong><br> 
-        <h3>{{ (summaryStats.distance / 1000).toFixed(0) }} kms</h3>
+        <h3>{{ (isMetric ? summaryStats.distance / 1000 : summaryStats.distance / 0.0254 / 12 / 5280 ).toFixed(0) }} {{isMetric ? " km" : " mi"}}</h3>
       </div>
     </div>
   </div>
@@ -37,6 +37,9 @@
 <script>
 export default {
   computed: {
+    isMetric() {
+      return this.$store.state.isMetric
+    },
     summaryStats() {
       let summary = {
         elapsed_time: 0,
@@ -50,7 +53,7 @@ export default {
         a.moving_time += c.moving_time
         a.distance += c.distance
         a.total_elevation_gain += c.total_elevation_gain
-        if (!a.day.includes(c.start_date_local.slice(0,10))) {
+        if (!a.day.includes(c.start_date_local.slice(0,10)) && !c.name.includes("Rest Day")) {
           a.day.push(c.start_date_local.slice(0,10))
         }
         return a
@@ -66,15 +69,23 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .container {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
   }
   .container div {
     margin: 1rem 2rem;
+  }
+  .headerRow h2 {
+    display: inline;
+    text-align: center;
+  }
+  .headerRow span {
+    float: right;
   }
 </style>
 

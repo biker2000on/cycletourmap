@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     start: '3/12/2019',
     end: '11/21/2019',
+    isMetric: true,
     athlete: '',
     activities: [],
   },
@@ -23,6 +24,9 @@ export default new Vuex.Store({
     },
     setActivities (state, activities) {
       state.activities = activities
+    },
+    setMetric (state, metric) {
+      state.isMetric = metric
     },
     addActivities (state, activities) {
       // should update to check if activity is already in state.

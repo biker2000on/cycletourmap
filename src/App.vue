@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Toggle id="toggle"/>
     <Leaflet />
     <Summary />
     <h2>All Rides</h2>
@@ -11,13 +12,14 @@
 import Leaflet from './components/Leaflet.vue'
 import Vuetable from './components/Vuetable.vue'
 import Summary from './components/Summary.vue'
+import Toggle from './components/Toggle.vue'
 import store from './store/index'
 
 export default {
   name: 'app',
   store,
   components: {
-    Leaflet, Vuetable, Summary
+    Leaflet, Vuetable, Summary, Toggle
   },
 }
 </script>
@@ -32,6 +34,9 @@ export default {
 }
 h2 {
   text-align: center;
+}
+#toggle {
+  margin-bottom: 5px;
 }
 
 </style>

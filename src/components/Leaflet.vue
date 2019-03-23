@@ -50,6 +50,9 @@ export default {
     }
   },
   computed: {
+    isMetric() {
+      return this.$store.state.isMetric
+    },
     rides() {
       return this.$store.state.activities.map(activity => activity.start_latlng)
     },
@@ -66,7 +69,9 @@ export default {
     popups() {
       return this.$store.state.activities.map(activity => {
         return [activity.start_latlng, 
-               "<p>" + activity.name + "<br>" + (activity.distance / 1000).toFixed(2) + " km " + activity.type + "<br>" + 
+               "<p>" + activity.name + "<br>" + 
+               (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi ")+ 
+               activity.type + "<br>" + 
                (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p><br>" +
                '<a href="https://www.strava.com/activities/' + activity.id + '" target="_blank">View on Strava</a>'
                ] 
