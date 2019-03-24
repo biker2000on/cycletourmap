@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     start: '3/12/2019',
     end: '11/21/2019',
-    isMetric: true,
+    isMetric: false,
     athlete: '',
     activities: [],
   },
