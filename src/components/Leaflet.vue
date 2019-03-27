@@ -54,20 +54,28 @@ export default {
       return this.$store.state.isMetric
     },
     rides() {
-      return this.$store.state.activities.map(activity => activity.start_latlng)
+      let ride = this.$store.state.activities.map(activity => {
+        if (activity.start_latlng) {return activity.start_latlng}
+        return
+      })
+      return ride.filter(c => c)
     },
     polylines() {
-      return this.$store.state.activities.map(activity => {
-        let poly = omnivore.polyline.parse(activity.map.summary_polyline)
-        let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
-        if (coords) {
-          coords = coords.map(c => c.reverse())
-          return coords
+      let poly = this.$store.state.activities.map(activity => {
+        if (activity.map.summary_polyline) {
+          let poly = omnivore.polyline.parse(activity.map.summary_polyline)
+          let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
+          if (coords) {
+            coords = coords.map(c => c.reverse())
+            return coords
+          }
         }
+        return
       })
+      return poly.filter(c => c)
     },
     popups() {
-      return this.$store.state.activities.map(activity => {
+      let popup = this.$store.state.activities.map(activity => {
         return [activity.start_latlng, 
                "<p>" + activity.name + "<br>" + 
                (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi ")+ 
@@ -76,6 +84,7 @@ export default {
                '<a href="https://www.strava.com/activities/' + activity.id + '" target="_blank">View on Strava</a>'
                ] 
       })
+      return popup.filter(c => c[0])
     },
     // route() {
     //   let gpx = omnivore.gpx('/2019_Trans-Asia_Tour.gpx')
