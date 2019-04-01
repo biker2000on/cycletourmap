@@ -2,21 +2,46 @@
   <v-data-table
     :headers="headers"
     :items="tableData2"
-    :height="500"
-    :minWidth="800"
-    :itemHeight="80"
-    :enableExport="true"
-    language="en"
+    class="elevation-1"
   >
+    <template v-slot:headers="props">
+      <tr>
+        <th v-for="header in props.headers" 
+          :key="header.text" 
+          :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+          @click="changeSort(header.value)">
+          <v-icon small>arrow_upward</v-icon>
+          {{ header.text }}
+        </th>
+      </tr>
+    </template>
+    <template v-slot:items="props">
+      <tr :active="props.selected" @click="props.selected = !props.selected">
+        <td>{{props.item.date}}</td>
+        <td>{{props.item.time}}</td>
+        <td>{{props.item.name}}</td>
+        <td>{{props.item.distance}}</td>
+        <td>{{props.item.moving_time}}</td>
+        <td>{{props.item.elapsed_time}}</td>
+        <td>{{props.item.total_elevation_gain}}</td>
+      </tr>
+    </template>
+
   </v-data-table>
 </template>
 
 <script>
-import VueVirtualTable from 'vue-virtual-table'
+import {VDataTable, VIcon} from 'vuetify/lib'
 export default {
   components: {
-    VueVirtualTable
+    VDataTable, VIcon
   },
+  data: () => ({
+    pagination: {
+      sortBy: 'name'
+    },
+    selected: [],
+  }),
   computed: {
     isMetric() {
       return this.$store.state.isMetric
@@ -38,24 +63,28 @@ export default {
       return [
         {value: 'date', text: 'Date', sortable: true},
         {value: 'time', text: 'Start Time', sortable: true},
-        {value: 'name', text: 'Name', searchable: true, },
+        {value: 'name', text: 'Name',},
         {value: 'distance', text: this.isMetric ? 'Distance (km)' : 'Distance (mi)', sortable: true, },
         {value: 'moving_time', text: 'Moving Time (hrs)', sortable: true, },
         {value: 'elapsed_time', text: 'Elapsed Time (hrs)', sortable: true, },
         {value: 'total_elevation_gain', text: this.isMetric ? 'Climbed (m)' : 'Climbed (ft)', sortable: true, },
       ]
     }
+  },
+  methods: {
+    changeSort (column) {
+      if (this.pagination.sortBy === column) {
+        this.pagination.descending = !this.pagination.descending
+      } else {
+        this.pagination.sortBy = column
+        this.pagination.descending = false
+      }
+    },
+
   }
 }
 </script>
 
 <style>
-  .item-cell-inner, .header-cell-inner {
-    word-break: normal !important;
-    text-align: center;
-  }
-  .item-line {
-    height: fit-content !important
-  }
 
 </style>

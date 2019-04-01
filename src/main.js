@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import App from './App.vue'
-// import VueMapbox from 'vue-mapbox'
-// import Mapbox from 'mapbox-gl'
-// import VueRouter from 'vue-router'
 
-// Vue.use(VueMapbox, { mapboxgl: Mapbox })
-// Vue.use(VueRouter)
+import Vuetify from  'vuetify/lib'
+Vue.use(Vuetify)
+
 Vue.config.productionTip = false
+
+//styles for Vuetify
+import 'vuetify/dist/vuetify.min.css'
+
 
 // const router = new VueRouter()
 

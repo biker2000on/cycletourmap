@@ -61,6 +61,7 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 
 ## Todos
 
+* Trying to get Vuetify Data Table to work
 * Add link to blog posts from rides
 * Import photos attached to Strava to Map popups
 * DONE after import of rides, zoom to fit
