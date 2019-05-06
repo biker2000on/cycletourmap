@@ -61,14 +61,14 @@ I am using Strava to pull activity data. [This is a good resource](https://codep
 
 ## Todos
 
-* Trying to get Vuetify Data Table to work
-* Add link to blog posts from rides
-* Import photos attached to Strava to Map popups
+* DONE Trying to get Vuetify Data Table to work (didn't end up liking the styling)
 * DONE after import of rides, zoom to fit
 * DONE pull correct rides from Strava
 * DONE Table based on `vue-virtual-table`
 * DONE Add lines to map and select whether they come up with popups or all displayed.
 * DONE Add popups with summary stats of each ride.
+* CANCEL Add link to blog posts from rides (not writing blog posts per ride)
+* CANCEL Import photos attached to Strava to Map popups (too many API calls)
 * CANCEL Save rides to local database (mongodb via Loopback) **possible**
 * LATER user authentication
 * LATER Finish Strava authentication dance

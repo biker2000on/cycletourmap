@@ -2,9 +2,11 @@
   <v-data-table
     :headers="headers"
     :items="tableData2"
+    item-key="name"
+    :pagination.sync="pagination" 
     class="elevation-1"
   >
-    <template v-slot:headers="props">
+    <!-- <template v-slot:headers="props">
       <tr>
         <th v-for="header in props.headers" 
           :key="header.text" 
@@ -14,9 +16,9 @@
           {{ header.text }}
         </th>
       </tr>
-    </template>
+    </template> -->
     <template v-slot:items="props">
-      <tr :active="props.selected" @click="props.selected = !props.selected">
+      <tr>
         <td>{{props.item.date}}</td>
         <td>{{props.item.time}}</td>
         <td>{{props.item.name}}</td>
@@ -38,9 +40,10 @@ export default {
   },
   data: () => ({
     pagination: {
-      sortBy: 'name'
+      sortBy: 'date',
+      descending: true,
+      rowsPerPage: -1,
     },
-    selected: [],
   }),
   computed: {
     isMetric() {
@@ -62,12 +65,12 @@ export default {
     headers() {
       return [
         {value: 'date', text: 'Date', sortable: true},
-        {value: 'time', text: 'Start Time', sortable: true},
-        {value: 'name', text: 'Name',},
-        {value: 'distance', text: this.isMetric ? 'Distance (km)' : 'Distance (mi)', sortable: true, },
-        {value: 'moving_time', text: 'Moving Time (hrs)', sortable: true, },
-        {value: 'elapsed_time', text: 'Elapsed Time (hrs)', sortable: true, },
-        {value: 'total_elevation_gain', text: this.isMetric ? 'Climbed (m)' : 'Climbed (ft)', sortable: true, },
+        {value: 'time', text: 'Start Time', sortable: true, width: 15},
+        {value: 'name', text: 'Name', width: 70},
+        {value: 'distance', text: this.isMetric ? 'Distance (km)' : 'Distance (mi)', sortable: true, width: 15 },
+        {value: 'moving_time', text: 'Moving Time (hrs)', sortable: true, width: 15},
+        {value: 'elapsed_time', text: 'Elapsed Time (hrs)', sortable: true, width: 15},
+        {value: 'total_elevation_gain', text: this.isMetric ? 'Climbed (m)' : 'Climbed (ft)', sortable: true, width: 15 },
       ]
     }
   },
@@ -85,6 +88,8 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+table.v-table {
+  padding: 0 0;
+}
 </style>

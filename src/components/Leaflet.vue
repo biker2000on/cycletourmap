@@ -8,7 +8,16 @@
       @update:zoom="zoomUpdated"
       :inertia="false"
       >
-      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+      <l-control-layers position="topright"  ></l-control-layers>
+      <l-tile-layer
+        v-for="tileProvider in tileProviders"
+        :key="tileProvider.name"
+        :name="tileProvider.name"
+        :visible="tileProvider.visible"
+        :url="tileProvider.url"
+        :attribution="tileProvider.attribution"
+        layer-type="base" />
+      <!-- <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer> -->
       <l-polyline v-for="(start, idx) in popups" :lat-lngs="popups[idx][2]" :key="'line' + idx" :fill="false">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
       </l-polyline>
@@ -22,7 +31,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPolyline, LPopup } from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers } from 'vue2-leaflet'
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import omnivore from "@mapbox/leaflet-omnivore";
@@ -41,6 +50,7 @@ export default {
     LMarker,
     LPolyline,
     LPopup,
+    LControlLayers,
   },
   data() {
     return {
@@ -48,8 +58,20 @@ export default {
       center: [0,0],
       bounds: null,
       maxBounds: null,
-      url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      tileProviders: [
+        {
+          name: 'OpenStreetMaps',
+          visible: false,
+          url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+          attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        },
+        {
+          name: 'OpenCycleMap',
+          visible: true,
+          url: 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3d3c357594e04c67a183d3c95a1792c0',
+          attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }
+      ]
     }
   },
   computed: {

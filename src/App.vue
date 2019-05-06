@@ -4,24 +4,26 @@
     <Leaflet />
     <Summary />
     <h2>All Rides</h2>
-    <Vuetable />
+    <!-- <Vuetable /> -->
     <VuetifyTable />
+    <!-- <vue-cheetah-table/> -->
   </div>
 </template>
 
 <script>
 import Leaflet from './components/Leaflet.vue'
-import Vuetable from './components/Vuetable.vue'
+// import Vuetable from './components/Vuetable.vue'
 import Summary from './components/Summary.vue'
 import Toggle from './components/Toggle.vue'
 import store from './store/index'
 import VuetifyTable from './components/VuetifyTable.vue'
+// import VueCheetahTable from './components/VueCheetahTable.vue'
 
 export default {
   name: 'app',
   store,
   components: {
-    Leaflet, Vuetable, Summary, Toggle, VuetifyTable
+    Leaflet, Summary, Toggle, VuetifyTable
   },
 }
 </script>
