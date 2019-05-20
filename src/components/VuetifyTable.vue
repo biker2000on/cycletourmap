@@ -64,13 +64,13 @@ export default {
     },
     headers() {
       return [
-        {value: 'date', text: 'Date', sortable: true},
-        {value: 'time', text: 'Start Time', sortable: true, width: 15},
-        {value: 'name', text: 'Name', width: 70},
-        {value: 'distance', text: this.isMetric ? 'Distance (km)' : 'Distance (mi)', sortable: true, width: 15 },
-        {value: 'moving_time', text: 'Moving Time (hrs)', sortable: true, width: 15},
-        {value: 'elapsed_time', text: 'Elapsed Time (hrs)', sortable: true, width: 15},
-        {value: 'total_elevation_gain', text: this.isMetric ? 'Climbed (m)' : 'Climbed (ft)', sortable: true, width: 15 },
+        {value: 'date', text: 'Date', sortable: true, width: 15},
+        {value: 'time', text: 'Start Time', sortable: true, width: 10},
+        {value: 'name', text: 'Name'},
+        {value: 'distance', text: this.isMetric ? 'Distance (km)' : 'Distance (mi)', sortable: true, width: 10 },
+        {value: 'moving_time', text: 'Moving Time (hrs)', sortable: true, width: 10},
+        {value: 'elapsed_time', text: 'Elapsed Time (hrs)', sortable: true, width: 10},
+        {value: 'total_elevation_gain', text: this.isMetric ? 'Climbed (m)' : 'Climbed (ft)', sortable: true, width: 10 },
       ]
     }
   },
