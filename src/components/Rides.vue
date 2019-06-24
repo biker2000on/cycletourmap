@@ -4,6 +4,7 @@
     :columns="columns"
     :tableData="tableData2"
     :tabulatorSettings="tabulatorSettings"
+    class="ride-table"
   />
 </template>
 
@@ -25,6 +26,9 @@ export default {
     };
   },
   computed: {
+    isMetric() {
+      return this.$store.state.isMetric
+    },
     tableData2() {
       return this.$store.state.activities.map(c => {
         return {
@@ -51,7 +55,7 @@ export default {
           title: "Start Time",
           field: "time",
           align: "center",
-          headerVertical: true,
+          headerVertical: 'flip',
           minWidth: 80 
         },
         {
@@ -67,7 +71,7 @@ export default {
           title: this.isMetric ? 'Distance (km)' : 'Distance (mi)',
           field: 'distance',
           align: "center",
-          headerVertical: true,
+          headerVertical: 'flip',
           minWidth: 80 
         },
         {
@@ -81,21 +85,21 @@ export default {
           title: "Elapsed Time (hrs)",
           field: "elapsed_time",
           align: "center",
-          headerVertical: true,
+          headerVertical: 'flip',
           minWidth: 80 
         },
         {
           title: this.isMetric ? 'Climbed (m)' : 'Climbed (ft)',
           field: "total_elevation_gain",
           align: "center",
-          headerVertical: true,
+          headerVertical: 'flip',
           minWidth: 80 
         },
         {
           title: this.isMetric ? 'Avg Spd (kph)' : 'Avg Spd (mph)',
           field: "average_speed",
           align: "center",
-          headerVertical: true,
+          headerVertical: 'flip',
           minWidth: 80 
         },
       ]
@@ -103,3 +107,10 @@ export default {
   }
 };
 </script>
+
+<style>
+  .ride-table {
+    height: 90vh
+  }
+</style>
+

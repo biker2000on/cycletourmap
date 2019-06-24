@@ -26,6 +26,14 @@ export default {
     error: [],
     widths: 20,
   }),
+  watch: {
+    tableData: function (newData, oldData) {
+      this.tabulator.replaceData(newData)
+    },
+    columns: function (newCols, oldCols) {
+      this.tabulator.setColumns(newCols)
+    }
+  },
   mounted() {
     this.tabulator = new Tabulator(this.$refs.table, {
       reactiveData: true,
