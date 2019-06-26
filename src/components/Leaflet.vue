@@ -18,10 +18,10 @@
         :attribution="tileProvider.attribution"
         layer-type="base" />
       <!-- <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer> -->
-      <l-polyline v-for="(start, idx) in popups" :lat-lngs="popups[idx][2]" :key="'line' + idx" :fill="false">
+      <l-polyline v-if="polylinesOn" v-for="(start, idx) in popups" :lat-lngs="popups[idx][2]" :key="'line' + idx" :fill="false">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
       </l-polyline>
-      <l-marker v-for="(start,idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
+      <l-marker v-if="markersOn" v-for="(start,idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop2' + idx"></l-popup>
       </l-marker>
       <!-- <l-polyline v-for="(line, idx) in polylines" :lat-lngs="line" :key="'line' + idx" :fill="false"></l-polyline> -->
@@ -52,6 +52,18 @@ export default {
     LPopup,
     LControlLayers,
   },
+  props: {
+    markersOn: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    polylinesOn: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+  },
   data() {
     return {
       zoom:2,
@@ -75,9 +87,9 @@ export default {
     }
   },
   computed: {
-    isMetric() {
-      return this.$store.state.isMetric
-    },
+    // isMetric() {
+    //   return this.$store.state.isMetric
+    // },
     rides() {
       let ride = this.$store.state.activities.map(activity => {
         if (activity.start_latlng) {return activity.start_latlng}
