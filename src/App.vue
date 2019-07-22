@@ -3,35 +3,34 @@
   <v-app id="app">
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
-        <v-list-item @click>
-          <v-list-item-action>
+        <v-list-tile @click>
+          <v-list-tile-action>
             <v-icon>home</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item @click>
-          <v-list-item-action>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Home</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click>
+          <v-list-tile-action>
             <v-icon>contact_mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Contact</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="indigo" dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-toolbar app color="indigo" dark>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Application</v-toolbar-title>
-    </v-app-bar>
+    </v-toolbar>
 
     <v-content>
       <v-container fluid fill-height>
-        <v-layout align-center justify-center>
-          <v-flex text-center>
-            <div class="inline">
+            <Leaflet :markersOn="markersOn" :polylinesOn="polylinesOn" />
+            <!-- <div class="inline">
               <input type="checkbox" v-model="isMetric" />
               {{ isMetric ? "Units(Switch to Standard)" : 'Units(Switch to Metric)'}}
               <input
@@ -40,24 +39,24 @@
               /> Markers
               <input type="checkbox" v-model="polylinesOn" /> Lines
             </div>
-            <Leaflet :markersOn="markersOn" :polylinesOn="polylinesOn" />
             <Summary :isMetric="isMetric" />
             <h2>All Rides</h2>
-            <rides :isMetric="isMetric" />
+            <rides :isMetric="isMetric" /> -->
+        <v-layout align-center justify-center>
+          <v-flex text-center>
           </v-flex>
         </v-layout>
       </v-container>
     </v-content>
-    <v-footer color="indigo" app>
+    <!-- <v-footer color="indigo" app>
       <span class="white--text">&copy; 2019</span>
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 
 <script>
 import Leaflet from './components/Leaflet.vue'
 import Summary from './components/Summary.vue'
-import Toggle from './components/Toggle.vue'
 import store from './store/index'
 import Rides from './components/Rides'
 
@@ -65,7 +64,7 @@ export default {
   name: 'app',
   store,
   components: {
-    Leaflet, Summary, Toggle, Rides
+    Leaflet, Summary, Rides
   },
   data() {
     return {
