@@ -36,17 +36,10 @@
 
 <script>
 export default {
-  props: {
-    isMetric: {
-      type: Boolean,
-      required: false,
-      default: false,
-    }
-  },
   computed: {
-    // isMetric() {
-    //   return this.$store.state.isMetric
-    // },
+    isMetric() {
+      return this.$store.state.isMetric
+    },
     summaryStats() {
       let summary = {
         elapsed_time: 0,
