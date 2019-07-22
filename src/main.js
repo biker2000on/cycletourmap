@@ -1,8 +1,10 @@
 import Vue from 'vue'
-import './plugins/vuetify'
 import App from './App.vue'
 
 Vue.config.productionTip = false
+
+import Vuetify from  'vuetify/lib'
+Vue.use(Vuetify)
 
 //styles for Vuetify
 import 'vuetify/dist/vuetify.min.css'
