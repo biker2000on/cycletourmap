@@ -14,7 +14,7 @@
     "tabulator-tables": "^4.2.7",
     "vue": "^2.6.10",
     "vue2-leaflet": "^1.1.1",
-    "vuetify": "^1.5.7",
+    "vuetify": "^2.0.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -22,6 +22,7 @@
     "@vue/cli-plugin-eslint": "^3.0.5",
     "@vue/cli-service": "^3.0.5",
     "css-loader": "^2.1.1",
+    "sass": "^1.22.7",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
