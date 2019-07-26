@@ -3,6 +3,7 @@
     <v-navigation-drawer
       v-model="drawer"
       app
+      permanent
     >
       <v-list dense>
         <v-list-item @click="">
@@ -22,6 +23,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      <strava :start.sync="start" :end.sync="end" :activities.sync="activities" />
     </v-navigation-drawer>
 
     <v-app-bar
@@ -44,7 +46,7 @@
           justify-center
         >
           <v-flex text-center>
-            <Leaflet :markersOn="markersOn" :polylinesOn="polylinesOn" />
+            <Leaflet :markersOn="markersOn" :polylinesOn="polylinesOn" :activities="activities" />
             <!-- <div class="inline">
               <input type="checkbox" v-model="isMetric" />
               {{ isMetric ? "Units(Switch to Standard)" : 'Units(Switch to Metric)'}}
@@ -76,21 +78,26 @@ import Leaflet from './components/Leaflet.vue'
 import Summary from './components/Summary.vue'
 import store from './store/index'
 import Rides from './components/Rides'
+import Strava from './components/Strava'
+import process from 'process'
 
 export default {
   name: 'app',
   store,
   components: {
-    Leaflet, Summary, Rides
+    Leaflet, Summary, Rides, Strava
   },
   data() {
     return {
+      start: '',
+      end: '',
+      activities: [],
       markersOn: true,
       polylinesOn: true,
       isMetric: false,
       drawer: null,
     }
-  }
+  },
 }
 </script>
 

@@ -9,6 +9,7 @@
       :inertia="false"
       >
       <l-control-layers position="topright"  ></l-control-layers>
+      <l-control-scale position="bottomright" :imperial="true" :metric="true"></l-control-scale>
       <l-tile-layer
         v-for="tileProvider in tileProviders"
         :key="tileProvider.name"
@@ -31,7 +32,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers } from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers, LControlScale } from 'vue2-leaflet'
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import omnivore from "@mapbox/leaflet-omnivore";
@@ -51,6 +52,14 @@ export default {
     LPolyline,
     LPopup,
     LControlLayers,
+    LControlScale,
+  },
+  props: {
+    activities: {
+      type: Array,
+      required: true,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -79,14 +88,14 @@ export default {
       return this.$store.state.isMetric
     },
     rides() {
-      let ride = this.$store.state.activities.map(activity => {
+      let ride = this.activities.map(activity => {
         if (activity.start_latlng) {return activity.start_latlng}
         return
       })
       return ride.filter(c => c)
     },
     polylines() {
-      let poly = this.$store.state.activities.map(activity => {
+      let poly = this.activities.map(activity => {
         if (activity.map.summary_polyline) {
           let poly = omnivore.polyline.parse(activity.map.summary_polyline)
           let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
@@ -100,7 +109,7 @@ export default {
       return poly.filter(c => c)
     },
     popups() {
-      let popup = this.$store.state.activities.map(activity => {
+      let popup = this.activities.map(activity => {
         let coords
         if (activity.map.summary_polyline) {
           let poly = omnivore.polyline.parse(activity.map.summary_polyline)
@@ -171,41 +180,11 @@ export default {
     },
   },
   methods: {
-    getAllActivities: async function () {
-      const start = new Date(this.$store.state.start)
-      let page = 1
-      let acts = []
-      let activities = ''
-      do {
-        let strava = await fetch('https://www.strava.com/api/v3/athletes/7594/activities?access_token=641c02aede2bd589ccf83096c9ea706c2fd3a1ec&per_page=50&page=' + page)
-        activities = await strava.json()
-        let dates = activities.reduce((a,c)=>{
-          let rideStart = new Date(c.start_date)
-          if (start > rideStart) {
-            return true
-          } else { return a }
-        }, false)
-        activities = activities.filter(c => {
-          let rideStart = new Date(c.start_date)
-          return rideStart >= start
-        })
-        acts = acts.concat(activities)
-        if (dates) {
-          this.$store.commit('setActivities', acts)
-          return
-        }
-        page++
-      } while (activities != '')
-      this.$store.commit('setActivities', acts)
-      return
-    },
+    
     zoomUpdated (zoom) {
       this.zoom = zoom;
     },
   },
-  mounted() {
-    this.getAllActivities()
-  }
 }
 </script>
 
