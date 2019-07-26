@@ -1,34 +1,49 @@
-
 <template>
-  <v-app id="app">
-    <v-navigation-drawer v-model="drawer" app>
+  <v-app id="inspire">
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+    >
       <v-list dense>
-        <v-list-tile @click>
-          <v-list-tile-action>
+        <v-list-item @click="">
+          <v-list-item-action>
             <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click>
-          <v-list-tile-action>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="">
+          <v-list-item-action>
             <v-icon>contact_mail</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Contact</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Contact</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar app color="indigo" dark>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    <v-app-bar
+      app
+      color="indigo"
+      dark
+      ref="appbar"
+    >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Application</v-toolbar-title>
-    </v-toolbar>
+    </v-app-bar>
 
     <v-content>
-      <v-container fluid fill-height>
+      <v-container
+        fluid
+        fill-height
+      >
+        <v-layout
+          align-center
+          justify-center
+        >
+          <v-flex text-center>
             <Leaflet :markersOn="markersOn" :polylinesOn="polylinesOn" />
             <!-- <div class="inline">
               <input type="checkbox" v-model="isMetric" />
@@ -42,17 +57,19 @@
             <Summary :isMetric="isMetric" />
             <h2>All Rides</h2>
             <rides :isMetric="isMetric" /> -->
-        <v-layout align-center justify-center>
-          <v-flex text-center>
           </v-flex>
         </v-layout>
       </v-container>
     </v-content>
-    <!-- <v-footer color="indigo" app>
+    <v-footer
+      color="indigo"
+      app
+    >
       <span class="white--text">&copy; 2019</span>
-    </v-footer> -->
+    </v-footer>
   </v-app>
 </template>
+
 
 <script>
 import Leaflet from './components/Leaflet.vue'
@@ -78,18 +95,8 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 10px;
-}
-h2 {
-  text-align: center;
-}
-#toggle {
-  margin-bottom: 5px;
+.container {
+  padding: 0 !important;
 }
 
 </style>

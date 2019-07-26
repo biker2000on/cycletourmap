@@ -1,5 +1,5 @@
 <template lang="html">
-  <div id="leaflet-comp">
+  <div id="leaflet-comp" :style="computedHeight">
     <l-map 
       :bounds="bounds"
       :zoom="zoom" 
@@ -120,6 +120,12 @@ export default {
       })
       return popup.filter(c => c[0])
     },
+    computedHeight() {
+      const top = this.$vuetify.application.top
+      const bottom = this.$vuetify.application.footer || 0
+      const total = window.innerHeight
+      return { height: total - top - bottom }
+    }
     // route() {
     //   let gpx = omnivore.gpx('/2019_Trans-Asia_Tour.gpx')
     //   // let coords = gpx._layers
@@ -205,7 +211,6 @@ export default {
 
 <style lang="css">
 #leaflet-comp {
-  height: 75vh;
   width: 100%;
   margin: auto;
 }
