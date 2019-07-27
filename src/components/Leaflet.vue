@@ -8,6 +8,7 @@
       @update:zoom="zoomUpdated"
       :inertia="false"
       >
+      <l-fullscreen />
       <l-control-layers position="topright"  ></l-control-layers>
       <l-control-scale position="bottomright" :imperial="true" :metric="true"></l-control-scale>
       <l-tile-layer
@@ -33,6 +34,7 @@
 
 <script>
 import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers, LControlScale } from 'vue2-leaflet'
+import LFullscreen from './Vue2LeafletFullscreen'
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import omnivore from "@mapbox/leaflet-omnivore";
@@ -53,6 +55,7 @@ export default {
     LPopup,
     LControlLayers,
     LControlScale,
+    LFullscreen,
   },
   props: {
     activities: {
@@ -67,7 +70,7 @@ export default {
       center: [0,0],
       bounds: null,
       maxBounds: null,
-      windowHeight: window.innerHeight,
+      windowHeight: 300,
       computedHeight: {height: 600},
       tileProviders: [
         {
@@ -175,16 +178,13 @@ export default {
       setTimeout(() => {this.bounds = bounds},500)
     },
     windowHeight(newHeight, oldHeight) {
-      this.computeHeight()
-    }
-  },
-  methods: {
-    computeHeight() {
       const top = this.$vuetify.application.top
       const bottom = this.$vuetify.application.footer || 0
       const total = this.windowHeight
       this.computedHeight = { height: total - top - bottom }
-    },
+    }
+  },
+  methods: {
     zoomUpdated (zoom) {
       this.zoom = zoom;
     },
@@ -194,7 +194,7 @@ export default {
       window.addEventListener('resize', () => {
         this.windowHeight = window.innerHeight
       });
-      this.computeHeight()
+      this.windowHeight = window.innerHeight
     })
   },
   beforeDestroy() {
