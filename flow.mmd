@@ -1,0 +1,19 @@
+graph TD
+A[Request Initial Auth] --> B{Redirect to<br> OAuth Page}
+B --> C(Athlete Clicks <br>Authorize)
+B -->D[Not Authorize]
+D --> E(returns error=?? Redirect back to app)
+C --> F(redirect to URL with SearchParams code and scope)
+F --> G{check if scope correct}
+G -->|yes|H(Make request with code for short lived token)
+G-->|no|I(Send back to OAuth for correct scope)
+I -->B
+H-->J(Receive refresh token, access token, and expiry date)
+J-->L(save tokens to cookies and vue data)
+L -->K(make requests with tokens in header)
+K -->M(request new token with refresh token when expiry date is near)
+M -->J
+N(Initial App Load)
+N-->O{Check for cookies <br>auth and athlete}
+O-->|yes|J
+O-->|no|A
