@@ -30,10 +30,9 @@
       app
       color="indigo"
       dark
-      ref="appbar"
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
+      <v-toolbar-title>Strava Tourmap</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
@@ -89,7 +88,7 @@ export default {
   },
   data() {
     return {
-      start: '',
+      start: '2019-03-12',
       end: '',
       activities: [],
       markersOn: true,

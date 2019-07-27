@@ -67,6 +67,8 @@ export default {
       center: [0,0],
       bounds: null,
       maxBounds: null,
+      windowHeight: window.innerHeight,
+      computedHeight: {height: 600},
       tileProviders: [
         {
           name: 'OpenStreetMaps',
@@ -129,12 +131,6 @@ export default {
       })
       return popup.filter(c => c[0])
     },
-    computedHeight() {
-      const top = this.$vuetify.application.top
-      const bottom = this.$vuetify.application.footer || 0
-      const total = window.innerHeight
-      return { height: total - top - bottom }
-    }
     // route() {
     //   let gpx = omnivore.gpx('/2019_Trans-Asia_Tour.gpx')
     //   // let coords = gpx._layers
@@ -178,13 +174,32 @@ export default {
                     [box[1][0]+1, box[1][1]+1]]
       setTimeout(() => {this.bounds = bounds},500)
     },
+    windowHeight(newHeight, oldHeight) {
+      this.computeHeight()
+    }
   },
   methods: {
-    
+    computeHeight() {
+      const top = this.$vuetify.application.top
+      const bottom = this.$vuetify.application.footer || 0
+      const total = this.windowHeight
+      this.computedHeight = { height: total - top - bottom }
+    },
     zoomUpdated (zoom) {
       this.zoom = zoom;
     },
   },
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', () => {
+        this.windowHeight = window.innerHeight
+      });
+      this.computeHeight()
+    })
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize')
+  }
 }
 </script>
 
