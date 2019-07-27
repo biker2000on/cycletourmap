@@ -5,7 +5,7 @@
       app
       permanent
     >
-      <v-list dense>
+      <!-- <v-list dense>
         <v-list-item @click="">
           <v-list-item-action>
             <v-icon>home</v-icon>
@@ -22,7 +22,7 @@
             <v-list-item-title>Contact</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-      </v-list>
+      </v-list> -->
       <strava :start.sync="start" :end.sync="end" :activities.sync="activities" />
     </v-navigation-drawer>
 

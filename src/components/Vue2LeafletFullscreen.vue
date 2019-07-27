@@ -42,9 +42,16 @@ export default {
     if (this.$parent._isMounted) {
       this.deferredMountedTo(this.$parent.mapObject);
     }
+    this.$on('keyup.esc', function() {
+      const map = this.$parent.mapObject
+      if (map.isFullscreen()) {
+        map.toggleFullscreen()
+      }
+    })
   },
   beforeDestroy() {
     this.removeLayer();
+    this.$off('keyup.esc')
   },
   methods: {
     deferredMountedTo(parent) {
@@ -52,19 +59,16 @@ export default {
       this.mapObject.addTo(parent);
       parent.on("enterFullscreen", function() {
         vm.$emit('enter-fullscreen')
+        vm.$on('keyup.esc', function() {
+          parent.toggleFullscreen()
+        })
       });
 
       parent.on("exitFullscreen", function() {
         vm.$emit('exit-fullscreen')
+        vm.$off('keyup.esc')
       });
     },
-    // setAttribution(val, old) {
-    //   this.attributionControl.removeAttribution(old);
-    //   this.attributionControl.addAttribution(val);
-    // },
-    // setToken(val) {
-    //   this.options.token = val;
-    // },
     removeLayer() {
       this.$parent.mapObject.removeLayer(this.mapObject);
     },

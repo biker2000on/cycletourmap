@@ -1,39 +1,62 @@
 <template>
-  <div id="strava">
-    <h3>Strava Info Test</h3>
+  <v-list>
+    <v-list-item>
+      <v-img
+        v-if="athlete"
+        :src="athlete.profile"
+        :alt="athlete.firstname + ' ' + athlete.lastname"
+        :style="{borderRadius: 50 + '%'}"
+      />
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <h2>{{ athlete.firstname + ' ' + athlete.lastname }}</h2>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item dense>
+      <v-list-item-content>
+       <h3>Start Date:</h3>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+      <input type="date" value="start" @input="$emit('update:start',$event.target.value)" />
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item dense>
+      <v-list-item-content>
+        <h3>End Date:</h3>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+      <input type="date" value="end" @input="$emit('update:end',$event.target.value)" />
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
     <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
-    <a
+    </v-list-item-content>
+    </v-list-item>
+    <v-list-item> 
+      <v-list-item-content>
+    <v-btn
       :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
               '&redirect_uri=' + redirect_uri +
               '&response_type=' + 'code' +
               '&approval_prompt=' + 'auto' + // could be 'force'
               '&scope=' + 'read,profile:read_all,activity:read'"
-    >Authorize App</a>
-    <div>
-      <label for="data.start">Start Date:</label>
-      <input type="date" value="start" @input="$emit('update:start',$event.target.value)" />
-      <label for="data.end">End Date:</label>
-      <input type="date" value="end" @input="$emit('update:end',$event.target.value)" />
-    </div>
-    <div>
-      <br />
-      We returned {{ this.activities.length }} activities.
-      <br />
-    </div>
-    <v-img
-      v-if="athlete"
-      :src="athlete.profile"
-      :alt="athlete.firstname + ' ' + athlete.lastname"
-      :style="{borderRadius: 50 + '%'}"
-    />
-  </div>
+    >Authorize App</v-btn>
+    </v-list-item-content>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script>
 import axios from "axios";
 import moment from "moment";
 import { URLSearchParams } from "url";
-import { setInterval, clearInterval } from 'timers';
+import { setInterval, clearInterval } from "timers";
 
 export default {
   props: {
@@ -59,25 +82,35 @@ export default {
       redirect_uri: process.env.VUE_APP_REDIRECTURI,
       client_id: process.env.VUE_APP_STRAVA_CLIENTID,
       client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-      auth: null
+      auth: null,
     };
   },
   methods: {
     getAllActivities: async function() {
       const start = new Date(this.start);
+      const end = this.end ? new Date(this.end) : new Date();
       let page = 1;
       let acts = [];
       let activities = "";
       do {
-        let strava = await fetch(
-          "https://www.strava.com/api/v3/athletes/" +
-            this.athlete.id +
-            "/activities?access_token=" +
-            this.auth.access_token +
-            "&per_page=50&page=" +
-            page
+        // let strava = await fetch(
+        //   "https://www.strava.com/api/v3/athletes/" +
+        //     this.athlete.id +
+        //     "/activities?access_token=" +
+        //     this.auth.access_token +
+        //     "&per_page=50&page=" +
+        //     page
+        // );
+        let strava = await axios.get(
+          "https://www.strava.com/api/v3/activities?per_page=50&page=" + page,
+          {
+            headers: {
+              Authorization: "Bearer " + this.auth.access_token
+            }
+          }
         );
-        activities = await strava.json();
+        // activities = await strava.json();
+        activities = strava.data;
         let dates = activities.reduce((a, c) => {
           let rideStart = new Date(c.start_date);
           if (start > rideStart) {
@@ -88,7 +121,7 @@ export default {
         }, false);
         activities = activities.filter(c => {
           let rideStart = new Date(c.start_date);
-          return rideStart >= start;
+          return rideStart >= start && rideStart <= end;
         });
         acts = acts.concat(activities);
         if (dates) {
@@ -120,28 +153,31 @@ export default {
       }
     },
     refreshToken() {
-      const vm = this
+      const vm = this;
       if (this.auth) {
         this.refresh = setInterval(() => {
-          let now = new Date()
+          let now = new Date();
           if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
-            vm.getTokens()
+            vm.getTokens();
           }
-        }, 3600)
+        }, 3600);
       }
     },
     getTokens: async function() {
+      let data;
       if (this.$cookies.isKey("auth")) {
         let now = new Date();
         this.auth = this.$cookies.get("auth");
-        this.athlete = this.$cookies.get('athlete')
-        if (this.auth.expires_at > now.getTime() / 1000 + 3600) return
-        const data = {
+        this.athlete = this.$cookies.get("athlete");
+        console.log("inside cookie check");
+        if (this.auth.expires_at > now.getTime() / 1000 + 3600) return;
+        data = {
           client_id: process.env.VUE_APP_STRAVA_CLIENTID,
           client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
           refresh_token: this.auth.refresh_token,
           grant_type: "refresh_token"
-        }
+        };
+        console.log(data);
       }
       if (window.location.search) {
         const params = new window.URLSearchParams(window.location.search);
@@ -153,21 +189,31 @@ export default {
         if (params.has("scope")) {
           this.stravaScope = params.get("scope").split(",");
         }
-        const data = {
+        data = {
           client_id: process.env.VUE_APP_STRAVA_CLIENTID,
           client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
           code: code,
           grant_type: "authorization_code"
         };
       }
+      console.log("check data before send", data);
+      if (!data) return;
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, ...auth } = res.data;
-      this.athlete = athlete;
       this.auth = auth;
-      this.$cookies.set("auth", auth, "30d")
-        .set('athlete',athlete, '30d')
+      if (!this.athlete && !athlete) {
+        // send request to get athlete object
+        res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
+          headers: {
+            Authorization: "Bearer " + this.auth.access_token //the token is a variable which holds the token
+          }
+        });
+        athlete = res2.data;
+      }
+      this.athlete = athlete;
+      this.$cookies.set("auth", auth, "30d").set("athlete", athlete, "30d");
       if (this.refresh == null) {
-        this.refreshToken()
+        this.refreshToken();
       }
 
       // console.log("Strava refresh token response: ", res.data);
@@ -178,14 +224,20 @@ export default {
     this.getTokens();
   },
   destroyed() {
-    clearInterval(this.refresh)
+    clearInterval(this.refresh);
   }
 };
 </script>
 
 <style scoped>
-#strava {
+.v-list-item {
   text-align: center;
-  padding: 5px;
+}
+input {
+  height: 2em;
+  border: 2px solid indigo;
+  border-radius: 5px;
+  box-shadow: 3px 3px;
+  padding: 6px;
 }
 </style>
