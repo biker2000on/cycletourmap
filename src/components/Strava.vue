@@ -181,6 +181,7 @@ export default {
       }
       if (window.location.search) {
         const params = new window.URLSearchParams(window.location.search);
+        window.history.replaceState({}, document.title, "/") // removes query string from URL
         if (params.has("error")) {
           console.error("You didn't give us the right permissions");
           return;
