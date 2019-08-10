@@ -36,8 +36,6 @@ export default {
       ...this.defaultOptions,
       ...this.options
     });
-    if (this.options) {
-    }
     L.DomEvent.on(this.mapObject, this.$listeners);
     if (this.$parent._isMounted) {
       this.deferredMountedTo(this.$parent.mapObject);

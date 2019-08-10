@@ -1,0 +1,9 @@
+{
+	"auth": {
+		"vuetourmap5340ac92": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	}
+}

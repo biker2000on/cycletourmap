@@ -27,10 +27,10 @@ export default {
     widths: 20,
   }),
   watch: {
-    tableData: function (newData, oldData) {
+    tableData: function (newData) { // (newData, oldData)
       this.tabulator.replaceData(newData)
     },
-    columns: function (newCols, oldCols) {
+    columns: function (newCols) { // (newCols, oldCols)
       this.tabulator.setColumns(newCols)
     }
   },

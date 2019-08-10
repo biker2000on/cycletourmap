@@ -60,7 +60,6 @@ export default {
   props: {
     activities: {
       type: Array,
-      required: true,
       default: () => []
     }
   },
@@ -177,7 +176,7 @@ export default {
                     [box[1][0]+1, box[1][1]+1]]
       setTimeout(() => {this.bounds = bounds},500)
     },
-    windowHeight(newHeight, oldHeight) {
+    windowHeight() { // (new, old)
       const top = this.$vuetify.application.top
       const bottom = this.$vuetify.application.footer || 0
       const total = this.windowHeight
@@ -198,14 +197,19 @@ export default {
     })
   },
   beforeDestroy() {
-    window.removeEventListener('resize')
+    window.removeEventListener('resize', () => {
+        this.windowHeight = window.innerHeight
+      })
   }
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
 #leaflet-comp {
   width: 100%;
   margin: auto;
+}
+#leaflet-comp > div {
+  z-index: 1;
 }
 </style>

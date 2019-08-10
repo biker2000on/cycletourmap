@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@mapbox/leaflet-omnivore": "^0.3.4",
+    "aws-amplify": "^1.1.36",
+    "aws-amplify-vue": "^0.2.14",
     "axios": "^0.19.0",
     "leaflet": "^1.5.1",
     "leaflet.fullscreen": "^1.5.1",
@@ -17,7 +19,7 @@
     "tabulator-tables": "^4.3.0",
     "vue": "^2.6.10",
     "vue-cookies": "^1.5.13",
-    "vue-router": "^3.0.7",
+    "vue-router": "^3.1.2",
     "vue2-leaflet": "^2.2.1",
     "vuetify": "^2.0.1",
     "vuex": "^3.1.1"

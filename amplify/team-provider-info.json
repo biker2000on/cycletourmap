@@ -1,0 +1,19 @@
+{
+    "tourmap": {
+        "awscloudformation": {
+            "AuthRoleName": "vue-tourmap-tourmap-20190810131254-authRole",
+            "UnauthRoleArn": "arn:aws:iam::355181763574:role/vue-tourmap-tourmap-20190810131254-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::355181763574:role/vue-tourmap-tourmap-20190810131254-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "vue-tourmap-tourmap-20190810131254-deployment",
+            "UnauthRoleName": "vue-tourmap-tourmap-20190810131254-unauthRole",
+            "StackName": "vue-tourmap-tourmap-20190810131254",
+            "StackId": "arn:aws:cloudformation:us-east-1:355181763574:stack/vue-tourmap-tourmap-20190810131254/0a6e6bd0-bb4f-11e9-9621-0a129e2750f4"
+        },
+        "categories": {
+            "auth": {
+                "vuetourmap5340ac92": {}
+            }
+        }
+    }
+}

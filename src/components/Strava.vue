@@ -54,8 +54,6 @@
 
 <script>
 import axios from "axios";
-import moment from "moment";
-import { URLSearchParams } from "url";
 import { setInterval, clearInterval } from "timers";
 
 export default {
@@ -169,7 +167,7 @@ export default {
         let now = new Date();
         this.auth = this.$cookies.get("auth");
         this.athlete = this.$cookies.get("athlete");
-        console.log("inside cookie check");
+        // console.log("inside cookie check");
         if (this.auth.expires_at > now.getTime() / 1000 + 3600) return;
         data = {
           client_id: process.env.VUE_APP_STRAVA_CLIENTID,
@@ -177,13 +175,12 @@ export default {
           refresh_token: this.auth.refresh_token,
           grant_type: "refresh_token"
         };
-        console.log(data);
       }
       if (window.location.search) {
         const params = new window.URLSearchParams(window.location.search);
         window.history.replaceState({}, document.title, "/") // removes query string from URL
         if (params.has("error")) {
-          console.error("You didn't give us the right permissions");
+          // console.error("You didn't give us the right permissions");
           return;
         }
         const code = params.get("code");
@@ -197,14 +194,14 @@ export default {
           grant_type: "authorization_code"
         };
       }
-      console.log("check data before send", data);
+      // console.log("check data before send", data);
       if (!data) return;
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, ...auth } = res.data;
       this.auth = auth;
       if (!this.athlete && !athlete) {
         // send request to get athlete object
-        res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
+        const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
           headers: {
             Authorization: "Bearer " + this.auth.access_token //the token is a variable which holds the token
           }

@@ -1,71 +1,55 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      permanent
-    >
-      <!-- <v-list dense>
-        <v-list-item @click="">
-          <v-list-item-action>
-            <v-icon>home</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item @click="">
-          <v-list-item-action>
-            <v-icon>contact_mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list> -->
+    <v-navigation-drawer v-model="drawer" app class="navigation">
       <strava :start.sync="start" :end.sync="end" :activities.sync="activities" />
     </v-navigation-drawer>
 
-    <v-app-bar
-      app
-      color="indigo"
-      dark
-    >
-      <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
+    <v-app-bar app color="indigo" dark>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer">
+        <v-icon>menu</v-icon>
+      </v-app-bar-nav-icon>
       <v-toolbar-title>Strava Tourmap</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon :to="{name: 'map', params: {activities: activities}}" v-on="on">
+            <v-icon>map</v-icon>
+          </v-btn>
+        </template>
+        <span>Map</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon :to="{name: 'rides', params: {activities: activities}}" v-on="on">
+            <v-icon>table_chart</v-icon>
+          </v-btn>
+        </template>
+        <span>Rides Table</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon :to="{name: 'summary', params: {activities: activities}}" v-on="on">
+            <v-icon>notes</v-icon>
+          </v-btn>
+        </template>
+        <span>Summary Stats</span>
+      </v-tooltip>
+      <v-btn :to="{name: 'auth'}" v-if="!signedIn">Sign In</v-btn>
+      <v-btn v-if="signedIn">
+        <amplify-sign-out class="amplify-sign-out"></amplify-sign-out>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
-      <v-container
-        fluid
-        fill-height
-      >
-        <v-layout
-          align-center
-          justify-center
-        >
+      <v-container fluid fill-height>
+        <v-layout align-center justify-center>
           <v-flex text-center>
-            <Leaflet :markersOn="markersOn" :polylinesOn="polylinesOn" :activities="activities" />
-            <!-- <div class="inline">
-              <input type="checkbox" v-model="isMetric" />
-              {{ isMetric ? "Units(Switch to Standard)" : 'Units(Switch to Metric)'}}
-              <input
-                type="checkbox"
-                v-model="markersOn"
-              /> Markers
-              <input type="checkbox" v-model="polylinesOn" /> Lines
-            </div>
-            <Summary :isMetric="isMetric" />
-            <h2>All Rides</h2>
-            <rides :isMetric="isMetric" /> -->
+            <router-view></router-view>
           </v-flex>
         </v-layout>
       </v-container>
     </v-content>
-    <v-footer
-      color="indigo"
-      app
-    >
+    <v-footer color="indigo" app>
       <span class="white--text">&copy; 2019</span>
     </v-footer>
   </v-app>
@@ -73,36 +57,62 @@
 
 
 <script>
-import Leaflet from './components/Leaflet.vue'
-import Summary from './components/Summary.vue'
-import store from './store/index'
-import Rides from './components/Rides'
-import Strava from './components/Strava'
-import process from 'process'
+import store from "./store/index";
+import Strava from "./components/Strava";
+import { AmplifyEventBus } from "aws-amplify-vue";
+import { Auth } from "aws-amplify";
 
 export default {
-  name: 'app',
+  name: "app",
   store,
   components: {
-    Leaflet, Summary, Rides, Strava
+    Strava // Leaflet, Summary, Rides,
   },
   data() {
     return {
-      start: '2019-03-12',
-      end: '',
+      start: "2019-03-12",
+      end: "",
       activities: [],
       markersOn: true,
       polylinesOn: true,
       isMetric: false,
       drawer: null,
-    }
+      signedIn: false
+    };
   },
-}
+  beforeCreate() {
+    AmplifyEventBus.$on("authState", info => {
+      if (info === "signedIn") {
+        this.signedIn = true;
+        this.$router.push("/");
+      }
+      if (info === "signedOut") {
+        this.$router.push("/auth");
+        this.signedIn = false;
+      }
+    });
+
+    Auth.currentAuthenticatedUser()
+      .then(user => {
+        this.signedIn = true;
+      })
+      .catch(() => (this.signedIn = false));
+  }
+};
 </script>
 
 <style>
 .container {
   padding: 0 !important;
 }
-
+.amplify-sign-out button {
+  min-width: 100%;
+  font-size: inherit;
+  color: inherit;
+  background-color: inherit;
+  padding: 0;
+}
+.navigation {
+  z-index: 9999;
+}
 </style>
