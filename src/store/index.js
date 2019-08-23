@@ -6,8 +6,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    start: '3/12/2019',
-    end: '11/21/2019',
+    start: null,
+    end: null,
     isMetric: false,
     athlete: '',
     activities: [],
@@ -30,7 +30,7 @@ export default new Vuex.Store({
     },
     addActivities (state, activities) {
       // should update to check if activity is already in state.
-      state.activities = state.activities.append(activities)
+      state.activities.push(...activities)
     }
   }
 })

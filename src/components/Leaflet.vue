@@ -57,12 +57,12 @@ export default {
     LControlScale,
     LFullscreen,
   },
-  props: {
-    activities: {
-      type: Array,
-      default: () => []
-    }
-  },
+  // props: {
+  //   activities: {
+  //     type: Array,
+  //     default: () => []
+  //   }
+  // },
   data() {
     return {
       zoom:2,
@@ -88,6 +88,9 @@ export default {
     }
   },
   computed: {
+    activities() {
+      return this.$store.state.activities.filter(c => c)
+    },
     isMetric() {
       return this.$store.state.isMetric
     },
@@ -141,8 +144,23 @@ export default {
   }, 
   watch: {
     rides(vals) {
+      this.zoomAll(vals)
+    },
+    windowHeight() { // (new, old)
+      const top = this.$vuetify.application.top
+      const bottom = this.$vuetify.application.footer || 0
+      const total = this.windowHeight
+      this.computedHeight = { height: total - top - bottom }
+    }
+  },
+  methods: {
+    zoomUpdated (zoom) {
+      this.zoom = zoom;
+    },
+    zoomAll() {
+      if (!this.activities.length) return
       //reduces to bounding box of values
-      let box = vals.reduce((a,c) => {
+      let box = this.activities.reduce((a,c) => {
         if (JSON.stringify(a) == '[]') {
           a = [c,c]
           return a
@@ -175,18 +193,7 @@ export default {
       let bounds = [[box[0][0]-1, box[0][1]-1],
                     [box[1][0]+1, box[1][1]+1]]
       setTimeout(() => {this.bounds = bounds},500)
-    },
-    windowHeight() { // (new, old)
-      const top = this.$vuetify.application.top
-      const bottom = this.$vuetify.application.footer || 0
-      const total = this.windowHeight
-      this.computedHeight = { height: total - top - bottom }
     }
-  },
-  methods: {
-    zoomUpdated (zoom) {
-      this.zoom = zoom;
-    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -194,6 +201,7 @@ export default {
         this.windowHeight = window.innerHeight
       });
       this.windowHeight = window.innerHeight
+      this.zoomAll()
     })
   },
   beforeDestroy() {

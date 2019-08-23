@@ -61,7 +61,7 @@ export default {
       return totals
     },
     days() {
-      let start = new Date(2019,2,15)
+      let start = new Date(this.$store.state.start)
       let now = new Date()
       return Math.round(Math.abs((now.getTime() - start.getTime())/(24*60*60*1000)));
     }

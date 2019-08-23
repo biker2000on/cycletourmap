@@ -8,7 +8,7 @@
         :style="{borderRadius: 50 + '%'}"
       />
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="athlete">
       <v-list-item-content>
         <h2>{{ athlete.firstname + ' ' + athlete.lastname }}</h2>
       </v-list-item-content>
@@ -20,7 +20,7 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-      <input type="date" value="start" @input="$emit('update:start',$event.target.value)" />
+      <input type="date" value="start" @input="$store.commit('setStart',$event.target.value)" />
       </v-list-item-content>
     </v-list-item>
     <v-list-item dense>
@@ -30,7 +30,7 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-      <input type="date" value="end" @input="$emit('update:end',$event.target.value)" />
+      <input type="date" value="end" @input="$store.commit('setEnd',$event.target.value)" />
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
@@ -85,8 +85,8 @@ export default {
   },
   methods: {
     getAllActivities: async function() {
-      const start = new Date(this.start);
-      const end = this.end ? new Date(this.end) : new Date();
+      const start = new Date(this.$store.state.start);
+      const end = this.$store.state.end ? new Date(this.$store.state.end) : new Date();
       let page = 1;
       let acts = [];
       let activities = "";
@@ -123,11 +123,13 @@ export default {
         });
         acts = acts.concat(activities);
         if (dates) {
+          this.$store.commit('addActivities', acts)
           this.$emit("update:activities", acts);
           return;
         }
         page++;
       } while (activities != "");
+      this.$store.commit('addActivities', acts)
       this.$emit("update:activities", acts);
       return;
     },

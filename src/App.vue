@@ -12,7 +12,7 @@
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'map', params: {activities: activities}}" v-on="on">
+          <v-btn icon :to="{name: 'map'}" v-on="on">
             <v-icon>map</v-icon>
           </v-btn>
         </template>
@@ -20,7 +20,7 @@
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'rides', params: {activities: activities}}" v-on="on">
+          <v-btn icon :to="{name: 'rides'}" v-on="on">
             <v-icon>table_chart</v-icon>
           </v-btn>
         </template>
@@ -28,7 +28,7 @@
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'summary', params: {activities: activities}}" v-on="on">
+          <v-btn icon :to="{name: 'summary'}" v-on="on">
             <v-icon>notes</v-icon>
           </v-btn>
         </template>
