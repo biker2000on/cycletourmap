@@ -4,7 +4,7 @@
     :columns="columns"
     :tableData="tableData2"
     :tabulatorSettings="tabulatorSettings"
-    class="ride-table"
+    :style="computedHeight"
   />
 </template>
 
@@ -22,7 +22,8 @@ export default {
   data() {
     return {
       tabulatorSettings: tabulatorSettings,
-
+      windowHeight: 300,
+      computedHeight: {height: 600},
     };
   },
   computed: {
@@ -104,13 +105,24 @@ export default {
         },
       ]
     }
+  },
+  watch: {
+    windowHeight() { // (new, old)
+      const top = this.$vuetify.application.top
+      const bottom = this.$vuetify.application.footer || 0
+      const total = this.windowHeight
+      this.computedHeight = { height: total - top - bottom }
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', () => {
+        this.windowHeight = window.innerHeight
+      });
+      this.windowHeight = window.innerHeight
+    })
   }
 };
 </script>
 
-<style>
-  .ride-table {
-    height: 90vh
-  }
-</style>
 

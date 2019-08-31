@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app class="navigation">
-      <strava :start.sync="start" :end.sync="end" :activities.sync="activities" />
+      <strava />
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
@@ -70,9 +70,6 @@ export default {
   },
   data() {
     return {
-      start: "2019-03-12",
-      end: "",
-      activities: [],
       markersOn: true,
       polylinesOn: true,
       isMetric: false,

@@ -58,11 +58,11 @@ import { setInterval, clearInterval } from "timers";
 
 export default {
   props: {
-    activities: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
+    // activities: {
+    //   type: Array,
+    //   required: true,
+    //   default: () => []
+    // },
     start: {
       type: String,
       required: false

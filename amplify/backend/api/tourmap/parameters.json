@@ -1,0 +1,5 @@
+{
+    "AppSyncApiName": "tourmap",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false"
+}
