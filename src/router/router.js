@@ -6,6 +6,7 @@ import Leaflet from '../components/Leaflet'
 import Auth from '../components/Auth'
 import Summary from '../components/Summary'
 import Rides from '../components/Rides'
+import Profile from '../components/Profile'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,12 @@ const routes = [
     name: 'map',
     component: Leaflet,
     props: true
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
+    props: true, 
   },
   {
     path: '/auth',

@@ -74,14 +74,15 @@ export default {
       polylinesOn: true,
       isMetric: false,
       drawer: null,
-      signedIn: false
+      signedIn: false,
+      user: null,
     };
   },
   beforeCreate() {
     AmplifyEventBus.$on("authState", info => {
       if (info === "signedIn") {
         this.signedIn = true;
-        this.$router.push("/");
+        this.$router.push({name: "profile", params: {username: user.username}});
       }
       if (info === "signedOut") {
         this.$router.push("/auth");
@@ -91,7 +92,9 @@ export default {
 
     Auth.currentAuthenticatedUser()
       .then(user => {
+        console.log("User Info: ", user)
         this.signedIn = true;
+        this.user = user
       })
       .catch(() => (this.signedIn = false));
   }
