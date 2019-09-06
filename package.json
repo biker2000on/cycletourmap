@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "site": "rclone copy dist/js ../adventureintandem-netlify/site/static/js/ && rclone copy dist/css ../adventureintandem-netlify/site/static/css/ "
   },
   "dependencies": {
     "@mapbox/leaflet-omnivore": "^0.3.4",
