@@ -179,6 +179,8 @@ export default {
   methods: {
     getAllActivities: async function () {
       const start = new Date(this.$store.state.start)
+      const weddingstart = new Date(2019,7,29)
+      const weddingend = new Date(2019,8,3)
       let page = 1
       let acts = []
       let activities = ''
@@ -193,7 +195,7 @@ export default {
         }, false)
         activities = activities.filter(c => {
           let rideStart = new Date(c.start_date)
-          return rideStart >= start
+          return rideStart >= start && !(rideStart >= weddingstart && rideStart <= weddingend)
         })
         acts = acts.concat(activities)
         if (dates) {
