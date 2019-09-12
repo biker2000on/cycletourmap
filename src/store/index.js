@@ -11,6 +11,7 @@ export default new Vuex.Store({
     isMetric: false,
     athlete: '',
     activities: [],
+    user: null,
   },
   mutations: {
     setStart (state, startdate) {
@@ -31,6 +32,12 @@ export default new Vuex.Store({
     addActivities (state, activities) {
       // should update to check if activity is already in state.
       state.activities.push(...activities)
-    }
+    },
+    setUser (state, user) {
+      state.user = user
+    },
+    resetUser (state) {
+      state.user = null
+    },
   }
 })

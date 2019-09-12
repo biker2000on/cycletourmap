@@ -4,10 +4,6 @@
 export const createTour = `mutation CreateTour($input: CreateTourInput!) {
   createTour(input: $input) {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -22,10 +18,6 @@ export const createTour = `mutation CreateTour($input: CreateTourInput!) {
 export const updateTour = `mutation UpdateTour($input: UpdateTourInput!) {
   updateTour(input: $input) {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -40,10 +32,6 @@ export const updateTour = `mutation UpdateTour($input: UpdateTourInput!) {
 export const deleteTour = `mutation DeleteTour($input: DeleteTourInput!) {
   deleteTour(input: $input) {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -60,10 +48,6 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -126,10 +110,6 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -192,10 +172,6 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -250,45 +226,6 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     utc_offset
     visibility
     workout_type
-  }
-}
-`;
-export const createUser = `mutation CreateUser($input: CreateUserInput!) {
-  createUser(input: $input) {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
-  }
-}
-`;
-export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
-  updateUser(input: $input) {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
-  }
-}
-`;
-export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
-  deleteUser(input: $input) {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
   }
 }
 `;

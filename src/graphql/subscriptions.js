@@ -4,10 +4,6 @@
 export const onCreateTour = `subscription OnCreateTour {
   onCreateTour {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -22,10 +18,6 @@ export const onCreateTour = `subscription OnCreateTour {
 export const onUpdateTour = `subscription OnUpdateTour {
   onUpdateTour {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -40,10 +32,6 @@ export const onUpdateTour = `subscription OnUpdateTour {
 export const onDeleteTour = `subscription OnDeleteTour {
   onDeleteTour {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -60,10 +48,6 @@ export const onCreateActivity = `subscription OnCreateActivity {
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -126,10 +110,6 @@ export const onUpdateActivity = `subscription OnUpdateActivity {
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -192,10 +172,6 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -250,45 +226,6 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
     utc_offset
     visibility
     workout_type
-  }
-}
-`;
-export const onCreateUser = `subscription OnCreateUser {
-  onCreateUser {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
-  }
-}
-`;
-export const onUpdateUser = `subscription OnUpdateUser {
-  onUpdateUser {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
-  }
-}
-`;
-export const onDeleteUser = `subscription OnDeleteUser {
-  onDeleteUser {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
   }
 }
 `;

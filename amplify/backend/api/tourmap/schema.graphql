@@ -1,6 +1,6 @@
 type Tour @model {
   id: ID!
-  user: User! @connection(name: "AthleteTours")
+  # user: User! @connection(name: "AthleteTours")
   name: String!
   description: String!
   start_date: String!
@@ -13,7 +13,7 @@ type Activity @model {
   id: ID!
   activity_type: ACTIVITY_TYPE!
   strava_id: ID
-  athlete: User! @connection(name: "AthleteActivities")
+  # athlete: User! @connection(name: "AthleteActivities")
   tour: Tour @connection(name: "TourActivities")
   achievement_count: Int!
   average_speed: Float!
@@ -63,12 +63,12 @@ type Activity @model {
   workout_type: String
 }
 
-type User @model {
-  id: ID!
-  username: String!
-  tours: [Tour]! @connection(name: "AthleteTours")
-  activities: [Activity]! @connection(name: "AthleteActivities")
-}
+# type User @model {
+#   id: ID!
+#   username: String!
+#   tours: [Tour]! @connection(name: "AthleteTours")
+#   activities: [Activity]! @connection(name: "AthleteActivities")
+# }
 
 enum ACTIVITY_TYPE {
   STRAVA 

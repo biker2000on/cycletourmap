@@ -4,10 +4,6 @@
 export const getTour = `query GetTour($id: ID!) {
   getTour(id: $id) {
     id
-    user {
-      id
-      username
-    }
     name
     description
     start_date
@@ -42,10 +38,6 @@ export const getActivity = `query GetActivity($id: ID!) {
     id
     activity_type
     strava_id
-    athlete {
-      id
-      username
-    }
     tour {
       id
       name
@@ -159,33 +151,6 @@ export const listActivitys = `query ListActivitys(
       utc_offset
       visibility
       workout_type
-    }
-    nextToken
-  }
-}
-`;
-export const getUser = `query GetUser($id: ID!) {
-  getUser(id: $id) {
-    id
-    username
-    tours {
-      nextToken
-    }
-    activities {
-      nextToken
-    }
-  }
-}
-`;
-export const listUsers = `query ListUsers(
-  $filter: ModelUserFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      username
     }
     nextToken
   }
