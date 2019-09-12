@@ -1,5 +1,5 @@
 <template>
-  <v-list>
+  <v-list dense>
     <v-list-item>
       <v-img
         v-if="athlete"
@@ -15,12 +15,55 @@
     </v-list-item>
     <v-list-item dense>
       <v-list-item-content>
-       <h3>Start Date:</h3>
+        <v-text-field label="Tour Name" v-model="name"></v-text-field>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item dense>
+      <v-list-item-content>
+        <v-menu
+          :close-on-content-click="false"
+          v-model="menu"
+          transition="scale-transition"
+          offset-y
+          full-width
+          :nudge-right="40"
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field label="Start Date" v-model="date" prepend-icon="event" v-on="on" readonly></v-text-field>
+          </template>
+          <v-date-picker v-model="date" no-title scrollable actions></v-date-picker>
+        </v-menu>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item dense>
+      <v-list-item-content>
+        <v-menu
+          :close-on-content-click="false"
+          v-model="menu2"
+          transition="scale-transition"
+          offset-y
+          full-width
+          :nudge-right="40"
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field label="End Date" v-model="enddate" prepend-icon="event" v-on="on" readonly></v-text-field>
+          </template>
+          <v-date-picker v-model="enddate" no-title scrollable actions></v-date-picker>
+        </v-menu>
+      </v-list-item-content>
+    </v-list-item>
+    <!-- <v-list-item dense>
+      <v-list-item-content>
+        <h3>Start Date:</h3>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-      <input type="date" value="start" @input="$store.commit('setStart',$event.target.value)" />
+        <input type="date" value="start" @input="$store.commit('setStart',$event.target.value)" />
       </v-list-item-content>
     </v-list-item>
     <v-list-item dense>
@@ -30,24 +73,29 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-      <input type="date" value="end" @input="$store.commit('setEnd',$event.target.value)" />
+        <input type="date" value="end" @input="$store.commit('setEnd',$event.target.value)" />
+      </v-list-item-content>
+    </v-list-item> -->
+    <v-list-item>
+      <v-list-item-content>
+        <v-textarea label="Description" v-model="description" rows="5"></v-textarea>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-    <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
-    </v-list-item-content>
+        <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
+      </v-list-item-content>
     </v-list-item>
-    <v-list-item> 
+    <v-list-item>
       <v-list-item-content>
-    <v-btn
-      :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
+        <v-btn
+          :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
               '&redirect_uri=' + redirect_uri +
               '&response_type=' + 'code' +
               '&approval_prompt=' + 'auto' + // could be 'force'
               '&scope=' + 'read,profile:read_all,activity:read'"
-    >Authorize App</v-btn>
-    </v-list-item-content>
+        >Authorize App</v-btn>
+      </v-list-item-content>
     </v-list-item>
   </v-list>
 </template>
@@ -81,12 +129,20 @@ export default {
       client_id: process.env.VUE_APP_STRAVA_CLIENTID,
       client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
       auth: null,
+      name: null,
+      description: null,
+      date: null,
+      enddate: null,
+      menu: false,
+      menu2: false,
     };
   },
   methods: {
     getAllActivities: async function() {
       const start = new Date(this.$store.state.start);
-      const end = this.$store.state.end ? new Date(this.$store.state.end) : new Date();
+      const end = this.$store.state.end
+        ? new Date(this.$store.state.end)
+        : new Date();
       let page = 1;
       let acts = [];
       let activities = "";
@@ -123,13 +179,13 @@ export default {
         });
         acts = acts.concat(activities);
         if (dates) {
-          this.$store.commit('addActivities', acts)
+          this.$store.commit("addActivities", acts);
           this.$emit("update:activities", acts);
           return;
         }
         page++;
       } while (activities != "");
-      this.$store.commit('addActivities', acts)
+      this.$store.commit("addActivities", acts);
       this.$emit("update:activities", acts);
       return;
     },
@@ -180,7 +236,7 @@ export default {
       }
       if (window.location.search) {
         const params = new window.URLSearchParams(window.location.search);
-        window.history.replaceState({}, document.title, "/") // removes query string from URL
+        window.history.replaceState({}, document.title, "/"); // removes query string from URL
         if (params.has("error")) {
           // console.error("You didn't give us the right permissions");
           return;

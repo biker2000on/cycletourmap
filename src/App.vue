@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app class="navigation">
-      <strava />
+      <router-view name="drawer"></router-view>
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
@@ -10,6 +10,14 @@
       </v-app-bar-nav-icon>
       <v-toolbar-title>Strava Tourmap</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon :to="{name: 'profile'}" v-on="on">
+            <v-icon>home</v-icon>
+          </v-btn>
+        </template>
+        <span>Home</span>
+      </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon :to="{name: 'map'}" v-on="on">
@@ -43,9 +51,7 @@
     <v-content>
       <v-container fluid fill-height>
         <v-layout align-center justify-center>
-          <v-flex text-center>
-            <router-view></router-view>
-          </v-flex>
+        <router-view></router-view>
         </v-layout>
       </v-container>
     </v-content>
@@ -75,14 +81,17 @@ export default {
       isMetric: false,
       drawer: null,
       signedIn: false,
-      user: null,
+      user: null
     };
   },
   beforeCreate() {
     AmplifyEventBus.$on("authState", info => {
       if (info === "signedIn") {
         this.signedIn = true;
-        this.$router.push({name: "profile", params: {username: user.username}});
+        this.$router.push({
+          name: "profile",
+          params: { username: user.username }
+        });
       }
       if (info === "signedOut") {
         this.$router.push("/auth");
@@ -92,9 +101,9 @@ export default {
 
     Auth.currentAuthenticatedUser()
       .then(user => {
-        console.log("User Info: ", user)
+        console.log("User Info: ", user);
         this.signedIn = true;
-        this.user = user
+        this.user = user;
       })
       .catch(() => (this.signedIn = false));
   }

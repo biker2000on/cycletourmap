@@ -7,21 +7,32 @@ import Auth from '../components/Auth'
 import Summary from '../components/Summary'
 import Rides from '../components/Rides'
 import Profile from '../components/Profile'
+import Strava from '../components/Strava'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
+    path: '/tourmap/:mapId', //   /tourmap/:id   and   /tourmap/new for new map
     name: 'map',
     component: Leaflet,
     props: true
   },
   {
-    path: '/profile',
+    path: '/tourmap/:mapId/edit', //   /tourmap/:id   and   /tourmap/new for new map
+    name: 'edit',
+    components: {
+      default: Leaflet,
+      drawer: Strava,
+    },
+    props: true
+  },
+  {
+    path: '/',
     name: 'profile',
     component: Profile,
-    props: true, 
+    props: true,
+    alias: '/profile'
   },
   {
     path: '/auth',
@@ -50,13 +61,13 @@ const router = new VueRouter({
 
 router.beforeResolve((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    let user;
-    Vue.prototype.$Amplify.Auth.currentAuthenticatedUser().then(data => {
-      if (data && data.signInUserSession) {
-        user = data;
-      }
+    // let user;
+    Vue.prototype.$Amplify.Auth.currentAuthenticatedUser().then(() => {
+      // if (data && data.signInUserSession) {
+      //   user = data;
+      // }
       next()
-    }).catch((e) => {
+    }).catch(() => {
       next({
         name: 'auth'
       });
