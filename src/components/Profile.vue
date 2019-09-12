@@ -22,6 +22,9 @@
               <v-icon>add</v-icon>New Tour
             </v-btn>
           </template>
+          <template v-slot:item.isPublic="{ item }">
+            <v-icon>{{ item.isPublic ? 'visibility' : 'visibility_off' }}</v-icon>
+          </template>
           <template v-slot:item.action="{ item }">
             <td class="justify-center layout px-0">
               <v-tooltip bottom>
@@ -71,6 +74,7 @@ export default {
         { text: "Start", value: "start_date" },
         { text: "End", value: "end_date" },
         { text: "Description", value: "description" },
+        { text: "Public", value: "isPublic" },
         { text: "Actions", value: "action", align: "center" }
       ],
       user: null
@@ -87,7 +91,10 @@ export default {
     }
   },
   beforeCreate() {
-    Auth.currentUserInfo().then(user => (this.user = user));
+    Auth.currentUserInfo().then(user => {
+      this.user = user
+      this.$store.commit('setUser', user)
+    });
   }
 };
 </script>

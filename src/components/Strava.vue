@@ -21,7 +21,9 @@
     <v-list-item dense>
       <v-list-item-content>
         <v-menu
+          ref="menu"
           :close-on-content-click="false"
+          :return-value.sync="startdate"
           v-model="menu"
           transition="scale-transition"
           offset-y
@@ -31,16 +33,27 @@
           min-width="290px"
         >
           <template v-slot:activator="{ on }">
-            <v-text-field label="Start Date" v-model="date" prepend-icon="event" v-on="on" readonly></v-text-field>
+            <v-text-field 
+              label="Start Date" 
+              v-model="startdate" 
+              prepend-icon="event" 
+              v-on="on" 
+              readonly></v-text-field>
           </template>
-          <v-date-picker v-model="date" no-title scrollable actions></v-date-picker>
+          <v-date-picker v-model="startdate" no-title scrollable actions>
+            <div class="flex-grow-1"></div>
+            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+            <v-btn text color="primary" @click="$refs.menu.save(startdate)">OK</v-btn>
+          </v-date-picker>
         </v-menu>
       </v-list-item-content>
     </v-list-item>
     <v-list-item dense>
       <v-list-item-content>
         <v-menu
+          ref="menu2"
           :close-on-content-click="false"
+          :return-value.sync="enddate"
           v-model="menu2"
           transition="scale-transition"
           offset-y
@@ -52,7 +65,11 @@
           <template v-slot:activator="{ on }">
             <v-text-field label="End Date" v-model="enddate" prepend-icon="event" v-on="on" readonly></v-text-field>
           </template>
-          <v-date-picker v-model="enddate" no-title scrollable actions></v-date-picker>
+          <v-date-picker v-model="enddate" no-title scrollable actions>
+            <div class="flex-grow-1"></div>
+            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+            <v-btn text color="primary" @click="$refs.menu2.save(enddate)">OK</v-btn>
+          </v-date-picker>
         </v-menu>
       </v-list-item-content>
     </v-list-item>
@@ -83,6 +100,17 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
+        <v-switch label="Public" v-model="isPublic" ></v-switch>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-btn @click="submitTour" >Save</v-btn>
+      </v-list-item-content>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-content>
         <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
       </v-list-item-content>
     </v-list-item>
@@ -103,23 +131,11 @@
 <script>
 import axios from "axios";
 import { setInterval, clearInterval } from "timers";
+import { API, graphqlOperation } from 'aws-amplify'
+import { createTour, updateTour } from '../graphql/mutations'
+import { getTour } from '../graphql/queries'
 
 export default {
-  props: {
-    // activities: {
-    //   type: Array,
-    //   required: true,
-    //   default: () => []
-    // },
-    start: {
-      type: String,
-      required: false
-    },
-    end: {
-      type: String,
-      required: false
-    }
-  },
   data() {
     return {
       athlete: null,
@@ -131,13 +147,55 @@ export default {
       auth: null,
       name: null,
       description: null,
-      date: null,
+      startdate: null,
       enddate: null,
       menu: false,
       menu2: false,
+      isPublic: false,
     };
   },
   methods: {
+    loadTour: async function() {
+      if (this.$route.params.mapId != 'new') {
+        const tour = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(getTour, {id: this.$route.params.mapId}))
+        // console.log(tour)
+        if (tour.data) {
+          this.name = tour.data.getTour.name
+          this.startdate = tour.data.getTour.start_date
+          this.enddate = tour.data.getTour.end_date
+          this.description = tour.data.getTour.description
+          this.isPublic = tour.data.getTour.isPublic
+        } else if (tour.errors) {
+          console.error('graphql Error', tour.errors)
+        }
+      }
+    },
+    submitTour: async function() {
+      if (this.$route.params.mapId == 'new') {
+        const input = {
+          name: this.name,
+          start_date: this.startdate,
+          end_date: this.enddate,
+          description: this.description,
+          isPublic: this.isPublic,
+        }
+        console.log('input', input)
+        const newTour = await API.graphql(graphqlOperation(createTour, {input}))
+        console.log('created new tour', newTour)
+      } else {
+        const updatedTour = await API.graphql(graphqlOperation(updateTour, {
+          input: {  
+            id: this.$route.params.mapId,
+            name: this.name,
+            start_date: this.startdate,
+            end_date: this.enddate,
+            description: this.description,
+            isPublic: this.isPublic
+          }
+        }))
+        console.log('updated tour', updatedTour)
+      }
+    },
     getAllActivities: async function() {
       const start = new Date(this.$store.state.start);
       const end = this.$store.state.end
@@ -276,8 +334,17 @@ export default {
       // console.log("From cookie: ", this.$cookies.get("auth"));
     }
   },
+  watch: {
+    startdate(newdate) {
+      this.$store.commit('setStart', newdate)
+    },
+    enddate(newdate) {
+      this.$store.commit('setEnd', newdate)
+    },
+  },
   mounted() {
     this.getTokens();
+    this.loadTour()
   },
   destroyed() {
     clearInterval(this.refresh);
