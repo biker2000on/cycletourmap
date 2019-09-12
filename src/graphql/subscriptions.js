@@ -4,7 +4,10 @@
 export const onCreateTour = `subscription OnCreateTour {
   onCreateTour {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -19,7 +22,10 @@ export const onCreateTour = `subscription OnCreateTour {
 export const onUpdateTour = `subscription OnUpdateTour {
   onUpdateTour {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -34,7 +40,10 @@ export const onUpdateTour = `subscription OnUpdateTour {
 export const onDeleteTour = `subscription OnDeleteTour {
   onDeleteTour {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -57,7 +66,6 @@ export const onCreateActivity = `subscription OnCreateActivity {
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -124,7 +132,6 @@ export const onUpdateActivity = `subscription OnUpdateActivity {
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -191,7 +198,6 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -252,13 +258,7 @@ export const onCreateUser = `subscription OnCreateUser {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken
@@ -271,13 +271,7 @@ export const onUpdateUser = `subscription OnUpdateUser {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken
@@ -290,13 +284,7 @@ export const onDeleteUser = `subscription OnDeleteUser {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken

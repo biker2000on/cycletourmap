@@ -4,7 +4,10 @@
 export const getTour = `query GetTour($id: ID!) {
   getTour(id: $id) {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -24,7 +27,6 @@ export const listTours = `query ListTours(
   listTours(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      user
       name
       description
       start_date
@@ -46,7 +48,6 @@ export const getActivity = `query GetActivity($id: ID!) {
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -168,13 +169,7 @@ export const getUser = `query GetUser($id: ID!) {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken

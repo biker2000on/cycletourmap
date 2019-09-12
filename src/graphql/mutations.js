@@ -4,7 +4,10 @@
 export const createTour = `mutation CreateTour($input: CreateTourInput!) {
   createTour(input: $input) {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -19,7 +22,10 @@ export const createTour = `mutation CreateTour($input: CreateTourInput!) {
 export const updateTour = `mutation UpdateTour($input: UpdateTourInput!) {
   updateTour(input: $input) {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -34,7 +40,10 @@ export const updateTour = `mutation UpdateTour($input: UpdateTourInput!) {
 export const deleteTour = `mutation DeleteTour($input: DeleteTourInput!) {
   deleteTour(input: $input) {
     id
-    user
+    user {
+      id
+      username
+    }
     name
     description
     start_date
@@ -57,7 +66,6 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -124,7 +132,6 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -191,7 +198,6 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     }
     tour {
       id
-      user
       name
       description
       start_date
@@ -252,13 +258,7 @@ export const createUser = `mutation CreateUser($input: CreateUserInput!) {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken
@@ -271,13 +271,7 @@ export const updateUser = `mutation UpdateUser($input: UpdateUserInput!) {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken
@@ -290,13 +284,7 @@ export const deleteUser = `mutation DeleteUser($input: DeleteUserInput!) {
     id
     username
     tours {
-      id
-      user
-      name
-      description
-      start_date
-      end_date
-      isPublic
+      nextToken
     }
     activities {
       nextToken
