@@ -57,6 +57,8 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -81,6 +83,7 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -119,6 +122,8 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -143,6 +148,7 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -181,6 +187,8 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -205,6 +213,7 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -226,6 +235,78 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     utc_offset
     visibility
     workout_type
+  }
+}
+`;
+export const createAthlete = `mutation CreateAthlete($input: CreateAthleteInput!) {
+  createAthlete(input: $input) {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const updateAthlete = `mutation UpdateAthlete($input: UpdateAthleteInput!) {
+  updateAthlete(input: $input) {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const deleteAthlete = `mutation DeleteAthlete($input: DeleteAthleteInput!) {
+  deleteAthlete(input: $input) {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const createAuth = `mutation CreateAuth($input: CreateAuthInput!) {
+  createAuth(input: $input) {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
+  }
+}
+`;
+export const updateAuth = `mutation UpdateAuth($input: UpdateAuthInput!) {
+  updateAuth(input: $input) {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
+  }
+}
+`;
+export const deleteAuth = `mutation DeleteAuth($input: DeleteAuthInput!) {
+  deleteAuth(input: $input) {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
   }
 }
 `;

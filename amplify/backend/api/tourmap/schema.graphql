@@ -15,15 +15,17 @@ type Activity @model {
   strava_id: ID
   # athlete: User! @connection(name: "AthleteActivities")
   tour: Tour @connection(name: "TourActivities")
-  achievement_count: Int!
-  average_speed: Float!
+  achievement_count: Int
+  athlete_count: Int
+  average_heartrate: Float
+  average_speed: Float
   average_temp: Int
   average_watts: Float
   comment_count: Int
   commute: Boolean
   device_watts: Boolean
   display_hide_heartrate_option: Boolean
-  distance: Int
+  distance: Float
   elapsed_time: Int
   elev_high: Float
   elev_low: Float
@@ -40,7 +42,8 @@ type Activity @model {
   location_state: String
   manual: Boolean
   summary_polyline: String
-  max_speed: Int
+  max_heartrate: Float
+  max_speed: Float
   moving_time: Int
   name: String
   photo_count: Int
@@ -53,22 +56,35 @@ type Activity @model {
   start_longitude: Float
   start_latlng: [Float]
   timezone: String
-  total_elevation_gain: Int
+  total_elevation_gain: Float
   total_photo_count: Int
   trainer: Boolean
   type: String
-  upload_id: Int
+  upload_id: ID
   utc_offset: Int
   visibility: String
-  workout_type: String
+  workout_type: Int
 }
 
-# type User @model {
-#   id: ID!
-#   username: String!
-#   tours: [Tour]! @connection(name: "AthleteTours")
-#   activities: [Activity]! @connection(name: "AthleteActivities")
-# }
+type Athlete @model {
+  id: ID!
+  firstname: String
+  lastname: String
+  profile: String
+  profile_medium: String
+  sex: String
+  city: String
+  state: String
+  country: String
+}
+
+type Auth @model {
+  access_token: String!
+  expires_at: Int!
+  refresh_token: String!
+  token_type: String!
+  strava_scope: [String]!
+}
 
 enum ACTIVITY_TYPE {
   STRAVA 

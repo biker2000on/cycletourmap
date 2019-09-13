@@ -57,6 +57,8 @@ export const onCreateActivity = `subscription OnCreateActivity {
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -81,6 +83,7 @@ export const onCreateActivity = `subscription OnCreateActivity {
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -119,6 +122,8 @@ export const onUpdateActivity = `subscription OnUpdateActivity {
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -143,6 +148,7 @@ export const onUpdateActivity = `subscription OnUpdateActivity {
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -181,6 +187,8 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -205,6 +213,7 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -226,6 +235,78 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
     utc_offset
     visibility
     workout_type
+  }
+}
+`;
+export const onCreateAthlete = `subscription OnCreateAthlete {
+  onCreateAthlete {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const onUpdateAthlete = `subscription OnUpdateAthlete {
+  onUpdateAthlete {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const onDeleteAthlete = `subscription OnDeleteAthlete {
+  onDeleteAthlete {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const onCreateAuth = `subscription OnCreateAuth {
+  onCreateAuth {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
+  }
+}
+`;
+export const onUpdateAuth = `subscription OnUpdateAuth {
+  onUpdateAuth {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
+  }
+}
+`;
+export const onDeleteAuth = `subscription OnDeleteAuth {
+  onDeleteAuth {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
   }
 }
 `;

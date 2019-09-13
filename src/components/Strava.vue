@@ -73,26 +73,6 @@
         </v-menu>
       </v-list-item-content>
     </v-list-item>
-    <!-- <v-list-item dense>
-      <v-list-item-content>
-        <h3>Start Date:</h3>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <input type="date" value="start" @input="$store.commit('setStart',$event.target.value)" />
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item dense>
-      <v-list-item-content>
-        <h3>End Date:</h3>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <input type="date" value="end" @input="$store.commit('setEnd',$event.target.value)" />
-      </v-list-item-content>
-    </v-list-item> -->
     <v-list-item>
       <v-list-item-content>
         <v-textarea label="Description" v-model="description" rows="5"></v-textarea>
@@ -114,7 +94,7 @@
         <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item>
+    <!-- <v-list-item>
       <v-list-item-content>
         <v-btn
           :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
@@ -124,7 +104,7 @@
               '&scope=' + 'read,profile:read_all,activity:read'"
         >Authorize App</v-btn>
       </v-list-item-content>
-    </v-list-item>
+    </v-list-item> -->
   </v-list>
 </template>
 
@@ -132,8 +112,9 @@
 import axios from "axios";
 import { setInterval, clearInterval } from "timers";
 import { API, graphqlOperation } from 'aws-amplify'
-import { createTour, updateTour } from '../graphql/mutations'
-import { getTour } from '../graphql/queries'
+import { createTour, updateTour, createActivity } from '../graphql/mutations'
+import { getTour, listAuths } from '../graphql/queries'
+import uuid from 'uuid/v4'
 
 export default {
   data() {
@@ -152,9 +133,30 @@ export default {
       menu: false,
       menu2: false,
       isPublic: false,
+      tourId: null,
     };
   },
   methods: {
+    loadAuth: async function() {
+      const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(listAuths, {id: this.$route.params.mapId}))
+      console.log(auths)
+      this.auth = auths.data.listAuths.items[0]
+      const expire = new Date(this.auth.expires_at * 1000)
+      if (expire < new Date()) {
+        this.refreshAuth()
+      }
+    },
+    refreshAuth: async function() {
+      const data = {
+        client_id: process.env.VUE_APP_STRAVA_CLIENTID,
+        client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
+        refresh_token: this.auth.refresh_token,
+        grant_type: "refresh_token"
+      }
+      let res = await axios.post("https://www.strava.com/oauth/token", data);
+      let { athlete, ...auth } = res.data;
+      this.auth = auth;
+    },
     loadTour: async function() {
       if (this.$route.params.mapId != 'new') {
         const tour = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(getTour, {id: this.$route.params.mapId}))
@@ -197,22 +199,15 @@ export default {
       }
     },
     getAllActivities: async function() {
-      const start = new Date(this.$store.state.start);
-      const end = this.$store.state.end
-        ? new Date(this.$store.state.end)
+      const start = new Date(this.startdate);
+      const end = this.enddate
+        ? new Date(this.enddate)
         : new Date();
       let page = 1;
       let acts = [];
       let activities = "";
+      const boundSubmitRide = this.submitRide.bind(this)
       do {
-        // let strava = await fetch(
-        //   "https://www.strava.com/api/v3/athletes/" +
-        //     this.athlete.id +
-        //     "/activities?access_token=" +
-        //     this.auth.access_token +
-        //     "&per_page=50&page=" +
-        //     page
-        // );
         let strava = await axios.get(
           "https://www.strava.com/api/v3/activities?per_page=50&page=" + page,
           {
@@ -237,102 +232,124 @@ export default {
         });
         acts = acts.concat(activities);
         if (dates) {
+          acts.map((c,i) => boundSubmitRide(c,i))
           this.$store.commit("addActivities", acts);
           this.$emit("update:activities", acts);
           return;
         }
         page++;
       } while (activities != "");
+      acts.map(this.submitRide(c,i))
       this.$store.commit("addActivities", acts);
       this.$emit("update:activities", acts);
-      return;
+      return
     },
-    getAuth: function() {
-      var data = {
-        client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-        redirect_uri: "localhost:8080",
-        response_type: "code",
-        approval_prompt: "auto",
-        scope: "read,profile:read_all,activity:read"
-      };
-      axios.get("https://www.strava.com/oauth/authorize", data);
+    submitRide: async function(c,i) {
+      let { id, map, athlete, external_id, from_accepted_tag, upload_id_str, ...strava} = c
+      const input = {
+        activity_type: 'STRAVA',
+        strava_id: id,
+        activityTourId: this.tourId,
+        summary_polyline: map.summary_polyline,
+        ...strava,
+      }
+      let ride = await API.graphql(graphqlOperation(createActivity, {input}))
+      console.log(`activity ${i} ${ride}`)
+      return
     },
-    checkCookie() {
-      if (this.$cookies.isKey("auth")) {
-        let now = new Date();
-        if (this.$cookies.get("auth").expires_at > now.getTime() / 1000) {
-          this.auth = this.$cookies.get("auth");
-          return;
-        }
+    setTourId() {
+      let id = this.$route.params.mapId
+      if (id == 'new') {
+        id = uuid()
       }
-    },
-    refreshToken() {
-      const vm = this;
-      if (this.auth) {
-        this.refresh = setInterval(() => {
-          let now = new Date();
-          if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
-            vm.getTokens();
-          }
-        }, 3600);
-      }
-    },
-    getTokens: async function() {
-      let data;
-      if (this.$cookies.isKey("auth")) {
-        let now = new Date();
-        this.auth = this.$cookies.get("auth");
-        this.athlete = this.$cookies.get("athlete");
-        // console.log("inside cookie check");
-        if (this.auth.expires_at > now.getTime() / 1000 + 3600) return;
-        data = {
-          client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-          client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-          refresh_token: this.auth.refresh_token,
-          grant_type: "refresh_token"
-        };
-      }
-      if (window.location.search) {
-        const params = new window.URLSearchParams(window.location.search);
-        window.history.replaceState({}, document.title, "/"); // removes query string from URL
-        if (params.has("error")) {
-          // console.error("You didn't give us the right permissions");
-          return;
-        }
-        const code = params.get("code");
-        if (params.has("scope")) {
-          this.stravaScope = params.get("scope").split(",");
-        }
-        data = {
-          client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-          client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-          code: code,
-          grant_type: "authorization_code"
-        };
-      }
-      // console.log("check data before send", data);
-      if (!data) return;
-      let res = await axios.post("https://www.strava.com/oauth/token", data);
-      let { athlete, ...auth } = res.data;
-      this.auth = auth;
-      if (!this.athlete && !athlete) {
-        // send request to get athlete object
-        const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
-          headers: {
-            Authorization: "Bearer " + this.auth.access_token //the token is a variable which holds the token
-          }
-        });
-        athlete = res2.data;
-      }
-      this.athlete = athlete;
-      this.$cookies.set("auth", auth, "30d").set("athlete", athlete, "30d");
-      if (this.refresh == null) {
-        this.refreshToken();
-      }
-
-      // console.log("Strava refresh token response: ", res.data);
-      // console.log("From cookie: ", this.$cookies.get("auth"));
+      this.tourId = id
     }
+  //   getAuth: function() {
+  //     var data = {
+  //       client_id: process.env.VUE_APP_STRAVA_CLIENTID,
+  //       redirect_uri: "localhost:8080",
+  //       response_type: "code",
+  //       approval_prompt: "auto",
+  //       scope: "read,profile:read_all,activity:read"
+  //     };
+  //     axios.get("https://www.strava.com/oauth/authorize", data);
+  //   },
+  //   checkCookie() {
+  //     if (this.$cookies.isKey("auth")) {
+  //       let now = new Date();
+  //       if (this.$cookies.get("auth").expires_at > now.getTime() / 1000) {
+  //         this.auth = this.$cookies.get("auth");
+  //         return;
+  //       }
+  //     }
+  //   },
+  //   refreshToken() {
+  //     const vm = this;
+  //     if (this.auth) {
+  //       this.refresh = setInterval(() => {
+  //         let now = new Date();
+  //         if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
+  //           vm.getTokens();
+  //         }
+  //       }, 3600);
+  //     }
+  //   },
+  //   getTokens: async function() {
+  //     let data;
+  //     if (this.$cookies.isKey("auth")) {
+  //       let now = new Date();
+  //       this.auth = this.$cookies.get("auth");
+  //       this.athlete = this.$cookies.get("athlete");
+  //       // console.log("inside cookie check");
+  //       if (this.auth.expires_at > now.getTime() / 1000 + 3600) return;
+  //       data = {
+  //         client_id: process.env.VUE_APP_STRAVA_CLIENTID,
+  //         client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
+  //         refresh_token: this.auth.refresh_token,
+  //         grant_type: "refresh_token"
+  //       };
+  //     }
+  //     if (window.location.search) {
+  //       const params = new window.URLSearchParams(window.location.search);
+  //       window.history.replaceState({}, document.title, "/"); // removes query string from URL
+  //       if (params.has("error")) {
+  //         // console.error("You didn't give us the right permissions");
+  //         return;
+  //       }
+  //       const code = params.get("code");
+  //       if (params.has("scope")) {
+  //         this.stravaScope = params.get("scope").split(",");
+  //       }
+  //       data = {
+  //         client_id: process.env.VUE_APP_STRAVA_CLIENTID,
+  //         client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
+  //         code: code,
+  //         grant_type: "authorization_code"
+  //       };
+  //     }
+  //     // console.log("check data before send", data);
+  //     if (!data) return;
+  //     let res = await axios.post("https://www.strava.com/oauth/token", data);
+  //     let { athlete, ...auth } = res.data;
+  //     this.auth = auth;
+  //     if (!this.athlete && !athlete) {
+  //       // send request to get athlete object
+  //       const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
+  //         headers: {
+  //           Authorization: "Bearer " + this.auth.access_token //the token is a variable which holds the token
+  //         }
+  //       });
+  //       athlete = res2.data;
+  //     }
+  //     this.athlete = athlete;
+  //     this.$cookies.set("auth", auth, "30d").set("athlete", athlete, "30d");
+  //     if (this.refresh == null) {
+  //       this.refreshToken();
+  //     }
+
+  //     // console.log("Strava refresh token response: ", res.data);
+  //     // console.log("From cookie: ", this.$cookies.get("auth"));
+  //   }
   },
   watch: {
     startdate(newdate) {
@@ -343,8 +360,10 @@ export default {
     },
   },
   mounted() {
-    this.getTokens();
+    // this.getTokens();
     this.loadTour()
+    this.loadAuth()
+    this.setTourId()
   },
   destroyed() {
     clearInterval(this.refresh);

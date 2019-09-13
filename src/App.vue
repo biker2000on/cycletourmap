@@ -8,7 +8,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer">
         <v-icon>menu</v-icon>
       </v-app-bar-nav-icon>
-      <v-toolbar-title>Strava Tourmap</v-toolbar-title>
+      <v-toolbar-title>Cycle Tourmap</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -18,30 +18,7 @@
         </template>
         <span>Home</span>
       </v-tooltip>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'map'}" v-on="on">
-            <v-icon>map</v-icon>
-          </v-btn>
-        </template>
-        <span>Map</span>
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'rides'}" v-on="on">
-            <v-icon>table_chart</v-icon>
-          </v-btn>
-        </template>
-        <span>Rides Table</span>
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'summary'}" v-on="on">
-            <v-icon>notes</v-icon>
-          </v-btn>
-        </template>
-        <span>Summary Stats</span>
-      </v-tooltip>
+      <router-view name="header" ></router-view>
       <v-btn :to="{name: 'auth'}" v-if="!signedIn">Sign In</v-btn>
       <v-btn v-if="signedIn">
         <amplify-sign-out class="amplify-sign-out"></amplify-sign-out>

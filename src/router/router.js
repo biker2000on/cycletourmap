@@ -4,10 +4,11 @@ import VueRouter from 'vue-router'
 // components
 import Leaflet from '../components/Leaflet'
 import Auth from '../components/Auth'
-import Summary from '../components/Summary'
-import Rides from '../components/Rides'
+// import Summary from '../components/Summary'
+// import Rides from '../components/Rides'
 import Profile from '../components/Profile'
 import Strava from '../components/Strava'
+import Buttons from '../components/Buttons'
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,7 @@ const routes = [
     components: {
       default: Leaflet,
       drawer: Strava,
+      header: Buttons,
     },
     props: true
   },
@@ -32,27 +34,26 @@ const routes = [
     name: 'profile',
     component: Profile,
     props: true,
-    alias: '/profile'
+    alias: '/profile',
+    meta: { requiresAuth: true }
   },
   {
     path: '/auth',
     name: 'auth',
     component: Auth,
   },
-  {
-    path: '/summary',
-    name: 'summary',
-    component: Summary,
-    props: true,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/rides',
-    name: 'rides',
-    component: Rides,
-    props: true,
-    meta: { requiresAuth: true }
-  },
+  // {
+  //   path: '/summary/:mapId',
+  //   name: 'summary',
+  //   component: Summary,
+  //   props: true,
+  // },
+  // {
+  //   path: '/rides/:mapId',
+  //   name: 'rides',
+  //   component: Rides,
+  //   props: true,
+  // },
 ]
 
 const router = new VueRouter({

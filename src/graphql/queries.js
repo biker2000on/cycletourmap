@@ -47,6 +47,8 @@ export const getActivity = `query GetActivity($id: ID!) {
       isPublic
     }
     achievement_count
+    athlete_count
+    average_heartrate
     average_speed
     average_temp
     average_watts
@@ -71,6 +73,7 @@ export const getActivity = `query GetActivity($id: ID!) {
     location_state
     manual
     summary_polyline
+    max_heartrate
     max_speed
     moving_time
     name
@@ -106,6 +109,8 @@ export const listActivitys = `query ListActivitys(
       activity_type
       strava_id
       achievement_count
+      athlete_count
+      average_heartrate
       average_speed
       average_temp
       average_watts
@@ -130,6 +135,7 @@ export const listActivitys = `query ListActivitys(
       location_state
       manual
       summary_polyline
+      max_heartrate
       max_speed
       moving_time
       name
@@ -151,6 +157,68 @@ export const listActivitys = `query ListActivitys(
       utc_offset
       visibility
       workout_type
+    }
+    nextToken
+  }
+}
+`;
+export const getAthlete = `query GetAthlete($id: ID!) {
+  getAthlete(id: $id) {
+    id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+  }
+}
+`;
+export const listAthletes = `query ListAthletes(
+  $filter: ModelAthleteFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listAthletes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+    }
+    nextToken
+  }
+}
+`;
+export const getAuth = `query GetAuth($id: ID!) {
+  getAuth(id: $id) {
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
+  }
+}
+`;
+export const listAuths = `query ListAuths(
+  $filter: ModelAuthFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listAuths(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
     }
     nextToken
   }

@@ -1,5 +1,7 @@
 <template>
-  <amplify-connect :query="tours"
+  <div>
+    <auth-strava />
+  <amplify-connect :query="tours" 
     :subscription="tourSubscription"
     :onSubscriptionMsg="deleteTourUpdate"
   >
@@ -60,6 +62,7 @@
       </div>
     </template>
   </amplify-connect>
+  </div>
 </template>
 
 <script>
@@ -67,8 +70,12 @@ import { listTours } from "../graphql/queries";
 import { onDeleteTour, onDeleteActivity } from '../graphql/subscriptions'
 import { Auth } from "aws-amplify";
 import { deleteTour } from '../graphql/mutations';
+import AuthStrava from './AuthStrava'
 
 export default {
+  components: {
+    AuthStrava,
+  },
   data() {
     return {
       headers: [
@@ -94,10 +101,10 @@ export default {
       }
     },
     deleteTourUpdate: function(prevData, newData) {
-      console.log('Deleted tour from subscription...');
+      console.log('Deleted tour from subscription...', prevData, newData);
       const deletedTour = newData.onDeleteTour.id;
       const index = prevData.data.listTours.items.findIndex(c => c.id == deletedTour);
-      prevData.data.listTours.splice(index, 1)
+      prevData.data.listTours.items.splice(index, 1)
       return prevData.data;
     },
   },
