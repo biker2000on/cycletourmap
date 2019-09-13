@@ -1,5 +1,8 @@
 <template>
-  <amplify-connect :query="tours">
+  <amplify-connect :query="tours"
+    :subscription="tourSubscription"
+    :onSubscriptionMsg="deleteTourUpdate"
+  >
     <template slot-scope="{loading, data, errors}">
       <v-progress-circular v-if="loading" indeterminate />
       <div v-else-if="errors.length > 0"></div>
@@ -29,7 +32,7 @@
             <td class="justify-center layout px-0">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon class="mx-0" :to="{ name: 'map', params: { mapId: item.id }}" @click="test(item)" >
+                  <v-btn icon class="mx-0" :to="{ name: 'map', params: { mapId: item.id }}" >
                     <v-icon color="blue">visibility</v-icon>
                   </v-btn>
                 </template>
@@ -37,7 +40,7 @@
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon class="mx-0" :to="{ name: 'edit', params: { mapId: item.id }}" @click>
+                  <v-btn icon class="mx-0" :to="{ name: 'edit', params: { mapId: item.id }}" >
                     <v-icon color="teal">edit</v-icon>
                   </v-btn>
                 </template>
@@ -45,7 +48,7 @@
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon class="mx-0" @click="alert('should we delete ' + item.name)">
+                  <v-btn icon class="mx-0" @click="deletetour(item)" >
                     <v-icon color="pink">delete</v-icon>
                   </v-btn>
                 </template>
@@ -61,7 +64,9 @@
 
 <script>
 import { listTours } from "../graphql/queries";
+import { onDeleteTour, onDeleteActivity } from '../graphql/subscriptions'
 import { Auth } from "aws-amplify";
+import { deleteTour } from '../graphql/mutations';
 
 export default {
   data() {
@@ -81,14 +86,28 @@ export default {
     };
   },
   methods: {
-    test(e) {
-      window.console.log(e)
+    deletetour: async function(item) {
+      if (confirm('are you sure you want to delete this Tour?')) {
+        console.log(item)
+        const deleted = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(deleteTour, {input: {id: item.id }}))
+        console.log('deleted Tour', deleted)
+      }
+    },
+    deleteTourUpdate: function(prevData, newData) {
+      console.log('Deleted tour from subscription...');
+      const deletedTour = newData.onDeleteTour.id;
+      const index = prevData.data.listTours.items.findIndex(c => c.id == deletedTour);
+      prevData.data.listTours.splice(index, 1)
+      return prevData.data;
     },
   },
   computed: {
     tours() {
       return this.$Amplify.graphqlOperation(listTours);
-    }
+    },
+    tourSubscription() {
+      return this.$Amplify.graphqlOperation(onDeleteTour)
+    },
   },
   beforeCreate() {
     Auth.currentUserInfo().then(user => {
