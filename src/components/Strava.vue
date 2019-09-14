@@ -115,6 +115,8 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { createTour, updateTour, createActivity } from '../graphql/mutations'
 import { getTour, listAuths } from '../graphql/queries'
 import uuid from 'uuid/v4'
+import { activityKeys } from '../utilities/activityKeys'
+import pick from 'lodash.pick'
 
 export default {
   data() {
@@ -173,29 +175,18 @@ export default {
       }
     },
     submitTour: async function() {
+      const input = {
+        id: this.tourId,
+        name: this.name,
+        start_date: this.startdate,
+        end_date: this.enddate,
+        description: this.description,
+        isPublic: this.isPublic,
+      }
       if (this.$route.params.mapId == 'new') {
-        const input = {
-          name: this.name,
-          start_date: this.startdate,
-          end_date: this.enddate,
-          description: this.description,
-          isPublic: this.isPublic,
-        }
-        console.log('input', input)
-        const newTour = await API.graphql(graphqlOperation(createTour, {input}))
-        console.log('created new tour', newTour)
+        const newTour = await API.graphql(graphqlOperation(createTour, { input }))
       } else {
-        const updatedTour = await API.graphql(graphqlOperation(updateTour, {
-          input: {  
-            id: this.$route.params.mapId,
-            name: this.name,
-            start_date: this.startdate,
-            end_date: this.enddate,
-            description: this.description,
-            isPublic: this.isPublic
-          }
-        }))
-        console.log('updated tour', updatedTour)
+        const updatedTour = await API.graphql(graphqlOperation(updateTour, { input }))
       }
     },
     getAllActivities: async function() {
@@ -245,16 +236,18 @@ export default {
       return
     },
     submitRide: async function(c,i) {
-      let { id, map, athlete, external_id, from_accepted_tag, upload_id_str, ...strava} = c
+      // let { id, map, athlete, external_id, from_accepted_tag, upload_id_str, ...strava} = c
+      let stats = pick(c, activityKeys)
+      // console.log(stats, activityKeys)
       const input = {
         activity_type: 'STRAVA',
-        strava_id: id,
+        strava_id: c.id,
         activityTourId: this.tourId,
-        summary_polyline: map.summary_polyline,
-        ...strava,
+        summary_polyline: c.map.summary_polyline,
+        ...stats,
       }
       let ride = await API.graphql(graphqlOperation(createActivity, {input}))
-      console.log(`activity ${i} ${ride}`)
+      console.log(`activity ${i}`, ride)
       return
     },
     setTourId() {
@@ -264,92 +257,6 @@ export default {
       }
       this.tourId = id
     }
-  //   getAuth: function() {
-  //     var data = {
-  //       client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-  //       redirect_uri: "localhost:8080",
-  //       response_type: "code",
-  //       approval_prompt: "auto",
-  //       scope: "read,profile:read_all,activity:read"
-  //     };
-  //     axios.get("https://www.strava.com/oauth/authorize", data);
-  //   },
-  //   checkCookie() {
-  //     if (this.$cookies.isKey("auth")) {
-  //       let now = new Date();
-  //       if (this.$cookies.get("auth").expires_at > now.getTime() / 1000) {
-  //         this.auth = this.$cookies.get("auth");
-  //         return;
-  //       }
-  //     }
-  //   },
-  //   refreshToken() {
-  //     const vm = this;
-  //     if (this.auth) {
-  //       this.refresh = setInterval(() => {
-  //         let now = new Date();
-  //         if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
-  //           vm.getTokens();
-  //         }
-  //       }, 3600);
-  //     }
-  //   },
-  //   getTokens: async function() {
-  //     let data;
-  //     if (this.$cookies.isKey("auth")) {
-  //       let now = new Date();
-  //       this.auth = this.$cookies.get("auth");
-  //       this.athlete = this.$cookies.get("athlete");
-  //       // console.log("inside cookie check");
-  //       if (this.auth.expires_at > now.getTime() / 1000 + 3600) return;
-  //       data = {
-  //         client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-  //         client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-  //         refresh_token: this.auth.refresh_token,
-  //         grant_type: "refresh_token"
-  //       };
-  //     }
-  //     if (window.location.search) {
-  //       const params = new window.URLSearchParams(window.location.search);
-  //       window.history.replaceState({}, document.title, "/"); // removes query string from URL
-  //       if (params.has("error")) {
-  //         // console.error("You didn't give us the right permissions");
-  //         return;
-  //       }
-  //       const code = params.get("code");
-  //       if (params.has("scope")) {
-  //         this.stravaScope = params.get("scope").split(",");
-  //       }
-  //       data = {
-  //         client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-  //         client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-  //         code: code,
-  //         grant_type: "authorization_code"
-  //       };
-  //     }
-  //     // console.log("check data before send", data);
-  //     if (!data) return;
-  //     let res = await axios.post("https://www.strava.com/oauth/token", data);
-  //     let { athlete, ...auth } = res.data;
-  //     this.auth = auth;
-  //     if (!this.athlete && !athlete) {
-  //       // send request to get athlete object
-  //       const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
-  //         headers: {
-  //           Authorization: "Bearer " + this.auth.access_token //the token is a variable which holds the token
-  //         }
-  //       });
-  //       athlete = res2.data;
-  //     }
-  //     this.athlete = athlete;
-  //     this.$cookies.set("auth", auth, "30d").set("athlete", athlete, "30d");
-  //     if (this.refresh == null) {
-  //       this.refreshToken();
-  //     }
-
-  //     // console.log("Strava refresh token response: ", res.data);
-  //     // console.log("From cookie: ", this.$cookies.get("auth"));
-  //   }
   },
   watch: {
     startdate(newdate) {
@@ -360,7 +267,6 @@ export default {
     },
   },
   mounted() {
-    // this.getTokens();
     this.loadTour()
     this.loadAuth()
     this.setTourId()

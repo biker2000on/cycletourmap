@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div id="leaflet-comp" :style="computedHeight">
     <l-map 
       :bounds="bounds"
@@ -19,15 +19,12 @@
         :url="tileProvider.url"
         :attribution="tileProvider.attribution"
         layer-type="base" />
-      <!-- <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer> -->
       <l-polyline v-for="(start, idx) in popups" :lat-lngs="popups[idx][2]" :key="'line' + idx" :fill="false">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
       </l-polyline>
       <l-marker v-for="(start,idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
         <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop2' + idx"></l-popup>
       </l-marker>
-      <!-- <l-polyline v-for="(line, idx) in polylines" :lat-lngs="line" :key="'line' + idx" :fill="false"></l-polyline> -->
-      <!-- <l-polyline :lat-lngs="route" :fill="false"></l-polyline> -->
     </l-map>
   </div>
 </template>
@@ -57,12 +54,12 @@ export default {
     LControlScale,
     LFullscreen,
   },
-  // props: {
-  //   activities: {
-  //     type: Array,
-  //     default: () => []
-  //   }
-  // },
+  props: {
+    activities: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       zoom:2,
@@ -88,9 +85,9 @@ export default {
     }
   },
   computed: {
-    activities() {
-      return this.$store.state.activities.filter(c => c)
-    },
+    // activities() {
+    //   return this.$store.state.activities.filter(c => c)
+    // },
     isMetric() {
       return this.$store.state.isMetric
     },
@@ -101,36 +98,22 @@ export default {
       })
       return ride.filter(c => c)
     },
-    polylines() {
-      let poly = this.activities.map(activity => {
-        if (activity.map.summary_polyline) {
-          let poly = omnivore.polyline.parse(activity.map.summary_polyline)
-          let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
-          if (coords) {
-            coords = coords.map(c => c.reverse())
-            return coords
-          }
-        }
-        return
-      })
-      return poly.filter(c => c)
-    },
     popups() {
       let popup = this.activities.map(activity => {
         let coords
-        if (activity.map.summary_polyline) {
-          let poly = omnivore.polyline.parse(activity.map.summary_polyline)
+        if (activity.summary_polyline) {
+          let poly = omnivore.polyline.parse(activity.summary_polyline)
           coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
           if (coords) {
             coords = coords.map(c => c.reverse())
           }
         }
-        return [activity.start_latlng, 
+        return [coords ? coords[0] : null, 
                "<p>" + activity.name + "<br>" + 
                (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi ")+ 
                activity.type + "<br>" + 
                (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p><br>" +
-               '<a href="https://www.strava.com/activities/' + activity.id + '" target="_blank">View on Strava</a>',
+               '<a href="https://www.strava.com/activities/' + activity.strava_id + '" target="_blank">View on Strava</a>',
                coords ? coords : null
                ] 
       })

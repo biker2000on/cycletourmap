@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 // components
-import Leaflet from '../components/Leaflet'
+import LeafletData from '../components/LeafletData'
 import Auth from '../components/Auth'
 // import Summary from '../components/Summary'
 // import Rides from '../components/Rides'
@@ -16,17 +16,18 @@ const routes = [
   {
     path: '/tourmap/:mapId', //   /tourmap/:id   and   /tourmap/new for new map
     name: 'map',
-    component: Leaflet,
+    component: LeafletData,
     props: true
   },
   {
     path: '/tourmap/:mapId/edit', //   /tourmap/:id   and   /tourmap/new for new map
     name: 'edit',
     components: {
-      default: Leaflet,
+      default: LeafletData,
       drawer: Strava,
       header: Buttons,
     },
+    meta: { requiresAuth: true },
     props: true
   },
   {

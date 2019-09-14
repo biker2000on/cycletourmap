@@ -1,24 +1,49 @@
 <template>
-  <amplify-connect
-    :query="ListAuths"
-  >
+  <amplify-connect :query="ListAuths" ref="auth">
     <template slot-scope="{loading, data, errors}">
-      <v-btn
-        v-if="!data.listAuths.items.length"
-        :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
-    '&redirect_uri=' + redirect_uri +
-    '&response_type=' + 'code' +
-    '&approval_prompt=' + 'auto' + // could be 'force'
-    '&scope=' + 'read,profile:read_all,activity:read'"
-      >Authorize Strava</v-btn>
+      <div v-if="loading">Loading...</div>
+      <div v-else-if="data">
+        <v-btn
+          v-if="!data.listAuths.items.length"
+          :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
+          '&redirect_uri=' + redirect_uri +
+          '&response_type=' + 'code' +
+          '&approval_prompt=' + 'auto' + // could be 'force'
+          '&scope=' + 'read,profile:read_all,activity:read'"
+        >Authorize Strava</v-btn>
+      </div>
+      <div v-else>{{ errors }}</div>
     </template>
   </amplify-connect>
 </template>
 
 <script>
 import axios from "axios";
-import { listAuths } from '../graphql/queries'
-import { createAuth, updateAuth } from '../graphql/mutations'
+import { listAuths, listAthletes } from "../graphql/queries";
+import { createAuth, updateAuth } from "../graphql/mutations";
+
+const myQuery = `
+query MyQuery {
+  __typename
+  listAuths {
+    items {
+      access_token
+      expires_at
+      refresh_token
+      strava_scope
+      token_type
+    }
+  }
+  listAthletes {
+    items {
+      id
+      firstname
+      lastname
+      profile
+    }
+  }
+}
+`;
 
 export default {
   data() {
@@ -39,9 +64,11 @@ export default {
         expires_at: this.auth.expires_at,
         refresh_token: this.auth.refresh_token,
         token_type: this.auth.token_type,
-        strava_scope: this.stravaScope,
-      }
-      const newAuth = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(createAuth, {input}))
+        strava_scope: this.stravaScope
+      };
+      const newAuth = await this.$Amplify.API.graphql(
+        this.$Amplify.graphqlOperation(createAuth, { input })
+      );
     },
     updateAuth: async function() {
       const input = {
@@ -49,18 +76,11 @@ export default {
         expires_at: this.auth.expires_at,
         refresh_token: this.auth.refresh_token,
         token_type: this.auth.token_type,
-        strava_scope: this.stravaScope,
-      }
-      const updatedAuth = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input}))
-    },
-    checkCookie() {
-      if (this.$cookies.isKey("auth")) {
-        let now = new Date();
-        if (this.$cookies.get("auth").expires_at > now.getTime() / 1000) {
-          this.auth = this.$cookies.get("auth");
-          return;
-        }
-      }
+        strava_scope: this.stravaScope
+      };
+      const updatedAuth = await this.$Amplify.API.graphql(
+        this.$Amplify.graphqlOperation(updateAuth, { input })
+      );
     },
     refreshToken() {
       const vm = this;
@@ -75,12 +95,7 @@ export default {
     },
     getTokens: async function() {
       let data;
-      // if (this.$cookies.isKey("auth")) {
-      //   let now = new Date();
-      //   this.auth = this.$cookies.get("auth");
-      //   this.athlete = this.$cookies.get("athlete");
-      //   // console.log("inside cookie check");
-      //   if (this.auth.expires_at > now.getTime() / 1000 + 3600) return;
+      // Check here and set for refresh of access token
       //   data = {
       //     client_id: process.env.VUE_APP_STRAVA_CLIENTID,
       //     client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
@@ -111,7 +126,7 @@ export default {
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, ...auth } = res.data;
       this.auth = auth;
-      this.createAuth()
+      this.createAuth();
       if (!this.athlete && !athlete) {
         // send request to get athlete object
         const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
@@ -133,7 +148,7 @@ export default {
   },
   computed: {
     ListAuths() {
-      return this.$Amplify.graphqlOperation(listAuths)
+      return this.$Amplify.graphqlOperation(myQuery);
     }
   },
   mounted() {
