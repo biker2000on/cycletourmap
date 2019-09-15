@@ -13,7 +13,7 @@ export default {
 
 <style>
 .auth {
-  margin: 0 auto;
+  margin: auto auto;
   width: 460px;
 }
 </style>
