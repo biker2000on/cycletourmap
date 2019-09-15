@@ -199,6 +199,7 @@ export const listAthletes = `query ListAthletes(
 `;
 export const getAuth = `query GetAuth($id: ID!) {
   getAuth(id: $id) {
+    id
     access_token
     expires_at
     refresh_token
@@ -214,6 +215,7 @@ export const listAuths = `query ListAuths(
 ) {
   listAuths(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
+      id
       access_token
       expires_at
       refresh_token

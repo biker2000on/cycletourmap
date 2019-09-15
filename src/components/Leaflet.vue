@@ -35,6 +35,7 @@ import LFullscreen from './Vue2LeafletFullscreen'
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import omnivore from "@mapbox/leaflet-omnivore";
+import { isNullOrUndefined } from 'util';
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -143,11 +144,13 @@ export default {
     zoomAll() {
       if (!this.activities.length) return
       //reduces to bounding box of values
-      let box = this.activities.reduce((a,c) => {
+      let box = this.activities.reduce((a,current) => {
+        let c = current.start_latlng
         if (JSON.stringify(a) == '[]') {
           a = [c,c]
           return a
         } 
+        if (isNullOrUndefined(c)) return a
         let minLat = a[0][0]
         let maxLat = a[1][0]
         let minLong = a[0][1]
@@ -173,8 +176,8 @@ export default {
       // let centerLat = (box[0][0] + box[1][0]) / 2
       // let centerLong = (box[0][1] + box[1][1]) / 2
       // this.center = [centerLat, centerLong]
-      let bounds = [[box[0][0]-1, box[0][1]-1],
-                    [box[1][0]+1, box[1][1]+1]]
+      let bounds = [[box[0][0]-0.5, box[0][1]-0.5],
+                    [box[1][0]+0.5, box[1][1]+0.5]]
       setTimeout(() => {this.bounds = bounds},500)
     }
   },

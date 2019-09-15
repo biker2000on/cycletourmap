@@ -34,6 +34,8 @@
     </v-content>
     <v-footer color="indigo" app>
       <span class="white--text">&copy; 2019</span>
+      <v-spacer></v-spacer>
+      <img src="/strava/api_logo_pwrdBy_strava_horiz_white.svg" height="30" >
     </v-footer>
   </v-app>
 </template>

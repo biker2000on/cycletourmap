@@ -7,7 +7,7 @@ import Auth from '../components/Auth'
 // import Summary from '../components/Summary'
 // import Rides from '../components/Rides'
 import Profile from '../components/Profile'
-import Strava from '../components/Strava'
+import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
 
 Vue.use(VueRouter)
@@ -16,7 +16,10 @@ const routes = [
   {
     path: '/tourmap/:mapId', //   /tourmap/:id   and   /tourmap/new for new map
     name: 'map',
-    component: LeafletData,
+    components: {
+      default: LeafletData,
+      drawer: StravaData,
+    },
     props: true
   },
   {
@@ -24,7 +27,7 @@ const routes = [
     name: 'edit',
     components: {
       default: LeafletData,
-      drawer: Strava,
+      drawer: StravaData,
       header: Buttons,
     },
     meta: { requiresAuth: true },

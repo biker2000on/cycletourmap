@@ -282,6 +282,7 @@ export const onDeleteAthlete = `subscription OnDeleteAthlete {
 `;
 export const onCreateAuth = `subscription OnCreateAuth {
   onCreateAuth {
+    id
     access_token
     expires_at
     refresh_token
@@ -292,6 +293,7 @@ export const onCreateAuth = `subscription OnCreateAuth {
 `;
 export const onUpdateAuth = `subscription OnUpdateAuth {
   onUpdateAuth {
+    id
     access_token
     expires_at
     refresh_token
@@ -302,6 +304,7 @@ export const onUpdateAuth = `subscription OnUpdateAuth {
 `;
 export const onDeleteAuth = `subscription OnDeleteAuth {
   onDeleteAuth {
+    id
     access_token
     expires_at
     refresh_token

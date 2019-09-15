@@ -1,16 +1,16 @@
 <template>
-  <amplify-connect :query="ListAuths" ref="auth">
+  <amplify-connect :query="ListAuthsAthletes" ref="auth">
     <template slot-scope="{loading, data, errors}">
       <div v-if="loading">Loading...</div>
       <div v-else-if="data">
-        <v-btn
+        <a
           v-if="!data.listAuths.items.length"
           :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
           '&redirect_uri=' + redirect_uri +
           '&response_type=' + 'code' +
           '&approval_prompt=' + 'auto' + // could be 'force'
           '&scope=' + 'read,profile:read_all,activity:read'"
-        >Authorize Strava</v-btn>
+        ><img src="/strava/btn_strava_connectwith_orange.svg" height="48" ></a>
       </div>
       <div v-else>{{ errors }}</div>
     </template>
@@ -19,14 +19,14 @@
 
 <script>
 import axios from "axios";
-import { listAuths, listAthletes } from "../graphql/queries";
-import { createAuth, updateAuth } from "../graphql/mutations";
+import { createAuth, updateAuth, createAthlete, updateAthlete } from "../graphql/mutations";
 
 const myQuery = `
 query MyQuery {
   __typename
   listAuths {
     items {
+      id
       access_token
       expires_at
       refresh_token
@@ -82,17 +82,17 @@ export default {
         this.$Amplify.graphqlOperation(updateAuth, { input })
       );
     },
-    refreshToken() {
-      const vm = this;
-      if (this.auth) {
-        this.refresh = setInterval(() => {
-          let now = new Date();
-          if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
-            vm.getTokens();
-          }
-        }, 3600);
-      }
-    },
+    // refreshToken() {
+    //   const vm = this;
+    //   if (this.auth) {
+    //     this.refresh = setInterval(() => {
+    //       let now = new Date();
+    //       if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
+    //         vm.getTokens();
+    //       }
+    //     }, 3600);
+    //   }
+    // },
     getTokens: async function() {
       let data;
       // Check here and set for refresh of access token
@@ -126,7 +126,9 @@ export default {
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, ...auth } = res.data;
       this.auth = auth;
-      this.createAuth();
+
+      this.$refs.auth.listAuths.items.length ? this.updateAuth() : this.createAuth()
+      
       if (!this.athlete && !athlete) {
         // send request to get athlete object
         const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
@@ -138,16 +140,16 @@ export default {
       }
       this.athlete = athlete;
       // this.$cookies.set("auth", auth, "30d").set("athlete", athlete, "30d");
-      if (this.refresh == null) {
-        this.refreshToken();
-      }
+      // if (this.refresh == null) {
+      //   this.refreshToken();
+      // }
 
       // console.log("Strava refresh token response: ", res.data);
       // console.log("From cookie: ", this.$cookies.get("auth"));
     }
   },
   computed: {
-    ListAuths() {
+    ListAuthsAthletes() {
       return this.$Amplify.graphqlOperation(myQuery);
     }
   },

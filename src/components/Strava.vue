@@ -22,8 +22,7 @@
       <v-list-item-content>
         <v-menu
           ref="menu"
-          :close-on-content-click="false"
-          :return-value.sync="startdate"
+          :close-on-content-click="true"
           v-model="menu"
           transition="scale-transition"
           offset-y
@@ -41,9 +40,6 @@
               readonly></v-text-field>
           </template>
           <v-date-picker v-model="startdate" no-title scrollable actions>
-            <div class="flex-grow-1"></div>
-            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-            <v-btn text color="primary" @click="$refs.menu.save(startdate)">OK</v-btn>
           </v-date-picker>
         </v-menu>
       </v-list-item-content>
@@ -52,8 +48,7 @@
       <v-list-item-content>
         <v-menu
           ref="menu2"
-          :close-on-content-click="false"
-          :return-value.sync="enddate"
+          :close-on-content-click="true"
           v-model="menu2"
           transition="scale-transition"
           offset-y
@@ -65,10 +60,7 @@
           <template v-slot:activator="{ on }">
             <v-text-field label="End Date" v-model="enddate" prepend-icon="event" v-on="on" readonly></v-text-field>
           </template>
-          <v-date-picker v-model="enddate" no-title scrollable actions>
-            <div class="flex-grow-1"></div>
-            <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-            <v-btn text color="primary" @click="$refs.menu2.save(enddate)">OK</v-btn>
+          <v-date-picker v-model="enddate" no-title scrollable reactive >
           </v-date-picker>
         </v-menu>
       </v-list-item-content>
@@ -94,17 +86,15 @@
         <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
       </v-list-item-content>
     </v-list-item>
-    <!-- <v-list-item>
-      <v-list-item-content>
-        <v-btn
-          :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
-              '&redirect_uri=' + redirect_uri +
-              '&response_type=' + 'code' +
-              '&approval_prompt=' + 'auto' + // could be 'force'
-              '&scope=' + 'read,profile:read_all,activity:read'"
-        >Authorize App</v-btn>
-      </v-list-item-content>
-    </v-list-item> -->
+    <v-dialog v-model="dialog" max-width="290">
+      <v-card>
+        <v-card-title class="headline" >Successfully Saved Tourmap</v-card-title>
+        <v-card-text>
+          <p><a :href="'/#/tourmap/' + tourId">View your tourmap here</a></p>
+          <p>or click outside the dialog to continue editing your tourmap.</p>  
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-list>
 </template>
 
@@ -112,13 +102,20 @@
 import axios from "axios";
 import { setInterval, clearInterval } from "timers";
 import { API, graphqlOperation } from 'aws-amplify'
-import { createTour, updateTour, createActivity } from '../graphql/mutations'
+import { createTour, updateTour, createActivity, updateAuth, updateActivity, deleteActivity } from '../graphql/mutations'
 import { getTour, listAuths } from '../graphql/queries'
 import uuid from 'uuid/v4'
 import { activityKeys } from '../utilities/activityKeys'
 import pick from 'lodash.pick'
+import isEqual from 'lodash.isequal'
 
 export default {
+  props: {
+    tourData: {
+      type: Object,
+      default: () => {},
+    }
+  },
   data() {
     return {
       athlete: null,
@@ -136,17 +133,21 @@ export default {
       menu2: false,
       isPublic: false,
       tourId: null,
+      tour: null,
+      dialog: false,
     };
   },
   methods: {
     loadAuth: async function() {
-      const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(listAuths, {id: this.$route.params.mapId}))
-      console.log(auths)
-      this.auth = auths.data.listAuths.items[0]
-      const expire = new Date(this.auth.expires_at * 1000)
+      // const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(listAuths, {id: this.$route.params.mapId}))
+      // console.log(auths)
+      // this.auth = auths.data.listAuths.items[0]
+      this.auth = this.tourData.listAuths.items[0]
+      const expire = new Date(this.auth.expires_at * 1000 + 3600 * 1000) // 1 hour before expiry
       if (expire < new Date()) {
-        this.refreshAuth()
+        return this.refreshAuth()
       }
+      return
     },
     refreshAuth: async function() {
       const data = {
@@ -156,8 +157,13 @@ export default {
         grant_type: "refresh_token"
       }
       let res = await axios.post("https://www.strava.com/oauth/token", data);
-      let { athlete, ...auth } = res.data;
+      let { athlete, expires_in, ...auth } = res.data;
+      console.log('auth', auth)
+      auth['id'] = this.tourData.listAuths.items[0].id
+      auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
+      console.log('successful submission of new auth', auths)
       this.auth = auth;
+      return auth
     },
     loadTour: async function() {
       if (this.$route.params.mapId != 'new') {
@@ -188,6 +194,7 @@ export default {
       } else {
         const updatedTour = await API.graphql(graphqlOperation(updateTour, { input }))
       }
+      this.dialog = true
     },
     getAllActivities: async function() {
       const start = new Date(this.startdate);
@@ -197,7 +204,9 @@ export default {
       let page = 1;
       let acts = [];
       let activities = "";
+      let beforeStart = false
       const boundSubmitRide = this.submitRide.bind(this)
+      let auth = await this.loadAuth()
       do {
         let strava = await axios.get(
           "https://www.strava.com/api/v3/activities?per_page=50&page=" + page,
@@ -207,9 +216,8 @@ export default {
             }
           }
         );
-        // activities = await strava.json();
         activities = strava.data;
-        let dates = activities.reduce((a, c) => {
+        let beforeStart = activities.reduce((a, c) => {
           let rideStart = new Date(c.start_date);
           if (start > rideStart) {
             return true;
@@ -222,20 +230,60 @@ export default {
           return rideStart >= start && rideStart <= end;
         });
         acts = acts.concat(activities);
-        if (dates) {
-          acts.map((c,i) => boundSubmitRide(c,i))
-          this.$store.commit("addActivities", acts);
-          this.$emit("update:activities", acts);
+        if (beforeStart) {
+          if (this.$route.params.mapId == 'new') {
+            acts.map((c,i) => boundSubmitRide(c))
+            } else {
+            this.compareRides(acts)
+          }
+          // this.$store.commit("addActivities", acts);
+          // this.$emit("update:activities", acts);
           return;
         }
         page++;
-      } while (activities != "");
-      acts.map(this.submitRide(c,i))
-      this.$store.commit("addActivities", acts);
-      this.$emit("update:activities", acts);
+      } while (!beforeStart);
+      // acts.map(this.submitRide(c,i))
+      // this.$store.commit("addActivities", acts);
+      // this.$emit("update:activities", acts);
       return
     },
-    submitRide: async function(c,i) {
+    compareRides(strava) {
+      let stravaIds = new Set(strava.map(c => c.id))
+      let app = new Set(this.tourData.getTour.activities.items.map(c => c.strava_id))
+      console.log('strava', stravaIds, app, strava, this.tourData.getTour.activities.items)
+      strava.map(c => this.compareRide(c))
+    },
+    compareRide(ride) {
+      let app = this.tourData.getTour.activities.items.filter(c => ride.id == c.strava_id)
+      const rideSum = pick(ride, ['elapsed_time','moving_time', 'name','start_date_local','type'])
+      rideSum['strava_id'] = ride.id
+      rideSum['summary_polyline'] = ride.map.summary_polyline
+      console.log('compared', app.length, rideSum, app)
+      if (app.length < 1) {
+        this.submitRide(ride, 'create') // create
+      } else if (app.length == 1) {
+        console.log('check equal rides', isEqual(rideSum, app[0]))
+        this.submitRide(ride, app[0].id)
+      } else {
+        this.handleMultipleRides(ride, app)
+      }
+    },
+    handleMultipleRides(ride, app) {
+      app.map((c,i) => {
+        if (i == 0) {
+          this.submitRide(ride, c.id)
+        } else {
+          this.deleteRide(c.id)
+        }
+      })
+    },
+    deleteRide: async function(id) {
+      console.log('delete', id, {input: {id}})
+      const ride = await API.graphql(graphqlOperation(deleteActivity, {input: {id}}))
+      console.log('deleted')
+      return
+    },
+    submitRide: async function(c, id = 'create') {
       // let { id, map, athlete, external_id, from_accepted_tag, upload_id_str, ...strava} = c
       let stats = pick(c, activityKeys)
       // console.log(stats, activityKeys)
@@ -246,8 +294,16 @@ export default {
         summary_polyline: c.map.summary_polyline,
         ...stats,
       }
-      let ride = await API.graphql(graphqlOperation(createActivity, {input}))
-      console.log(`activity ${i}`, ride)
+      
+      if (id == 'create') {
+        let ride = await API.graphql(graphqlOperation(createActivity, {input}))
+        console.log('created')
+      } else {
+        input['id'] = id
+        let ride = await API.graphql(graphqlOperation(updateActivity, {input}))
+        console.log('updated')
+      }
+      // console.log(`activity ${i}`, ride)
       return
     },
     setTourId() {
@@ -280,12 +336,5 @@ export default {
 <style scoped>
 .v-list-item {
   text-align: center;
-}
-input {
-  height: 2em;
-  border: 2px solid indigo;
-  border-radius: 5px;
-  box-shadow: 3px 3px;
-  padding: 6px;
 }
 </style>

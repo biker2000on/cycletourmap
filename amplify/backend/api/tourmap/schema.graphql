@@ -79,6 +79,7 @@ type Athlete @model {
 }
 
 type Auth @model {
+  id: ID!
   access_token: String!
   expires_at: Int!
   refresh_token: String!

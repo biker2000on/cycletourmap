@@ -282,6 +282,7 @@ export const deleteAthlete = `mutation DeleteAthlete($input: DeleteAthleteInput!
 `;
 export const createAuth = `mutation CreateAuth($input: CreateAuthInput!) {
   createAuth(input: $input) {
+    id
     access_token
     expires_at
     refresh_token
@@ -292,6 +293,7 @@ export const createAuth = `mutation CreateAuth($input: CreateAuthInput!) {
 `;
 export const updateAuth = `mutation UpdateAuth($input: UpdateAuthInput!) {
   updateAuth(input: $input) {
+    id
     access_token
     expires_at
     refresh_token
@@ -302,6 +304,7 @@ export const updateAuth = `mutation UpdateAuth($input: UpdateAuthInput!) {
 `;
 export const deleteAuth = `mutation DeleteAuth($input: DeleteAuthInput!) {
   deleteAuth(input: $input) {
+    id
     access_token
     expires_at
     refresh_token
