@@ -26,7 +26,7 @@
     </v-app-bar>
 
     <v-content>
-      <v-container fluid fill-height>
+      <v-container fluid fill-height :class="isHome" >
         <v-layout align-center justify-center>
         <router-view :style="{ width: '100%' }" ></router-view>
         </v-layout>
@@ -62,6 +62,15 @@ export default {
       signedIn: false,
       user: null
     };
+  },
+  computed: {
+    isHome() {
+      if (this.$route.name == 'home') {
+        return 'home'
+      } else {
+        return ''
+      }
+    }
   },
   beforeCreate() {
     AmplifyEventBus.$on("authState", info => {
@@ -102,5 +111,14 @@ export default {
 }
 .navigation {
   z-index: 9999;
+}
+
+.home {
+  background-image: url(/tour.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: rgba(0, 0, 0, 0.3);
+  background-blend-mode: saturation;
+  width: 100%;
 }
 </style>

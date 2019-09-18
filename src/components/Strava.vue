@@ -77,15 +77,15 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
+        <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
         <v-btn @click="submitTour" >Save</v-btn>
       </v-list-item-content>
     </v-list-item>
 
-    <v-list-item>
-      <v-list-item-content>
-        <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
-      </v-list-item-content>
-    </v-list-item>
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
         <v-card-title class="headline" >Successfully Saved Tourmap</v-card-title>
@@ -160,7 +160,7 @@ export default {
       let { athlete, expires_in, ...auth } = res.data;
       console.log('auth', auth)
       auth['id'] = this.tourData.listAuths.items[0].id
-      auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
+      const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
       console.log('successful submission of new auth', auths)
       this.auth = auth;
       return auth
@@ -201,47 +201,58 @@ export default {
       const end = this.enddate
         ? new Date(this.enddate)
         : new Date();
+      const times = [start.getTime() / 1000, end.getTime() / 1000]
       let page = 1;
+      let per_page = 50
       let acts = [];
-      let activities = "";
+      let activities = [];
       let beforeStart = false
       const boundSubmitRide = this.submitRide.bind(this)
       let auth = await this.loadAuth()
       do {
         let strava = await axios.get(
-          "https://www.strava.com/api/v3/activities?per_page=50&page=" + page,
+          "https://www.strava.com/api/v3/athlete/activities",
           {
+            params: {
+              per_page,
+              page,
+              before: times[1] + 43200, // max possible time forward at +12h TZ
+              after: times[0] - 43200,  // min possible time backwards at -12h TZ
+            },
             headers: {
               Authorization: "Bearer " + this.auth.access_token
             }
           }
         );
         activities = strava.data;
-        let beforeStart = activities.reduce((a, c) => {
-          let rideStart = new Date(c.start_date);
-          if (start > rideStart) {
-            return true;
-          } else {
-            return a;
-          }
-        }, false);
+
+        // don't need with filtered rest query
+        // let beforeStart = activities.reduce((a, c) => {
+        //   let rideStart = new Date(c.start_date);
+        //   if (start > rideStart) {
+        //     return true;
+        //   } else {
+        //     return a;
+        //   }
+        // }, false);
         activities = activities.filter(c => {
-          let rideStart = new Date(c.start_date);
+          let rideStart = new Date(c.start_date_local); // use local since that is what people will be thinking on.
           return rideStart >= start && rideStart <= end;
         });
         acts = acts.concat(activities);
-        if (beforeStart) {
-          if (this.$route.params.mapId == 'new') {
-            acts.map((c,i) => boundSubmitRide(c))
-            } else {
-            this.compareRides(acts)
-          }
+        // if (beforeStart) {
           // this.$store.commit("addActivities", acts);
           // this.$emit("update:activities", acts);
-          return;
-        }
+          // return;
+        // }
         page++;
-      } while (!beforeStart);
+      } while (activities.length == per_page);
+
+      if (this.$route.params.mapId == 'new') {
+        acts.map((c,i) => boundSubmitRide(c))
+        } else {
+        this.compareRides(acts)
+      }
       // acts.map(this.submitRide(c,i))
       // this.$store.commit("addActivities", acts);
       // this.$emit("update:activities", acts);

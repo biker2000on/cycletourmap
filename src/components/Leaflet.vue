@@ -204,6 +204,6 @@ export default {
   margin: auto;
 }
 #leaflet-comp > div {
-  z-index: 999;
+  z-index: 7;
 }
 </style>

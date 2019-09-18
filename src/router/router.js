@@ -9,10 +9,16 @@ import Auth from '../components/Auth'
 import Profile from '../components/Profile'
 import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
+import Home from '../components/Home'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/home',
+    name: 'home',
+    component: Home, 
+  },
   {
     path: '/tourmap/:mapId', //   /tourmap/:id   and   /tourmap/new for new map
     name: 'map',
