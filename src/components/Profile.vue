@@ -25,7 +25,7 @@
       <v-progress-circular v-if="loading" indeterminate />
       <div v-else-if="error" class="error">We had an error</div>
       <div v-else-if="data">
-        <h2>Hello {{ user ? user.username : '' }}</h2>
+        <h2 class="text-center ma-6">Hello {{ user ? user.username : '' }}</h2>
         <!-- <v-img
           v-if="athlete"
           :src="athlete.profile"
@@ -36,10 +36,10 @@
           :headers="headers"
           :items="data.listTours.items"
           :items-per-page="10"
-          class="elevation-1"
+          class="elevation-1 mx-md-6"
         >
           <template v-slot:top>
-            <v-btn color="success" :to="{ name: 'edit', params: { mapId: 'new' }}" >
+            <v-btn color="success" :to="{ name: 'edit', params: { mapId: 'new' }}" class="ma-2">
               <v-icon>add</v-icon>New Tour
             </v-btn>
           </template>

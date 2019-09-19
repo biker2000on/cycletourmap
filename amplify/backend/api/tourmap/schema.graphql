@@ -2,7 +2,7 @@ type Tour @model {
   id: ID!
   # user: User! @connection(name: "AthleteTours")
   name: String!
-  description: String!
+  description: String
   start_date: String!
   end_date: String!
   isPublic: Boolean!

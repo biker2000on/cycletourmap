@@ -7,7 +7,7 @@ query GetTourActivities ($id: ID!) {
     isPublic
     name
     start_date
-    activities (limit: 10) {
+    activities (limit: 200) {
       items {
         id
         elapsed_time
@@ -17,6 +17,7 @@ query GetTourActivities ($id: ID!) {
         summary_polyline
         type
         strava_id
+        __typename
       }
       nextToken
     }

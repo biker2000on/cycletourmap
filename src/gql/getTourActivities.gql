@@ -1,3 +1,4 @@
+
 query GetActivities ($id: ID!) {
     getTour(id: $id) {
       id

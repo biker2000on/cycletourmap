@@ -1,6 +1,6 @@
 <template>
-  <v-list dense>
-    <v-list-item>
+  <v-list dense >
+    <v-list-item v-if="athlete" >
       <v-img
         v-if="athlete"
         :src="athlete.profile"
@@ -65,14 +65,16 @@
         </v-menu>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
+    <v-list-item >
+      <v-list-item-content class="my-0 py-0" >
         <v-textarea label="Description" v-model="description" rows="5"></v-textarea>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content>
-        <v-switch label="Public" v-model="isPublic" ></v-switch>
+      <v-list-item-content class="my-0 py-0">
+        <v-switch label="Public" class="mx-auto" v-model="isPublic" ></v-switch>
+        <br>
+        <!-- <p class="text-center">{{ '# of Activities: ' + tourdata ? tourData.getTour.activities.items.length : ''}}</p> -->
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
@@ -101,14 +103,12 @@
 <script>
 import axios from "axios";
 import { setInterval, clearInterval } from "timers";
-import { API, graphqlOperation } from 'aws-amplify'
-import { createTour, updateTour, createActivity, updateAuth, updateActivity, deleteActivity } from '../graphql/mutations'
-import { getTour, listAuths } from '../graphql/queries'
 import uuid from 'uuid/v4'
 import { activityKeys } from '../utilities/activityKeys'
 import pick from 'lodash.pick'
 import isEqual from 'lodash.isequal'
 
+// queries
 import CREATE_TOUR from '../gql/createTour.gql'
 import CREATE_ACTIVITY from '../gql/createActivity.gql'
 import UPDATE_TOUR from '../gql/updateTour.gql'
@@ -151,7 +151,7 @@ export default {
   methods: {
     loadAuth: function() {
       this.auth = this.tourData.listAuths.items[0]
-      const expire = new Date(this.auth.expires_at * 1000 + 3600 * 1000) // 1 hour before expiry
+      const expire = new Date(this.auth.expires_at * 1000 - 3600 * 1000) // 1 hour before expiry
       if (expire < new Date()) {
         this.refreshAuth()
       }
@@ -167,6 +167,7 @@ export default {
       let { athlete, expires_in, ...auth } = res.data;
       auth['id'] = this.tourData.listAuths.items[0].id
       // const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
+      console.log('update auth', auth)
       this.$apollo.mutate({
         mutation: UPDATE_AUTH,
         variables: { input: auth },
@@ -208,14 +209,19 @@ export default {
         isPublic: this.isPublic,
       }
       if (this.$route.params.mapId == 'new') {
-        // const newTour = await API.graphql(graphqlOperation(createTour, { input }))
         this.$apollo.mutate({
           mutation: CREATE_TOUR,
           variables: { input },
           update: (store, { data: { createTour }}) => {
             let data = store.readQuery({ query: LIST_TOURS })
-            data.listTours.items.push({ ...input })
-            store.writeQuery({ query: LIST_TOURS, data })
+            console.log('cached tours', data.listTours.items, 'createTour', createTour)
+            let index = data.listTours.items.findIndex(c => c.id == input.id)
+            if (index == -1) {
+              data.listTours.items.push(createTour)
+            } else {
+              data.listTours.items[index] = createTour
+            }
+              store.writeQuery({ query: LIST_TOURS, data })
           },
           optimisticResponse: {
             __typename: 'Mutation',
@@ -225,8 +231,11 @@ export default {
             }
           }
         })
+        this.$store.state.activities.map(c => this.submitRide(c, 'create'))
+        // this.$store.commit('setActivities', []) // possibly to reset State
+        // this.$router.push({ name: 'edit', params: { mapId: this.tourId }})
       } else {
-        const updatedTour = await API.graphql(graphqlOperation(updateTour, { input }))
+        // const updatedTour = await API.graphql(graphqlOperation(updateTour, { input }))
         this.$apollo.mutate({
           mutation: UPDATE_TOUR,
           variables: { input },
@@ -252,7 +261,7 @@ export default {
       const end = this.enddate
         ? new Date(this.enddate)
         : new Date();
-      const times = [start.getTime() / 1000, end.getTime() / 1000]
+      const times = [parseInt(start.getTime() / 1000), parseInt(end.getTime() / 1000)]
       let page = 1;
       let per_page = 50
       let acts = [];
@@ -267,7 +276,7 @@ export default {
             params: {
               per_page,
               page,
-              before: times[1] + 43200, // max possible time forward at +12h TZ
+              // before: times[1] + 43200, // max possible time forward at +12h TZ
               after: times[0] - 43200,  // min possible time backwards at -12h TZ
             },
             headers: {
@@ -295,14 +304,26 @@ export default {
       } while (activities.length == per_page);
 
       if (this.$route.params.mapId == 'new') {
-        acts.map((c,i) => boundSubmitRide(c))
+        console.log('inside new')
+        this.$store.commit('setActivities', acts.map(c => { 
+          return { ...c, summary_polyline: c.map.summary_polyline } 
+        }))
+        // acts.map((c,i) => boundSubmitRide(c))
       } else {
-        this.compareRides(acts)
+        this.compareRides(acts, start, end)
       }
       // acts.map(this.submitRide(c,i))
       return
     },
-    compareRides(strava) {
+    compareRides(strava, start, end) {
+      let toBeDeleted = this.tourData.getTour.activities.items.filter(c => {
+        console.log('before Start', rideStart < start, 'after End', rideStart > end)
+        let rideStart = new Date(c.start_date_local)
+        if (rideStart < start || rideStart > end) return true
+        return false
+      })
+      toBeDeleted.map(c => this.deleteRide(c.id))
+      console.log('toBeDeleted', toBeDeleted)
       let stravaIds = new Set(strava.map(c => c.id))
       let app = new Set(this.tourData.getTour.activities.items.map(c => c.strava_id))
       console.log('strava', stravaIds, app, strava, this.tourData.getTour.activities.items)
@@ -338,10 +359,12 @@ export default {
       this.$apollo.mutate({
         mutation: DELETE_ACTIVITY,
         variables: { input: { id }},
-        update: ( store, { data: deleteActivity }) => {
-          const data = store.readQuery({query: GET_TOUR_ACTIVITIES })
+        update: ( store, { data: {deleteActivity} }) => {
+          console.log('delete Activity', deleteActivity)
+          const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
+          console.log('data from delete query', data)
           data.getTour.activities.items = data.getTour.activities.items.filter(c => c.id != id)
-          store.writeQuery({ query: GET_TOUR_ACTIVITIES, data })
+          store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
         },
         optimisticResponse: {
           __typename: 'Mutation',
@@ -373,8 +396,9 @@ export default {
           mutation: CREATE_ACTIVITY,
           variables: { input },
           update: ( store, { data: createActivity }) => {
+            // console.log('Create Activity mutation', createActivity)
             const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
-            data.getTour.activities.items.push({...input})
+            data.getTour.activities.items.push(createActivity.createActivity)
             store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
           },
           optimisticResponse: {
@@ -394,6 +418,13 @@ export default {
         this.$apollo.mutate({
           mutation: UPDATE_ACTIVITY,
           variables: { input },
+          // update: ( store, { data: updateActivity }) => {
+          //   const data = store.readQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }})
+          //   console.log('store update query ', data.getTour.activities.items, updateActivity)
+          //   const index = data.getTour.activities.items.findIndex(c => c.id == id)
+          //   data.getTour.activities.items[index] = updateActivity
+          //   store.writeQuery({ query: GET_TOUR_ACTIVITIES, data, variables: { id: this.tourId }})
+          // },
           optimisticResponse: {
             __typename: 'Mutation',
             updateActivity: {

@@ -4,7 +4,7 @@
     <template slot-scope="{ result: {loading, data, error}}">
       <v-progress-circular v-if="loading" indeterminate />
       <leaflet v-else-if="data" :activities="data.getTour.activities.items" />
-      <leaflet v-else-if="$route.params.mapId == 'new'" /> 
+      <leaflet v-else-if="$route.params.mapId == 'new'" :activities="$store.state.activities" /> 
       <div v-else-if="error">{{ error }}</div>
     </template>
   </ApolloQuery>
