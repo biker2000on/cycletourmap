@@ -1,6 +1,6 @@
 <template>
-  <amplify-connect :query="ListAuthsAthletes" ref="auth">
-    <template slot-scope="{loading, data, errors}">
+  <ApolloQuery :query="require('../gql/listAuthsAthletes.gql')" ref = auth>
+    <template slot-scope="{ result: { loading, data, error }}">
       <div v-if="loading">Loading...</div>
       <div v-else-if="data">
         <a
@@ -12,14 +12,17 @@
           '&scope=' + 'read,profile:read_all,activity:read'"
         ><img src="/strava/btn_strava_connectwith_orange.svg" height="48" ></a>
       </div>
-      <div v-else>{{ errors }}</div>
+      <div v-else>{{ error }}</div>
     </template>
-  </amplify-connect>
+  </ApolloQuery>
 </template>
 
 <script>
 import axios from "axios";
 import { createAuth, updateAuth, createAthlete, updateAthlete } from "../graphql/mutations";
+import uuidv4 from 'uuid/v4'
+import CREATE_AUTH from '../gql/createAuth.gql'
+import UPDATE_AUTH from '../gql/updateAuth.gql'
 
 const myQuery = `
 query MyQuery {
@@ -60,24 +63,56 @@ export default {
   methods: {
     createAuth: async function() {
       const input = {
+        id: uuidv4(),
         access_token: this.auth.access_token,
         expires_at: this.auth.expires_at,
         refresh_token: this.auth.refresh_token,
         token_type: this.auth.token_type,
         strava_scope: this.stravaScope
       };
-      const newAuth = await this.$Amplify.API.graphql(
-        this.$Amplify.graphqlOperation(createAuth, { input })
-      );
+      this.$apollo.mutate({
+        mutation: CREATE_AUTH,
+        variables: { input },
+        update: (store, { data: { createAuth }}) => {
+          const data = store.readQuery({ query: LIST_AUTHS })
+          data.listAuths.items.push(createAuth)
+          store.writeQuery({ query: LIST_AUTHS, data })
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          createAuth: {
+            __typename: 'Auth',
+            ...input
+          }
+        }
+      })
     },
     updateAuth: async function() {
       const input = {
+        id: this.$refs.auth.result.data.listAuths.items[0].id, 
         access_token: this.auth.access_token,
         expires_at: this.auth.expires_at,
         refresh_token: this.auth.refresh_token,
         token_type: this.auth.token_type,
         strava_scope: this.stravaScope
       };
+      this.$apollo.mutate({
+        mutation: UPDATE_AUTH,
+        variables: { input },
+        update: (store, { data: { updateAuth }}) => {
+          const data = store.readQuery({ query: LIST_AUTHS })
+          let updatedIndex = data.listAuths.items.findIndex(c => c.id == updateAuth.id )
+          data.listAuths.items[updatedIndex] = updateAuth
+          store.writeQuery({ query: LIST_AUTHS, data })
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          createAuth: {
+            __typename: 'Auth',
+            ...input
+          }
+        }
+      })
       const updatedAuth = await this.$Amplify.API.graphql(
         this.$Amplify.graphqlOperation(updateAuth, { input })
       );
@@ -121,7 +156,6 @@ export default {
           grant_type: "authorization_code"
         };
       }
-      // console.log("check data before send", data);
       if (!data) return;
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, ...auth } = res.data;
@@ -133,19 +167,12 @@ export default {
         // send request to get athlete object
         const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
           headers: {
-            Authorization: "Bearer " + this.auth.access_token //the token is a variable which holds the token
+            Authorization: "Bearer " + this.auth.access_token
           }
         });
         athlete = res2.data;
       }
       this.athlete = athlete;
-      // this.$cookies.set("auth", auth, "30d").set("athlete", athlete, "30d");
-      // if (this.refresh == null) {
-      //   this.refreshToken();
-      // }
-
-      // console.log("Strava refresh token response: ", res.data);
-      // console.log("From cookie: ", this.$cookies.get("auth"));
     }
   },
   computed: {

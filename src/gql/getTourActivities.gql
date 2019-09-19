@@ -1,0 +1,20 @@
+query GetActivities ($id: ID!) {
+    getTour(id: $id) {
+      id
+      activities(limit: 200) {
+        items {
+          id
+          name
+          distance
+          elapsed_time
+          moving_time
+          start_latlng
+          start_date_local
+          summary_polyline
+          type
+          strava_id
+        }
+        nextToken
+      } 
+    }
+  }

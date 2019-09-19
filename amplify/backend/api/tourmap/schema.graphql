@@ -12,7 +12,7 @@ type Tour @model {
 type Activity @model {
   id: ID!
   activity_type: ACTIVITY_TYPE!
-  strava_id: ID
+  strava_id: ID!
   # athlete: User! @connection(name: "AthleteActivities")
   tour: Tour @connection(name: "TourActivities")
   achievement_count: Int

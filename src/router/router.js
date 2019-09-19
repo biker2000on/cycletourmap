@@ -25,6 +25,7 @@ const routes = [
     components: {
       default: LeafletData,
       drawer: StravaData,
+      header: Buttons,
     },
     props: true
   },

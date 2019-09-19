@@ -1,12 +1,20 @@
 <template>
   <div>
-    <v-tooltip bottom>
+    <v-tooltip bottom v-if="$route.name != 'map'">
       <template v-slot:activator="{ on }">
         <v-btn icon :to="{name: 'map'}" v-on="on">
           <v-icon>map</v-icon>
         </v-btn>
       </template>
       <span>Map</span>
+    </v-tooltip>
+    <v-tooltip bottom v-if="$route.name == 'map' && signedIn">
+      <template v-slot:activator="{ on }">
+        <v-btn icon :to="{name: 'edit'}" v-on="on">
+          <v-icon>edit</v-icon>
+        </v-btn>
+      </template>
+      <span>Edit</span>
     </v-tooltip>
     <!-- <v-tooltip bottom>
       <template v-slot:activator="{ on }">
@@ -28,7 +36,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    signedIn: {
+      type: Boolean,
+      default: false,
+    }
+  }
+};
 </script>
 
 <style>

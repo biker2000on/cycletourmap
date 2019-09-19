@@ -1,0 +1,10 @@
+mutation UpdateAuth($input: UpdateAuthInput!) {
+  updateAuth(input: $input) {
+    id
+    access_token
+    expires_at
+    refresh_token
+    token_type
+    strava_scope
+  }
+}

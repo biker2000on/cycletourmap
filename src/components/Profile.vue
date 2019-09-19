@@ -1,13 +1,29 @@
 <template>
   <div>
     <auth-strava />
-  <amplify-connect :query="tours" 
+  <!-- <amplify-connect :query="tours" 
     :subscription="tourSubscription"
     :onSubscriptionMsg="deleteTourUpdate"
-  >
-    <template slot-scope="{loading, data, errors}">
+  > -->
+  <ApolloQuery :query="gql => gql`
+    query ListTours($filter:ModelTourFilterInput, $limit:Int, $nextToken:String) {
+      listTours(filter: $filter, limit: $limit, nextToken: $nextToken) {
+        items {
+          id
+          name
+          description
+          start_date
+          end_date
+          isPublic
+        }
+        nextToken
+      }
+    }
+    `" >
+    <!-- <template slot-scope="{loading, data, errors}"> -->
+      <template slot-scope="{ result: { loading, error, data } }">
       <v-progress-circular v-if="loading" indeterminate />
-      <div v-else-if="errors.length > 0"></div>
+      <div v-else-if="error" class="error">We had an error</div>
       <div v-else-if="data">
         <h2>Hello {{ user ? user.username : '' }}</h2>
         <!-- <v-img
@@ -50,7 +66,7 @@
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon class="mx-0" @click="deletetour(item)" >
+                  <v-btn icon class="mx-0" @click="deleteTourApollo(item)" >
                     <v-icon color="pink">delete</v-icon>
                   </v-btn>
                 </template>
@@ -61,16 +77,39 @@
         </v-data-table>
       </div>
     </template>
-  </amplify-connect>
+  </ApolloQuery>
   </div>
 </template>
 
 <script>
-import { listTours } from "../graphql/queries";
 import { onDeleteTour, onDeleteActivity } from '../graphql/subscriptions'
 import { Auth } from "aws-amplify";
 import { deleteTour } from '../graphql/mutations';
 import AuthStrava from './AuthStrava'
+import gql from 'graphql-tag'
+
+const DELETE_TOUR = gql`mutation DeleteTour($input: DeleteTourInput!) {
+  deleteTour(input: $input) {
+    id
+  }
+}
+`
+
+const LIST_TOURS = gql`
+  query ListTours($filter:ModelTourFilterInput, $limit:Int, $nextToken:String) {
+    listTours(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+      }
+      nextToken
+    }
+  }
+`
 
 export default {
   components: {
@@ -99,6 +138,24 @@ export default {
         const deleted = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(deleteTour, {input: {id: item.id }}))
         console.log('deleted Tour', deleted)
       }
+    },
+    deleteTourApollo: function(tour) {
+      this.$apollo.mutate({
+        mutation: DELETE_TOUR,
+        variables: {input: {id: tour.id}},
+        update: (store, { data: { deleteTour } }) => {
+          const data = store.readQuery({ query: LIST_TOURS })
+          data.listTours.items = data.listTours.items.filter(t => t.id !== deleteTour.id)
+          store.writeQuery({ query: LIST_TOURS, data })
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          deleteTour: {
+            __typename: 'Tour',
+            id: tour.id,
+          }
+        },
+      })
     },
     deleteTourUpdate: function(prevData, newData) {
       console.log('Deleted tour from subscription...', prevData, newData);

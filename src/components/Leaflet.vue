@@ -1,5 +1,5 @@
 <template>
-  <div id="leaflet-comp" :style="computedHeight">
+  <div id="leaflet-comp" :style="computedHeight" :class="isOnTop">
     <l-map 
       :bounds="bounds"
       :zoom="zoom" 
@@ -8,7 +8,7 @@
       @update:zoom="zoomUpdated"
       :inertia="false"
       >
-      <l-fullscreen />
+      <l-fullscreen @enter-fullscreen="isFullscreen = true" @exit-fullscreen="isFullscreen = false" />
       <l-control-layers position="topright"  ></l-control-layers>
       <l-control-scale position="bottomright" :imperial="true" :metric="true"></l-control-scale>
       <l-tile-layer
@@ -69,6 +69,7 @@ export default {
       maxBounds: null,
       windowHeight: 300,
       computedHeight: {height: 600},
+      isFullscreen: false,
       tileProviders: [
         {
           name: 'OpenStreetMaps',
@@ -89,6 +90,9 @@ export default {
     // activities() {
     //   return this.$store.state.activities.filter(c => c)
     // },
+    isOnTop() {
+      return this.isFullscreen ? 'on-top' : ''
+    },
     isMetric() {
       return this.$store.state.isMetric
     },
@@ -203,7 +207,7 @@ export default {
   width: 100%;
   margin: auto;
 }
-#leaflet-comp > div {
-  z-index: 7;
+.on-top {
+  z-index: 9999 !important;
 }
 </style>

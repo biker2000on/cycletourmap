@@ -109,6 +109,17 @@ import { activityKeys } from '../utilities/activityKeys'
 import pick from 'lodash.pick'
 import isEqual from 'lodash.isequal'
 
+import CREATE_TOUR from '../gql/createTour.gql'
+import CREATE_ACTIVITY from '../gql/createActivity.gql'
+import UPDATE_TOUR from '../gql/updateTour.gql'
+import UPDATE_ACTIVITY from '../gql/updateActivity.gql'
+import UPDATE_AUTH from '../gql/updateAuth.gql'
+import DELETE_ACTIVITY from '../gql/deleteActivity.gql'
+import GET_TOUR from '../gql/getTour.gql'
+import GET_TOUR_ACTIVITIES from '../gql/getTourActivities.gql'
+import LIST_AUTHS from '../gql/listAuths.gql'
+import LIST_TOURS from '../gql/listTours.gql'
+
 export default {
   props: {
     tourData: {
@@ -138,16 +149,12 @@ export default {
     };
   },
   methods: {
-    loadAuth: async function() {
-      // const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(listAuths, {id: this.$route.params.mapId}))
-      // console.log(auths)
-      // this.auth = auths.data.listAuths.items[0]
+    loadAuth: function() {
       this.auth = this.tourData.listAuths.items[0]
       const expire = new Date(this.auth.expires_at * 1000 + 3600 * 1000) // 1 hour before expiry
       if (expire < new Date()) {
-        return this.refreshAuth()
+        this.refreshAuth()
       }
-      return
     },
     refreshAuth: async function() {
       const data = {
@@ -158,25 +165,36 @@ export default {
       }
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, expires_in, ...auth } = res.data;
-      console.log('auth', auth)
       auth['id'] = this.tourData.listAuths.items[0].id
-      const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
-      console.log('successful submission of new auth', auths)
+      // const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
+      this.$apollo.mutate({
+        mutation: UPDATE_AUTH,
+        variables: { input: auth },
+        update: (store, { data: { updateAuth } }) => {
+          const data = store.readQuery({query: LIST_AUTHS})
+          data.listAuths.items = [ updateAuth ]
+          store.writeQuery({ query: LIST_AUTHS, data })
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          updateAuth: {
+            __typename: 'Auth',
+            ...auth
+          }
+        }
+      })
+      // console.log('successful submission of new auth', auths)
       this.auth = auth;
       return auth
     },
     loadTour: async function() {
       if (this.$route.params.mapId != 'new') {
-        const tour = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(getTour, {id: this.$route.params.mapId}))
-        // console.log(tour)
-        if (tour.data) {
-          this.name = tour.data.getTour.name
-          this.startdate = tour.data.getTour.start_date
-          this.enddate = tour.data.getTour.end_date
-          this.description = tour.data.getTour.description
-          this.isPublic = tour.data.getTour.isPublic
-        } else if (tour.errors) {
-          console.error('graphql Error', tour.errors)
+        if (this.tourData.getTour) {
+          this.name = this.tourData.getTour.name
+          this.startdate = this.tourData.getTour.start_date
+          this.enddate = this.tourData.getTour.end_date
+          this.description = this.tourData.getTour.description
+          this.isPublic = this.tourData.getTour.isPublic
         }
       }
     },
@@ -190,9 +208,42 @@ export default {
         isPublic: this.isPublic,
       }
       if (this.$route.params.mapId == 'new') {
-        const newTour = await API.graphql(graphqlOperation(createTour, { input }))
+        // const newTour = await API.graphql(graphqlOperation(createTour, { input }))
+        this.$apollo.mutate({
+          mutation: CREATE_TOUR,
+          variables: { input },
+          update: (store, { data: { createTour }}) => {
+            let data = store.readQuery({ query: LIST_TOURS })
+            data.listTours.items.push({ ...input })
+            store.writeQuery({ query: LIST_TOURS, data })
+          },
+          optimisticResponse: {
+            __typename: 'Mutation',
+            createTour: {
+              __typename: 'Tour',
+              ...input
+            }
+          }
+        })
       } else {
         const updatedTour = await API.graphql(graphqlOperation(updateTour, { input }))
+        this.$apollo.mutate({
+          mutation: UPDATE_TOUR,
+          variables: { input },
+          update: ( store, { data: { updateTour }} ) => {
+            let data = store.readQuery({ query: LIST_TOURS })
+            let index = data.listTours.items.findIndex(c => c.id == updateTour.id )
+            data.listTours.items[index] = updateTour
+            store.writeQuery({ query: LIST_TOURS, data })
+          },
+          optimisticResponse: {
+            __typename: 'Mutation',
+            updateTour: {
+              __typename: 'Tour',
+              ...input
+            }
+          }
+        })
       }
       this.dialog = true
     },
@@ -240,22 +291,15 @@ export default {
           return rideStart >= start && rideStart <= end;
         });
         acts = acts.concat(activities);
-        // if (beforeStart) {
-          // this.$store.commit("addActivities", acts);
-          // this.$emit("update:activities", acts);
-          // return;
-        // }
         page++;
       } while (activities.length == per_page);
 
       if (this.$route.params.mapId == 'new') {
         acts.map((c,i) => boundSubmitRide(c))
-        } else {
+      } else {
         this.compareRides(acts)
       }
       // acts.map(this.submitRide(c,i))
-      // this.$store.commit("addActivities", acts);
-      // this.$emit("update:activities", acts);
       return
     },
     compareRides(strava) {
@@ -290,7 +334,23 @@ export default {
     },
     deleteRide: async function(id) {
       console.log('delete', id, {input: {id}})
-      const ride = await API.graphql(graphqlOperation(deleteActivity, {input: {id}}))
+      // const ride = await API.graphql(graphqlOperation(deleteActivity, {input: {id}}))
+      this.$apollo.mutate({
+        mutation: DELETE_ACTIVITY,
+        variables: { input: { id }},
+        update: ( store, { data: deleteActivity }) => {
+          const data = store.readQuery({query: GET_TOUR_ACTIVITIES })
+          data.getTour.activities.items = data.getTour.activities.items.filter(c => c.id != id)
+          store.writeQuery({ query: GET_TOUR_ACTIVITIES, data })
+        },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          deleteActivity: {
+            __typename: 'Activity',
+            id: id,
+          }
+        }
+      })
       console.log('deleted')
       return
     },
@@ -305,13 +365,44 @@ export default {
         summary_polyline: c.map.summary_polyline,
         ...stats,
       }
-      
+      let { activityTourID, ...hopefulResponse } = input
       if (id == 'create') {
-        let ride = await API.graphql(graphqlOperation(createActivity, {input}))
+        input['id'] = uuid()
+        // let ride = await API.graphql(graphqlOperation(createActivity, {input}))
+        this.$apollo.mutate({
+          mutation: CREATE_ACTIVITY,
+          variables: { input },
+          update: ( store, { data: createActivity }) => {
+            const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
+            data.getTour.activities.items.push({...input})
+            store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
+          },
+          optimisticResponse: {
+            __typename: 'Mutation',
+            createActivity: {
+              __typename: 'Activity',
+              ...hopefulResponse,
+              id: input.id
+            }
+          }
+        })
+
         console.log('created')
       } else {
         input['id'] = id
-        let ride = await API.graphql(graphqlOperation(updateActivity, {input}))
+        // let ride = await API.graphql(graphqlOperation(updateActivity, {input}))
+        this.$apollo.mutate({
+          mutation: UPDATE_ACTIVITY,
+          variables: { input },
+          optimisticResponse: {
+            __typename: 'Mutation',
+            updateActivity: {
+              __typename: 'Activity',
+              ...hopefulResponse,
+              id
+            }
+          }
+        })
         console.log('updated')
       }
       // console.log(`activity ${i}`, ride)

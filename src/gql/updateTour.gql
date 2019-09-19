@@ -1,0 +1,10 @@
+mutation UpdateTour($input: UpdateTourInput!) {
+  updateTour(input: $input) {
+    id
+    name
+    description
+    start_date
+    end_date
+    isPublic
+  }
+}

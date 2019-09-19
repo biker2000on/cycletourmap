@@ -1,0 +1,21 @@
+query listAuthsAthletes {
+  __typename
+  listAuths {
+    items {
+      id
+      access_token
+      expires_at
+      refresh_token
+      strava_scope
+      token_type
+    }
+  }
+  listAthletes {
+    items {
+      id
+      firstname
+      lastname
+      profile
+    }
+  }
+}

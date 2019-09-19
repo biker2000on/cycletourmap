@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app class="navigation">
+    <v-navigation-drawer v-model="drawer" app id="nav-drawer">
       <router-view name="drawer"></router-view>
     </v-navigation-drawer>
 
@@ -8,6 +8,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer">
         <v-icon>menu</v-icon>
       </v-app-bar-nav-icon>
+      <img src="/bikeLogo.svg" alt="Cycle Tourmap" height="45" class="mr-2">
       <v-toolbar-title>Cycle Tourmap</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
@@ -18,7 +19,7 @@
         </template>
         <span>Home</span>
       </v-tooltip>
-      <router-view name="header" ></router-view>
+      <router-view name="header" :signedIn="signedIn"></router-view>
       <v-btn :to="{name: 'auth'}" v-if="!signedIn">Sign In</v-btn>
       <v-btn v-if="signedIn">
         <amplify-sign-out class="amplify-sign-out"></amplify-sign-out>
@@ -55,12 +56,10 @@ export default {
   },
   data() {
     return {
-      markersOn: true,
-      polylinesOn: true,
-      isMetric: false,
       drawer: null,
       signedIn: false,
-      user: null
+      user: null,
+      hydrated: false,
     };
   },
   computed: {
@@ -72,13 +71,20 @@ export default {
       }
     }
   },
-  beforeCreate() {
+  async beforeCreate() {
+    try {
+      let user = await Auth.currentAuthenticatedUser()
+      console.log("User Info: ", user);
+      this.signedIn = true;
+      this.user = user;
+    } catch (error) {
+      this.signedIn = false
+    }
     AmplifyEventBus.$on("authState", info => {
       if (info === "signedIn") {
         this.signedIn = true;
         this.$router.push({
           name: "profile",
-          params: { username: user.username }
         });
       }
       if (info === "signedOut") {
@@ -87,14 +93,11 @@ export default {
       }
     });
 
-    Auth.currentAuthenticatedUser()
-      .then(user => {
-        console.log("User Info: ", user);
-        this.signedIn = true;
-        this.user = user;
-      })
-      .catch(() => (this.signedIn = false));
-  }
+  },
+  async mounted() {
+    await this.$apollo.provider.defaultClient.hydrated()
+    this.hydrated = true
+  },
 };
 </script>
 
@@ -109,8 +112,8 @@ export default {
   background-color: inherit;
   padding: 0;
 }
-.navigation {
-  z-index: 9999;
+#nav-drawer {
+  z-index: 10000;
 }
 
 .home {

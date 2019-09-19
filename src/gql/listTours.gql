@@ -1,0 +1,17 @@
+query ListTours(
+  $filter: ModelTourFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listTours(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+    }
+    nextToken
+  }
+}
