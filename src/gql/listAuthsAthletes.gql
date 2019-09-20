@@ -8,14 +8,17 @@ query listAuthsAthletes {
       refresh_token
       strava_scope
       token_type
+      __typename
     }
   }
   listAthletes {
     items {
       id
+      strava_id
       firstname
       lastname
       profile
+      __typename
     }
   }
 }

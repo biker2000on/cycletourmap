@@ -1,61 +1,56 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateTour = `subscription OnCreateTour {
-  onCreateTour {
+export const onCreateTour = `subscription OnCreateTour($owner: String!) {
+  onCreateTour(owner: $owner) {
     id
     name
     description
     start_date
     end_date
     isPublic
+    owner
     activities {
       nextToken
     }
   }
 }
 `;
-export const onUpdateTour = `subscription OnUpdateTour {
-  onUpdateTour {
+export const onUpdateTour = `subscription OnUpdateTour($owner: String!) {
+  onUpdateTour(owner: $owner) {
     id
     name
     description
     start_date
     end_date
     isPublic
+    owner
     activities {
       nextToken
     }
   }
 }
 `;
-export const onDeleteTour = `subscription OnDeleteTour {
-  onDeleteTour {
+export const onDeleteTour = `subscription OnDeleteTour($owner: String!) {
+  onDeleteTour(owner: $owner) {
     id
     name
     description
     start_date
     end_date
     isPublic
+    owner
     activities {
       nextToken
     }
   }
 }
 `;
-export const onCreateActivity = `subscription OnCreateActivity {
-  onCreateActivity {
+export const onCreateActivity = `subscription OnCreateActivity($owner: String!) {
+  onCreateActivity(owner: $owner) {
     id
     activity_type
     strava_id
-    tour {
-      id
-      name
-      description
-      start_date
-      end_date
-      isPublic
-    }
     achievement_count
     athlete_count
     average_heartrate
@@ -105,14 +100,6 @@ export const onCreateActivity = `subscription OnCreateActivity {
     utc_offset
     visibility
     workout_type
-  }
-}
-`;
-export const onUpdateActivity = `subscription OnUpdateActivity {
-  onUpdateActivity {
-    id
-    activity_type
-    strava_id
     tour {
       id
       name
@@ -120,7 +107,17 @@ export const onUpdateActivity = `subscription OnUpdateActivity {
       start_date
       end_date
       isPublic
+      owner
     }
+    owner
+  }
+}
+`;
+export const onUpdateActivity = `subscription OnUpdateActivity($owner: String!) {
+  onUpdateActivity(owner: $owner) {
+    id
+    activity_type
+    strava_id
     achievement_count
     athlete_count
     average_heartrate
@@ -170,14 +167,6 @@ export const onUpdateActivity = `subscription OnUpdateActivity {
     utc_offset
     visibility
     workout_type
-  }
-}
-`;
-export const onDeleteActivity = `subscription OnDeleteActivity {
-  onDeleteActivity {
-    id
-    activity_type
-    strava_id
     tour {
       id
       name
@@ -185,7 +174,17 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
       start_date
       end_date
       isPublic
+      owner
     }
+    owner
+  }
+}
+`;
+export const onDeleteActivity = `subscription OnDeleteActivity($owner: String!) {
+  onDeleteActivity(owner: $owner) {
+    id
+    activity_type
+    strava_id
     achievement_count
     athlete_count
     average_heartrate
@@ -235,12 +234,23 @@ export const onDeleteActivity = `subscription OnDeleteActivity {
     utc_offset
     visibility
     workout_type
+    tour {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+      owner
+    }
+    owner
   }
 }
 `;
-export const onCreateAthlete = `subscription OnCreateAthlete {
-  onCreateAthlete {
+export const onCreateAthlete = `subscription OnCreateAthlete($owner: String!) {
+  onCreateAthlete(owner: $owner) {
     id
+    strava_id
     firstname
     lastname
     profile
@@ -249,12 +259,23 @@ export const onCreateAthlete = `subscription OnCreateAthlete {
     city
     state
     country
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
   }
 }
 `;
-export const onUpdateAthlete = `subscription OnUpdateAthlete {
-  onUpdateAthlete {
+export const onUpdateAthlete = `subscription OnUpdateAthlete($owner: String!) {
+  onUpdateAthlete(owner: $owner) {
     id
+    strava_id
     firstname
     lastname
     profile
@@ -263,12 +284,23 @@ export const onUpdateAthlete = `subscription OnUpdateAthlete {
     city
     state
     country
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
   }
 }
 `;
-export const onDeleteAthlete = `subscription OnDeleteAthlete {
-  onDeleteAthlete {
+export const onDeleteAthlete = `subscription OnDeleteAthlete($owner: String!) {
+  onDeleteAthlete(owner: $owner) {
     id
+    strava_id
     firstname
     lastname
     profile
@@ -277,39 +309,91 @@ export const onDeleteAthlete = `subscription OnDeleteAthlete {
     city
     state
     country
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
   }
 }
 `;
-export const onCreateAuth = `subscription OnCreateAuth {
-  onCreateAuth {
+export const onCreateAuth = `subscription OnCreateAuth($owner: String!) {
+  onCreateAuth(owner: $owner) {
     id
     access_token
     expires_at
     refresh_token
     token_type
     strava_scope
+    athlete {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+      owner
+    }
+    owner
   }
 }
 `;
-export const onUpdateAuth = `subscription OnUpdateAuth {
-  onUpdateAuth {
+export const onUpdateAuth = `subscription OnUpdateAuth($owner: String!) {
+  onUpdateAuth(owner: $owner) {
     id
     access_token
     expires_at
     refresh_token
     token_type
     strava_scope
+    athlete {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+      owner
+    }
+    owner
   }
 }
 `;
-export const onDeleteAuth = `subscription OnDeleteAuth {
-  onDeleteAuth {
+export const onDeleteAuth = `subscription OnDeleteAuth($owner: String!) {
+  onDeleteAuth(owner: $owner) {
     id
     access_token
     expires_at
     refresh_token
     token_type
     strava_scope
+    athlete {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+      owner
+    }
+    owner
   }
 }
 `;

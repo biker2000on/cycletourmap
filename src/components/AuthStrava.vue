@@ -1,5 +1,5 @@
 <template>
-  <ApolloQuery :query="require('../gql/listAuthsAthletes.gql')" ref = auth>
+  <ApolloQuery :query="require('../gql/listAuthsAthletes.gql')" ref="auth" @result="getTokens()">
     <template slot-scope="{ result: { loading, data, error }}">
       <div v-if="loading">Loading...</div>
       <div v-else-if="data">
@@ -23,30 +23,7 @@ import { createAuth, updateAuth, createAthlete, updateAthlete } from "../graphql
 import uuidv4 from 'uuid/v4'
 import CREATE_AUTH from '../gql/createAuth.gql'
 import UPDATE_AUTH from '../gql/updateAuth.gql'
-
-const myQuery = `
-query MyQuery {
-  __typename
-  listAuths {
-    items {
-      id
-      access_token
-      expires_at
-      refresh_token
-      strava_scope
-      token_type
-    }
-  }
-  listAthletes {
-    items {
-      id
-      firstname
-      lastname
-      profile
-    }
-  }
-}
-`;
+import LIST_AUTHS from '../gql/listAuths.gql'
 
 export default {
   data() {
@@ -161,7 +138,7 @@ export default {
       let { athlete, ...auth } = res.data;
       this.auth = auth;
 
-      this.$refs.auth.listAuths.items.length ? this.updateAuth() : this.createAuth()
+      this.$refs.auth.result.data.listAuths.items.length ? this.updateAuth() : this.createAuth()
       
       if (!this.athlete && !athlete) {
         // send request to get athlete object
@@ -175,14 +152,14 @@ export default {
       this.athlete = athlete;
     }
   },
-  computed: {
-    ListAuthsAthletes() {
-      return this.$Amplify.graphqlOperation(myQuery);
-    }
-  },
-  mounted() {
-    this.getTokens();
-  }
+  // computed: {
+  //   ListAuthsAthletes() {
+  //     return this.$Amplify.graphqlOperation(myQuery);
+  //   }
+  // },
+  // mounted() {
+  //   this.getTokens();
+  // }
 };
 </script>
 

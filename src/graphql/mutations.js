@@ -9,6 +9,7 @@ export const createTour = `mutation CreateTour($input: CreateTourInput!) {
     start_date
     end_date
     isPublic
+    owner
     activities {
       nextToken
     }
@@ -23,6 +24,7 @@ export const updateTour = `mutation UpdateTour($input: UpdateTourInput!) {
     start_date
     end_date
     isPublic
+    owner
     activities {
       nextToken
     }
@@ -37,6 +39,7 @@ export const deleteTour = `mutation DeleteTour($input: DeleteTourInput!) {
     start_date
     end_date
     isPublic
+    owner
     activities {
       nextToken
     }
@@ -48,14 +51,6 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
     id
     activity_type
     strava_id
-    tour {
-      id
-      name
-      description
-      start_date
-      end_date
-      isPublic
-    }
     achievement_count
     athlete_count
     average_heartrate
@@ -105,6 +100,16 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
     utc_offset
     visibility
     workout_type
+    tour {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+      owner
+    }
+    owner
   }
 }
 `;
@@ -113,14 +118,6 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
     id
     activity_type
     strava_id
-    tour {
-      id
-      name
-      description
-      start_date
-      end_date
-      isPublic
-    }
     achievement_count
     athlete_count
     average_heartrate
@@ -170,6 +167,16 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
     utc_offset
     visibility
     workout_type
+    tour {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+      owner
+    }
+    owner
   }
 }
 `;
@@ -178,14 +185,6 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     id
     activity_type
     strava_id
-    tour {
-      id
-      name
-      description
-      start_date
-      end_date
-      isPublic
-    }
     achievement_count
     athlete_count
     average_heartrate
@@ -235,12 +234,23 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
     utc_offset
     visibility
     workout_type
+    tour {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+      owner
+    }
+    owner
   }
 }
 `;
 export const createAthlete = `mutation CreateAthlete($input: CreateAthleteInput!) {
   createAthlete(input: $input) {
     id
+    strava_id
     firstname
     lastname
     profile
@@ -249,12 +259,23 @@ export const createAthlete = `mutation CreateAthlete($input: CreateAthleteInput!
     city
     state
     country
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
   }
 }
 `;
 export const updateAthlete = `mutation UpdateAthlete($input: UpdateAthleteInput!) {
   updateAthlete(input: $input) {
     id
+    strava_id
     firstname
     lastname
     profile
@@ -263,12 +284,23 @@ export const updateAthlete = `mutation UpdateAthlete($input: UpdateAthleteInput!
     city
     state
     country
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
   }
 }
 `;
 export const deleteAthlete = `mutation DeleteAthlete($input: DeleteAthleteInput!) {
   deleteAthlete(input: $input) {
     id
+    strava_id
     firstname
     lastname
     profile
@@ -277,6 +309,16 @@ export const deleteAthlete = `mutation DeleteAthlete($input: DeleteAthleteInput!
     city
     state
     country
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
   }
 }
 `;
@@ -288,6 +330,20 @@ export const createAuth = `mutation CreateAuth($input: CreateAuthInput!) {
     refresh_token
     token_type
     strava_scope
+    athlete {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+      owner
+    }
+    owner
   }
 }
 `;
@@ -299,6 +355,20 @@ export const updateAuth = `mutation UpdateAuth($input: UpdateAuthInput!) {
     refresh_token
     token_type
     strava_scope
+    athlete {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+      owner
+    }
+    owner
   }
 }
 `;
@@ -310,6 +380,20 @@ export const deleteAuth = `mutation DeleteAuth($input: DeleteAuthInput!) {
     refresh_token
     token_type
     strava_scope
+    athlete {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      profile_medium
+      sex
+      city
+      state
+      country
+      owner
+    }
+    owner
   }
 }
 `;

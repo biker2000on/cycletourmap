@@ -1,14 +1,17 @@
 projects:
   tourmap:
-    schemaPath: amplify\backend\api\tourmap\build\schema.graphql
+    schemaPath: amplify/backend/api/tourmap/build/schema.graphql
     includes:
-      - src\graphql\**\*.js
+      - src/graphql/**/*.js
     excludes:
       - ./amplify/**
     extensions:
       amplify:
         codeGenTarget: javascript
         generatedFileName: ''
-        docsFilePath: src\graphql
+        docsFilePath: src/graphql
         region: us-east-1
         maxDepth: 2
+extensions:
+  amplify:
+    version: 3

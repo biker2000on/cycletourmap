@@ -62,6 +62,18 @@ export default {
       hydrated: false,
     };
   },
+  methods: {
+    getUser: async function() {
+      try {
+        let user = await Auth.currentAuthenticatedUser()
+        console.log("User Info: ", user);
+        this.signedIn = true;
+        this.user = user;
+      } catch (error) {
+        this.signedIn = false
+      }
+    }
+  },
   computed: {
     isHome() {
       if (this.$route.name == 'home') {
@@ -72,29 +84,27 @@ export default {
     }
   },
   async beforeCreate() {
-    try {
-      let user = await Auth.currentAuthenticatedUser()
-      console.log("User Info: ", user);
-      this.signedIn = true;
-      this.user = user;
-    } catch (error) {
-      this.signedIn = false
-    }
-    AmplifyEventBus.$on("authState", info => {
+    AmplifyEventBus.$on("authState", async (info) => {
       if (info === "signedIn") {
+        let user = await Auth.currentAuthenticatedUser()
+        this.$apollo.provider.defaultClient.resetStore() // clears cache and refetches queries
         this.signedIn = true;
+        this.user = user
         this.$router.push({
           name: "profile",
         });
       }
       if (info === "signedOut") {
         this.$router.push("/auth");
+        this.user = null
         this.signedIn = false;
+        this.$apollo.provider.defaultClient.resetStore() // clears cache and refetches queries
       }
     });
 
   },
   async mounted() {
+    this.getUser()
     await this.$apollo.provider.defaultClient.hydrated()
     this.hydrated = true
   },

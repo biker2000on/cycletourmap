@@ -3,7 +3,6 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router/router'
 import store from './store'
-import './plugins/cookies'
 
 // amplify imports
 import Amplify, * as AmplifyModules from 'aws-amplify'
@@ -20,8 +19,10 @@ const configApollo = {
   region: AppSyncConfig.aws_appsync_region,
   auth: {
     type: AppSyncConfig.aws_appsync_authenticationType,
-    apiKey: AppSyncConfig.aws_appsync_apiKey,
-  }
+    // apiKey: AppSyncConfig.aws_appsync_apiKey,
+    jwtToken: async () => (await Amplify.Auth.currentSession()).getAccessToken().getJwtToken(),
+  },
+  complexObjectsCredentials: () => Amplify.Auth.currentCredentials()
 }
 const options = {
   defaultOptions: {

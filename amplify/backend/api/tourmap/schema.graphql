@@ -1,6 +1,4 @@
-type Tour @model 
-          @auth(rules: [{allow: owner}, 
-          {allow: public, provider: iam, operations: [read]}]) {
+type Tour @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}]) {
   id: ID!
   # user: User! @connection(name: "AthleteTours")
   name: String!
@@ -11,9 +9,8 @@ type Tour @model
   activities: [Activity]! @connection(name: "TourActivities")
 }
 
-type Activity @model 
-              @auth(rules: [{allow: owner}])
-              @key(fields: ["strava_id"]) {
+type Activity @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}]) 
+  @key(fields: ["strava_id"], name: "stravaId", queryField: "listActivitiesByStravaId") {
   id: ID!
   activity_type: ACTIVITY_TYPE!
   strava_id: ID!
@@ -70,9 +67,10 @@ type Activity @model
   workout_type: Int
 }
 
-type Athlete @model
-             @auth(rules: [{allow: owner}]) {
+type Athlete @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}]) 
+  @key(fields: ["strava_id"], name: "stravaId", queryField: "getAthleteByStravaId") {
   id: ID!
+  strava_id: ID!
   firstname: String
   lastname: String
   profile: String
@@ -81,15 +79,17 @@ type Athlete @model
   city: String
   state: String
   country: String
+  auth: Auth @connection(name: "AthleteAuth")
 }
 
-type Auth @model @auth(rules: [{allow: owner}]) {
+type Auth @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}]) {
   id: ID!
   access_token: String!
   expires_at: Int!
   refresh_token: String!
   token_type: String!
   strava_scope: [String]!
+  athlete: Athlete @connection(name: "AthleteAuth")
 }
 
 enum ACTIVITY_TYPE {

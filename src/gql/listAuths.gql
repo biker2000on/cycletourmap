@@ -11,6 +11,7 @@ query ListAuths(
       refresh_token
       token_type
       strava_scope
+      __typename
     }
     nextToken
   }

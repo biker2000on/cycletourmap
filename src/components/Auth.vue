@@ -1,6 +1,6 @@
 <template>
-  <div class="auth">
-    <amplify-authenticator ></amplify-authenticator>
+  <div>
+    <amplify-authenticator class="mx-auto text-center"></amplify-authenticator>
   </div>
 </template>
 
@@ -20,8 +20,4 @@ export default {
 </script>
 
 <style>
-.auth {
-  margin: auto auto;
-  width: 460px;
-}
 </style>
