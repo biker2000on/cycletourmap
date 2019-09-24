@@ -22,7 +22,7 @@
       <v-list-item-content>
         <v-menu
           ref="menu"
-          :close-on-content-click="true"
+          :close-on-content-click="false"
           v-model="menu"
           transition="scale-transition"
           offset-y
@@ -39,7 +39,7 @@
               v-on="on" 
               readonly></v-text-field>
           </template>
-          <v-date-picker v-model="startdate" no-title scrollable actions>
+          <v-date-picker v-model="startdate" no-title scrollable @input="menu = false" >
           </v-date-picker>
         </v-menu>
       </v-list-item-content>
@@ -48,7 +48,7 @@
       <v-list-item-content>
         <v-menu
           ref="menu2"
-          :close-on-content-click="true"
+          :close-on-content-click="false"
           v-model="menu2"
           transition="scale-transition"
           offset-y
@@ -60,7 +60,7 @@
           <template v-slot:activator="{ on }">
             <v-text-field label="End Date" v-model="enddate" prepend-icon="event" v-on="on" readonly></v-text-field>
           </template>
-          <v-date-picker v-model="enddate" no-title scrollable reactive >
+          <v-date-picker v-model="enddate" no-title scrollable @input="menu2 = false" >
           </v-date-picker>
         </v-menu>
       </v-list-item-content>
@@ -89,7 +89,7 @@
     </v-list-item>
 
     <v-dialog v-model="dialog" max-width="290">
-      <v-card>
+      <v-card :loading="isSaving">
         <v-card-title class="headline" >Successfully Saved Tourmap</v-card-title>
         <v-card-text>
           <p><a :href="'/#/tourmap/' + tourId">View your tourmap here</a></p>
@@ -111,6 +111,7 @@ import isEqual from 'lodash.isequal'
 // queries
 import CREATE_TOUR from '../gql/createTour.gql'
 import CREATE_ACTIVITY from '../gql/createActivity.gql'
+import CREATE_ACTIVITIES from '../gql/createActivities.gql'
 import UPDATE_TOUR from '../gql/updateTour.gql'
 import UPDATE_ACTIVITY from '../gql/updateActivity.gql'
 import UPDATE_AUTH from '../gql/updateAuth.gql'
@@ -132,6 +133,7 @@ export default {
       athlete: null,
       refresh: null, // timer for refreshing tokens
       stravaScope: null,
+      isSaving: false,
       redirect_uri: process.env.VUE_APP_REDIRECTURI,
       client_id: process.env.VUE_APP_STRAVA_CLIENTID,
       client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
@@ -200,6 +202,8 @@ export default {
       }
     },
     submitTour: async function() {
+      this.isSaving = true
+      this.dialog = true
       const input = {
         id: this.tourId,
         name: this.name,
@@ -209,7 +213,7 @@ export default {
         isPublic: this.isPublic,
       }
       if (this.$route.params.mapId == 'new') {
-        this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: CREATE_TOUR,
           variables: { input },
           update: (store, { data: { createTour }}) => {
@@ -231,12 +235,15 @@ export default {
             }
           }
         })
-        this.$store.state.activities.map(c => this.submitRide(c, 'create'))
-        // this.$store.commit('setActivities', []) // possibly to reset State
-        // this.$router.push({ name: 'edit', params: { mapId: this.tourId }})
+        await this.batchSubmitNewRides(this.$store.state.activities)
+        // const ridePromises = this.$store.state.activities.map(c => this.submitRide(c, 'create'))
+        // console.log(ridePromises)
+        // Promise.all(ridePromises)
+        //   .then(() => {this.isSaving = false})
+        //   .catch(error => console.warn('Rides did not save correctly: ', error))
+        this.$store.commit('setActivities', []) // possibly to reset State
       } else {
-        // const updatedTour = await API.graphql(graphqlOperation(updateTour, { input }))
-        this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: UPDATE_TOUR,
           variables: { input },
           update: ( store, { data: { updateTour }} ) => {
@@ -253,8 +260,49 @@ export default {
             }
           }
         })
+      this.isSaving = false
       }
-      this.dialog = true
+    },
+    batchSubmitNewRides: async function(rides) {
+      // batch in collections of 25 max
+      while (rides.length) {
+        let activities = rides.splice(0,25)
+        activities = activities.map(c => {
+          let stats = pick(c, activityKeys)
+          return {
+            id: uuid(),
+            activity_type: 'STRAVA',
+            strava_id: c.id,
+            activityTourId: this.tourId,
+            summary_polyline: c.map.summary_polyline,
+            ...stats
+          }
+        })
+        let hopefulResponse = activities.map(c => {
+          let { activityTourId, ...response } = c
+          return response
+        })
+        this.$apollo.mutate({
+          mutation: CREATE_ACTIVITIES,
+          variables: {
+            input: activities, 
+          },
+          update: ( store, { data: { createActivity } }) => {
+            if (this.$route.params.mapId != 'new') {
+              const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
+              data.getTour.activities.items.push(...createActivity)
+              store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
+            }
+          },
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   createActivity: {
+          //     __typename: 'Activity',
+          //     ...hopefulResponse,
+          //   }
+          // }
+        }) 
+      }
     },
     getAllActivities: async function() {
       const start = new Date(this.startdate);
@@ -286,15 +334,6 @@ export default {
         );
         activities = strava.data;
 
-        // don't need with filtered rest query
-        // let beforeStart = activities.reduce((a, c) => {
-        //   let rideStart = new Date(c.start_date);
-        //   if (start > rideStart) {
-        //     return true;
-        //   } else {
-        //     return a;
-        //   }
-        // }, false);
         activities = activities.filter(c => {
           let rideStart = new Date(c.start_date_local); // use local since that is what people will be thinking on.
           return rideStart >= start && rideStart <= end;
@@ -355,7 +394,6 @@ export default {
     },
     deleteRide: async function(id) {
       console.log('delete', id, {input: {id}})
-      // const ride = await API.graphql(graphqlOperation(deleteActivity, {input: {id}}))
       this.$apollo.mutate({
         mutation: DELETE_ACTIVITY,
         variables: { input: { id }},
@@ -378,9 +416,7 @@ export default {
       return
     },
     submitRide: async function(c, id = 'create') {
-      // let { id, map, athlete, external_id, from_accepted_tag, upload_id_str, ...strava} = c
       let stats = pick(c, activityKeys)
-      // console.log(stats, activityKeys)
       const input = {
         activity_type: 'STRAVA',
         strava_id: c.id,
@@ -391,15 +427,15 @@ export default {
       let { activityTourID, ...hopefulResponse } = input
       if (id == 'create') {
         input['id'] = uuid()
-        // let ride = await API.graphql(graphqlOperation(createActivity, {input}))
         this.$apollo.mutate({
           mutation: CREATE_ACTIVITY,
           variables: { input },
           update: ( store, { data: createActivity }) => {
-            // console.log('Create Activity mutation', createActivity)
-            const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
-            data.getTour.activities.items.push(createActivity.createActivity)
-            store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
+            if (this.$route.params.mapId != 'new') {
+              const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
+              data.getTour.activities.items.push(createActivity.createActivity)
+              store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
+            }
           },
           optimisticResponse: {
             __typename: 'Mutation',
@@ -414,17 +450,9 @@ export default {
         console.log('created')
       } else {
         input['id'] = id
-        // let ride = await API.graphql(graphqlOperation(updateActivity, {input}))
         this.$apollo.mutate({
           mutation: UPDATE_ACTIVITY,
           variables: { input },
-          // update: ( store, { data: updateActivity }) => {
-          //   const data = store.readQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }})
-          //   console.log('store update query ', data.getTour.activities.items, updateActivity)
-          //   const index = data.getTour.activities.items.findIndex(c => c.id == id)
-          //   data.getTour.activities.items[index] = updateActivity
-          //   store.writeQuery({ query: GET_TOUR_ACTIVITIES, data, variables: { id: this.tourId }})
-          // },
           optimisticResponse: {
             __typename: 'Mutation',
             updateActivity: {
@@ -436,7 +464,6 @@ export default {
         })
         console.log('updated')
       }
-      // console.log(`activity ${i}`, ride)
       return
     },
     setTourId() {

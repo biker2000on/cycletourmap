@@ -12,8 +12,12 @@ export default new Vuex.Store({
     athlete: '',
     activities: [],
     user: null,
+    signedIn: null,
   },
   mutations: {
+    setSignedIn (state, signedIn) {
+      state.signedIn = signedIn
+    },
     setStart (state, startdate) {
       state.start = startdate
     },

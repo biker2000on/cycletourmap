@@ -19,7 +19,6 @@
 
 <script>
 import axios from "axios";
-import { createAuth, updateAuth, createAthlete, updateAthlete } from "../graphql/mutations";
 import uuidv4 from 'uuid/v4'
 import CREATE_AUTH from '../gql/createAuth.gql'
 import UPDATE_AUTH from '../gql/updateAuth.gql'
@@ -152,14 +151,6 @@ export default {
       this.athlete = athlete;
     }
   },
-  // computed: {
-  //   ListAuthsAthletes() {
-  //     return this.$Amplify.graphqlOperation(myQuery);
-  //   }
-  // },
-  // mounted() {
-  //   this.getTokens();
-  // }
 };
 </script>
 

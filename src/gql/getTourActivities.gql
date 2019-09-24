@@ -1,8 +1,9 @@
 
-query GetActivities ($id: ID!) {
+query GetActivities ($id: ID!, $nextToken: String) {
     getTour(id: $id) {
       id
-      activities(limit: 200) {
+      isPublic
+      activities(limit: 10, nextToken: $nextToken) {
         items {
           id
           name

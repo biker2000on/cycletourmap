@@ -1,6 +1,6 @@
 <template>
   <div>
-    <amplify-authenticator class="mx-auto text-center"></amplify-authenticator>
+    <amplify-authenticator class="mx-auto text-center" :authConfig="authConfig" ></amplify-authenticator>
   </div>
 </template>
 
@@ -8,6 +8,15 @@
 
 export default {
   name: 'auth',
+  data() {
+    return {
+      authConfig: {
+        signUpConfig: {
+          hiddenDefaults: ['phone_number']
+        }
+      }
+    }
+  },
   methods: {
     handleSignin(val) {
       console.log(val)

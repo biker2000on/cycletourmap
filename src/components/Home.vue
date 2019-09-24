@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center text-white">
+  <div class="text-center white--text">
     <h1>Cycle Tourmap</h1>
     <h2>Your #1 Place to Build and Share Tourmaps</h2>
     <v-btn :to="{name: 'auth'}">Sign Up</v-btn>
@@ -40,7 +40,4 @@ export default {
 </script>
 
 <style>
-  .text-white {
-    color: white;
-  }
 </style>

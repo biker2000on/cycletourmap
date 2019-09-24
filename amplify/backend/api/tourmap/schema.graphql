@@ -1,4 +1,4 @@
-type Tour @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}]) {
+type Tour @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}, {allow: public, operations: [read]}]) {
   id: ID!
   # user: User! @connection(name: "AthleteTours")
   name: String!
@@ -9,7 +9,7 @@ type Tour @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}])
   activities: [Activity]! @connection(name: "TourActivities")
 }
 
-type Activity @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}]) 
+type Activity @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}, {allow: public, operations: [read]}]) 
   @key(fields: ["strava_id"], name: "stravaId", queryField: "listActivitiesByStravaId") {
   id: ID!
   activity_type: ACTIVITY_TYPE!
@@ -95,4 +95,64 @@ type Auth @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}])
 enum ACTIVITY_TYPE {
   STRAVA 
   MANUAL 
+}
+
+input CreateActivityInput {
+  id: ID
+  activity_type: ACTIVITY_TYPE!
+  strava_id: ID!
+  achievement_count: Int
+  athlete_count: Int
+  average_heartrate: Float
+  average_speed: Float
+  average_temp: Int
+  average_watts: Float
+  comment_count: Int
+  commute: Boolean
+  device_watts: Boolean
+  display_hide_heartrate_option: Boolean
+  distance: Float
+  elapsed_time: Int
+  elev_high: Float
+  elev_low: Float
+  end_latlng: [Float]
+  flagged: Boolean
+  gear_id: String
+  has_heartrate: Boolean
+  has_kudoed: Boolean
+  heartrate_opt_out: Boolean
+  kilojoules: Float
+  kudos_count: Int
+  location_city: String
+  location_country: String
+  location_state: String
+  manual: Boolean
+  summary_polyline: String
+  max_heartrate: Float
+  max_speed: Float
+  moving_time: Int
+  name: String
+  photo_count: Int
+  pr_count: Int
+  private: Boolean
+  resource_state: Int
+  start_date: String
+  start_date_local: String
+  start_latitude: Float
+  start_longitude: Float
+  start_latlng: [Float]
+  timezone: String
+  total_elevation_gain: Float
+  total_photo_count: Int
+  trainer: Boolean
+  type: String
+  upload_id: ID
+  utc_offset: Int
+  visibility: String
+  workout_type: Int
+  activityTourId: ID
+}
+
+type Mutation {
+  createActivities(input: [CreateActivityInput]): [Activity] @aws_iam @aws_cognito_user_pools
 }

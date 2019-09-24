@@ -1,6 +1,6 @@
 <template>
   <ApolloQuery :query="require('../gql/listTours.gql')" >
-      <template slot-scope="{ result: { loading, error, data } }">
+    <template slot-scope="{ result: { loading, error, data } }">
       <v-progress-circular v-if="loading" indeterminate />
       <div v-else-if="error" class="error">We had an error</div>
       <div v-else-if="data">
@@ -15,7 +15,8 @@
           :headers="headers"
           :items="data.listTours.items"
           :items-per-page="10"
-          class="elevation-1 mx-md-6"
+          light
+          class="elevation-2 mx-md-6"
         >
           <template v-slot:top>
             <div class="flex-row d-flex justify-space-around" >

@@ -10,7 +10,7 @@ import { AmplifyPlugin } from 'aws-amplify-vue'
 import config from './aws-exports'
 
 // apollo client config
-import AWSAppSyncClient from 'aws-appsync'
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync'
 import VueApollo from 'vue-apollo'
 import AppSyncConfig from './aws-exports'
 
@@ -18,12 +18,26 @@ const configApollo = {
   url: AppSyncConfig.aws_appsync_graphqlEndpoint,
   region: AppSyncConfig.aws_appsync_region,
   auth: {
-    type: AppSyncConfig.aws_appsync_authenticationType,
-    // apiKey: AppSyncConfig.aws_appsync_apiKey,
+    type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
     jwtToken: async () => (await Amplify.Auth.currentSession()).getAccessToken().getJwtToken(),
   },
   complexObjectsCredentials: () => Amplify.Auth.currentCredentials()
 }
+
+const configApolloApiKey = {
+  url: AppSyncConfig.aws_appsync_graphqlEndpoint,
+  region: AppSyncConfig.aws_appsync_region,
+  auth: { type: AUTH_TYPE.API_KEY, apiKey: AppSyncConfig.aws_appsync_apiKey},
+  disableOffline: true,
+};
+
+const configApolloIAM = {
+  url: AppSyncConfig.aws_appsync_graphqlEndpoint,
+  region: AppSyncConfig.aws_appsync_region,
+  auth: { type: AUTH_TYPE.AWS_IAM},
+  disableOffline: true,
+};
+
 const options = {
   defaultOptions: {
     watchQuery: {
@@ -32,10 +46,17 @@ const options = {
   }
 }
 
-const client = new AWSAppSyncClient(configApollo, options)
+const cognito = new AWSAppSyncClient(configApollo, options)
+const apikey = new AWSAppSyncClient(configApolloApiKey, options)
+const iam = new AWSAppSyncClient(configApolloIAM, options)
 
 const appsyncProvider = new VueApollo({
-  defaultClient: client
+  clients: {
+    cognito,
+    apikey, 
+    iam,
+  },
+  defaultClient: cognito
 })
 
 Vue.use(VueApollo)

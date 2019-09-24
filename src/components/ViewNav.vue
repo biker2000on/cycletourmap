@@ -27,6 +27,7 @@
     <v-list-item dense>
       <v-list-item-content>
         <p><strong>Description: </strong>{{tourData.description}}</p>
+        <div>Activities: {{ tourData.activities.items.length }}</div>
       </v-list-item-content>
     </v-list-item>
     <v-list-item dense >
@@ -70,7 +71,7 @@ export default {
   props: {
     tourData: {
       type: Object,
-      default: () => {},
+      default: null,
     }
   },
   components: {

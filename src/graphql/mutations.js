@@ -1,6 +1,76 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const createActivities = `mutation CreateActivities($input: [CreateActivityInput]) {
+  createActivities(input: $input) {
+    id
+    activity_type
+    strava_id
+    achievement_count
+    athlete_count
+    average_heartrate
+    average_speed
+    average_temp
+    average_watts
+    comment_count
+    commute
+    device_watts
+    display_hide_heartrate_option
+    distance
+    elapsed_time
+    elev_high
+    elev_low
+    end_latlng
+    flagged
+    gear_id
+    has_heartrate
+    has_kudoed
+    heartrate_opt_out
+    kilojoules
+    kudos_count
+    location_city
+    location_country
+    location_state
+    manual
+    summary_polyline
+    max_heartrate
+    max_speed
+    moving_time
+    name
+    photo_count
+    pr_count
+    private
+    resource_state
+    start_date
+    start_date_local
+    start_latitude
+    start_longitude
+    start_latlng
+    timezone
+    total_elevation_gain
+    total_photo_count
+    trainer
+    type
+    upload_id
+    utc_offset
+    visibility
+    workout_type
+    tour {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+      owner
+      activities {
+        nextToken
+      }
+    }
+    owner
+  }
+}
+`;
 export const createTour = `mutation CreateTour($input: CreateTourInput!) {
   createTour(input: $input) {
     id
@@ -11,6 +81,61 @@ export const createTour = `mutation CreateTour($input: CreateTourInput!) {
     isPublic
     owner
     activities {
+      items {
+        id
+        activity_type
+        strava_id
+        achievement_count
+        athlete_count
+        average_heartrate
+        average_speed
+        average_temp
+        average_watts
+        comment_count
+        commute
+        device_watts
+        display_hide_heartrate_option
+        distance
+        elapsed_time
+        elev_high
+        elev_low
+        end_latlng
+        flagged
+        gear_id
+        has_heartrate
+        has_kudoed
+        heartrate_opt_out
+        kilojoules
+        kudos_count
+        location_city
+        location_country
+        location_state
+        manual
+        summary_polyline
+        max_heartrate
+        max_speed
+        moving_time
+        name
+        photo_count
+        pr_count
+        private
+        resource_state
+        start_date
+        start_date_local
+        start_latitude
+        start_longitude
+        start_latlng
+        timezone
+        total_elevation_gain
+        total_photo_count
+        trainer
+        type
+        upload_id
+        utc_offset
+        visibility
+        workout_type
+        owner
+      }
       nextToken
     }
   }
@@ -26,6 +151,61 @@ export const updateTour = `mutation UpdateTour($input: UpdateTourInput!) {
     isPublic
     owner
     activities {
+      items {
+        id
+        activity_type
+        strava_id
+        achievement_count
+        athlete_count
+        average_heartrate
+        average_speed
+        average_temp
+        average_watts
+        comment_count
+        commute
+        device_watts
+        display_hide_heartrate_option
+        distance
+        elapsed_time
+        elev_high
+        elev_low
+        end_latlng
+        flagged
+        gear_id
+        has_heartrate
+        has_kudoed
+        heartrate_opt_out
+        kilojoules
+        kudos_count
+        location_city
+        location_country
+        location_state
+        manual
+        summary_polyline
+        max_heartrate
+        max_speed
+        moving_time
+        name
+        photo_count
+        pr_count
+        private
+        resource_state
+        start_date
+        start_date_local
+        start_latitude
+        start_longitude
+        start_latlng
+        timezone
+        total_elevation_gain
+        total_photo_count
+        trainer
+        type
+        upload_id
+        utc_offset
+        visibility
+        workout_type
+        owner
+      }
       nextToken
     }
   }
@@ -41,6 +221,61 @@ export const deleteTour = `mutation DeleteTour($input: DeleteTourInput!) {
     isPublic
     owner
     activities {
+      items {
+        id
+        activity_type
+        strava_id
+        achievement_count
+        athlete_count
+        average_heartrate
+        average_speed
+        average_temp
+        average_watts
+        comment_count
+        commute
+        device_watts
+        display_hide_heartrate_option
+        distance
+        elapsed_time
+        elev_high
+        elev_low
+        end_latlng
+        flagged
+        gear_id
+        has_heartrate
+        has_kudoed
+        heartrate_opt_out
+        kilojoules
+        kudos_count
+        location_city
+        location_country
+        location_state
+        manual
+        summary_polyline
+        max_heartrate
+        max_speed
+        moving_time
+        name
+        photo_count
+        pr_count
+        private
+        resource_state
+        start_date
+        start_date_local
+        start_latitude
+        start_longitude
+        start_latlng
+        timezone
+        total_elevation_gain
+        total_photo_count
+        trainer
+        type
+        upload_id
+        utc_offset
+        visibility
+        workout_type
+        owner
+      }
       nextToken
     }
   }
@@ -108,6 +343,9 @@ export const createActivity = `mutation CreateActivity($input: CreateActivityInp
       end_date
       isPublic
       owner
+      activities {
+        nextToken
+      }
     }
     owner
   }
@@ -175,6 +413,9 @@ export const updateActivity = `mutation UpdateActivity($input: UpdateActivityInp
       end_date
       isPublic
       owner
+      activities {
+        nextToken
+      }
     }
     owner
   }
@@ -242,6 +483,9 @@ export const deleteActivity = `mutation DeleteActivity($input: DeleteActivityInp
       end_date
       isPublic
       owner
+      activities {
+        nextToken
+      }
     }
     owner
   }
@@ -267,6 +511,19 @@ export const createAthlete = `mutation CreateAthlete($input: CreateAthleteInput!
       refresh_token
       token_type
       strava_scope
+      athlete {
+        id
+        strava_id
+        firstname
+        lastname
+        profile
+        profile_medium
+        sex
+        city
+        state
+        country
+        owner
+      }
       owner
     }
   }
@@ -292,6 +549,19 @@ export const updateAthlete = `mutation UpdateAthlete($input: UpdateAthleteInput!
       refresh_token
       token_type
       strava_scope
+      athlete {
+        id
+        strava_id
+        firstname
+        lastname
+        profile
+        profile_medium
+        sex
+        city
+        state
+        country
+        owner
+      }
       owner
     }
   }
@@ -317,6 +587,19 @@ export const deleteAthlete = `mutation DeleteAthlete($input: DeleteAthleteInput!
       refresh_token
       token_type
       strava_scope
+      athlete {
+        id
+        strava_id
+        firstname
+        lastname
+        profile
+        profile_medium
+        sex
+        city
+        state
+        country
+        owner
+      }
       owner
     }
   }
@@ -342,6 +625,15 @@ export const createAuth = `mutation CreateAuth($input: CreateAuthInput!) {
       state
       country
       owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        token_type
+        strava_scope
+        owner
+      }
     }
     owner
   }
@@ -367,6 +659,15 @@ export const updateAuth = `mutation UpdateAuth($input: UpdateAuthInput!) {
       state
       country
       owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        token_type
+        strava_scope
+        owner
+      }
     }
     owner
   }
@@ -392,6 +693,15 @@ export const deleteAuth = `mutation DeleteAuth($input: DeleteAuthInput!) {
       state
       country
       owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        token_type
+        strava_scope
+        owner
+      }
     }
     owner
   }

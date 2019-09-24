@@ -7,7 +7,7 @@ query GetTourActivities ($id: ID!) {
     isPublic
     name
     start_date
-    activities (limit: 200) {
+    activities (limit: 10) {
       items {
         id
         elapsed_time

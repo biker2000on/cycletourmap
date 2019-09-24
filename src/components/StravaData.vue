@@ -6,7 +6,7 @@
       <v-progress-circular v-if="loading" indeterminate ></v-progress-circular>
       <div v-else-if="data">
         <strava v-if="isEdit" :tourData="data" />
-        <view-nav v-else :tourData="data.getTour" />
+        <view-nav v-else-if="data.getTour" :tourData="data.getTour" />
       </div>
       <div v-else-if="error"></div>
     </template>

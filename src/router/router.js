@@ -6,7 +6,8 @@ import LeafletData from '../components/LeafletData'
 import Auth from '../components/Auth'
 // import Summary from '../components/Summary'
 // import Rides from '../components/Rides'
-import Profile from '../components/Profile'
+// import Profile from '../components/Profile'
+import HomeWrapper from '../components/HomeWrapper'
 import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
 import Home from '../components/Home'
@@ -43,10 +44,10 @@ const routes = [
   {
     path: '/',
     name: 'profile',
-    component: Profile,
+    component: HomeWrapper,
     props: true,
     alias: '/profile',
-    meta: { requiresAuth: true }
+    // meta: { requiresAuth: true }
   },
   {
     path: '/auth',

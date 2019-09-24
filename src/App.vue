@@ -1,11 +1,11 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app id="nav-drawer">
+    <v-navigation-drawer v-model="drawer" app id="nav-drawer" v-if="signedIn">
       <router-view name="drawer"></router-view>
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer">
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="signedIn">
         <v-icon>menu</v-icon>
       </v-app-bar-nav-icon>
       <img src="/bikeLogo.svg" alt="Cycle Tourmap" height="45" class="mr-2">
@@ -20,8 +20,8 @@
         <span>Home</span>
       </v-tooltip>
       <router-view name="header" :signedIn="signedIn"></router-view>
-      <v-btn :to="{name: 'auth'}" v-if="!signedIn">Sign In</v-btn>
-      <v-btn v-if="signedIn">
+      <v-btn :to="{name: 'auth'}" v-if="!signedIn" color="mediumseagreen" >Sign In</v-btn>
+      <v-btn v-if="signedIn" color="mediumseagreen" >
         <amplify-sign-out class="amplify-sign-out"></amplify-sign-out>
       </v-btn>
     </v-app-bar>
@@ -29,7 +29,7 @@
     <v-content>
       <v-container fluid fill-height :class="isHome" >
         <v-layout align-center justify-center>
-        <router-view :style="{ width: '100%' }" ></router-view>
+        <router-view :style="{ width: '100%' }" class="text-center" ></router-view>
         </v-layout>
       </v-container>
     </v-content>
@@ -57,7 +57,6 @@ export default {
   data() {
     return {
       drawer: null,
-      signedIn: false,
       user: null,
       hydrated: false,
     };
@@ -67,37 +66,40 @@ export default {
       try {
         let user = await Auth.currentAuthenticatedUser()
         console.log("User Info: ", user);
-        this.signedIn = true;
+        this.$store.commit('setSignedIn', true)
         this.user = user;
       } catch (error) {
-        this.signedIn = false
+        this.$store.commit('setSignedIn', false)
       }
     }
   },
   computed: {
     isHome() {
-      if (this.$route.name == 'home') {
+      if (!this.signedIn) {
         return 'home'
       } else {
         return ''
       }
-    }
+    },
+    signedIn() {
+      return this.$store.state.signedIn
+    },
   },
   async beforeCreate() {
     AmplifyEventBus.$on("authState", async (info) => {
       if (info === "signedIn") {
         let user = await Auth.currentAuthenticatedUser()
         this.$apollo.provider.defaultClient.resetStore() // clears cache and refetches queries
-        this.signedIn = true;
+        this.$store.commit('setSignedIn', true)
         this.user = user
         this.$router.push({
           name: "profile",
         });
       }
       if (info === "signedOut") {
-        this.$router.push("/auth");
+        this.$router.push("/");
         this.user = null
-        this.signedIn = false;
+        this.$store.commit('setSignedIn', false)
         this.$apollo.provider.defaultClient.resetStore() // clears cache and refetches queries
       }
     });
@@ -112,13 +114,17 @@ export default {
 </script>
 
 <style>
+:root {
+  --amazonOrange: mediumseagreen;
+}
+
 .container {
   padding: 0 !important;
 }
 .amplify-sign-out button {
   min-width: 100%;
   font-size: inherit;
-  color: inherit;
+  /* color: var(--amazonOrange); */
   background-color: inherit;
   padding: 0;
 }

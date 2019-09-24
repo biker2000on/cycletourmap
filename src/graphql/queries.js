@@ -15,6 +15,9 @@ export const listTours = `query ListTours(
       end_date
       isPublic
       owner
+      activities {
+        nextToken
+      }
     }
     nextToken
   }
@@ -30,6 +33,61 @@ export const getTour = `query GetTour($id: ID!) {
     isPublic
     owner
     activities {
+      items {
+        id
+        activity_type
+        strava_id
+        achievement_count
+        athlete_count
+        average_heartrate
+        average_speed
+        average_temp
+        average_watts
+        comment_count
+        commute
+        device_watts
+        display_hide_heartrate_option
+        distance
+        elapsed_time
+        elev_high
+        elev_low
+        end_latlng
+        flagged
+        gear_id
+        has_heartrate
+        has_kudoed
+        heartrate_opt_out
+        kilojoules
+        kudos_count
+        location_city
+        location_country
+        location_state
+        manual
+        summary_polyline
+        max_heartrate
+        max_speed
+        moving_time
+        name
+        photo_count
+        pr_count
+        private
+        resource_state
+        start_date
+        start_date_local
+        start_latitude
+        start_longitude
+        start_latlng
+        timezone
+        total_elevation_gain
+        total_photo_count
+        trainer
+        type
+        upload_id
+        utc_offset
+        visibility
+        workout_type
+        owner
+      }
       nextToken
     }
   }
@@ -97,6 +155,9 @@ export const getActivity = `query GetActivity($id: ID!) {
       end_date
       isPublic
       owner
+      activities {
+        nextToken
+      }
     }
     owner
   }
@@ -161,6 +222,15 @@ export const listActivitys = `query ListActivitys(
       utc_offset
       visibility
       workout_type
+      tour {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+        owner
+      }
       owner
     }
     nextToken
@@ -234,6 +304,15 @@ export const listActivitiesByStravaId = `query ListActivitiesByStravaId(
       utc_offset
       visibility
       workout_type
+      tour {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+        owner
+      }
       owner
     }
     nextToken
@@ -258,6 +337,15 @@ export const listAthletes = `query ListAthletes(
       state
       country
       owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        token_type
+        strava_scope
+        owner
+      }
     }
     nextToken
   }
@@ -283,6 +371,19 @@ export const getAthlete = `query GetAthlete($id: ID!) {
       refresh_token
       token_type
       strava_scope
+      athlete {
+        id
+        strava_id
+        firstname
+        lastname
+        profile
+        profile_medium
+        sex
+        city
+        state
+        country
+        owner
+      }
       owner
     }
   }
@@ -314,6 +415,15 @@ export const getAthleteByStravaId = `query GetAthleteByStravaId(
       state
       country
       owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        token_type
+        strava_scope
+        owner
+      }
     }
     nextToken
   }
@@ -332,6 +442,19 @@ export const listAuths = `query ListAuths(
       refresh_token
       token_type
       strava_scope
+      athlete {
+        id
+        strava_id
+        firstname
+        lastname
+        profile
+        profile_medium
+        sex
+        city
+        state
+        country
+        owner
+      }
       owner
     }
     nextToken
@@ -358,6 +481,15 @@ export const getAuth = `query GetAuth($id: ID!) {
       state
       country
       owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        token_type
+        strava_scope
+        owner
+      }
     }
     owner
   }
