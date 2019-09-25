@@ -37,8 +37,9 @@ import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import omnivore from "@mapbox/leaflet-omnivore";
 import { isNullOrUndefined } from 'util';
-delete L.Icon.Default.prototype._getIconUrl;
+import { lightFormat } from 'date-fns'
 
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
@@ -115,7 +116,7 @@ export default {
           }
         }
         return [coords ? coords[0] : null, 
-               "<p>" + activity.name + "<br>" + 
+               "<p>" + activity.name + "<br>" + lightFormat(new Date(activity.start_date_local), 'M/d/yyyy') + "<br>"  +
                (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi ")+ 
                activity.type + "<br>" + 
                (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p><br>" +

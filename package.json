@@ -16,6 +16,7 @@
     "aws-amplify-vue": "^0.2.14",
     "aws-appsync": "^2.0.0",
     "axios": "^0.19.0",
+    "date-fns": "^2.3.0",
     "graphql-tag": "^2.10.1",
     "leaflet": "^1.5.1",
     "leaflet.fullscreen": "^1.5.1",

@@ -62,6 +62,7 @@ export default {
         //   }
         // }
       })
+      this.$store.commit('setHasStravaAuth', true)
     },
     updateAuth: async function() {
       const input = {
@@ -89,6 +90,7 @@ export default {
           }
         }
       })
+      this.$store.commit('setHasStravaAuth', true)
     },
     getTokens: async function() {
       let data;
@@ -118,7 +120,10 @@ export default {
           grant_type: "authorization_code"
         };
       }
-      if (!data) return;
+      if (!data) {
+        this.$store.commit('setHasStravaAuth',true)
+        return
+      }
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, ...auth } = res.data;
       this.auth = auth;

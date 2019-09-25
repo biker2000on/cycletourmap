@@ -1,8 +1,8 @@
 <template>
   <div class="text-center white--text">
     <h1>Cycle Tourmap</h1>
-    <h2>Your #1 Place to Build and Share Tourmaps</h2>
-    <v-btn :to="{name: 'auth'}">Sign Up</v-btn>
+    <h2 class="mb-4">Your #1 Place to Build and Share Tourmaps</h2>
+    <v-btn :to="{name: 'auth'}" color="green">Sign Up</v-btn>
   </div>
 </template>
 

@@ -20,7 +20,7 @@
         >
           <template v-slot:top>
             <div class="flex-row d-flex justify-space-around" >
-            <v-btn color="success" :to="{ name: 'edit', params: { mapId: 'new' }}" class="ma-2">
+            <v-btn color="success" :to="{ name: 'edit', params: { mapId: 'new' }}" class="ma-2" :disabled="!$store.state.hasStravaAuth">
               <v-icon>add</v-icon>New Tour
             </v-btn>
             <auth-strava class="d-inline"/>

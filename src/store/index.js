@@ -13,10 +13,14 @@ export default new Vuex.Store({
     activities: [],
     user: null,
     signedIn: null,
+    hasStravaAuth: false,
   },
   mutations: {
     setSignedIn (state, signedIn) {
       state.signedIn = signedIn
+    },
+    setHasStravaAuth (state, auth) {
+      state.hasStravaAuth = auth
     },
     setStart (state, startdate) {
       state.start = startdate
