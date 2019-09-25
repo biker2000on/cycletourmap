@@ -79,12 +79,12 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-        <v-btn @click="getAllActivities">Fetch All Activities</v-btn>
+        <v-btn @click="getAllActivities" color="primary">Fetch All Activities</v-btn>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-        <v-btn @click="submitTour" >Save</v-btn>
+        <v-btn @click="submitTour" color="primary">Save</v-btn>
       </v-list-item-content>
     </v-list-item>
 
@@ -126,6 +126,10 @@ export default {
     tourData: {
       type: Object,
       default: () => {},
+    },
+    authProp: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -152,7 +156,7 @@ export default {
   },
   methods: {
     loadAuth: function() {
-      this.auth = this.tourData.listAuths.items[0]
+      this.auth = this.authProp[0]
       const expire = new Date(this.auth.expires_at * 1000 - 3600 * 1000) // 1 hour before expiry
       if (expire < new Date()) {
         this.refreshAuth()
@@ -167,7 +171,7 @@ export default {
       }
       let res = await axios.post("https://www.strava.com/oauth/token", data);
       let { athlete, expires_in, ...auth } = res.data;
-      auth['id'] = this.tourData.listAuths.items[0].id
+      auth['id'] = this.auth.id
       // const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
       console.log('update auth', auth)
       this.$apollo.mutate({
@@ -236,11 +240,6 @@ export default {
           }
         })
         await this.batchSubmitNewRides(this.$store.state.activities)
-        // const ridePromises = this.$store.state.activities.map(c => this.submitRide(c, 'create'))
-        // console.log(ridePromises)
-        // Promise.all(ridePromises)
-        //   .then(() => {this.isSaving = false})
-        //   .catch(error => console.warn('Rides did not save correctly: ', error))
         this.$store.commit('setActivities', []) // possibly to reset State
       } else {
         await this.$apollo.mutate({
@@ -260,8 +259,8 @@ export default {
             }
           }
         })
-      this.isSaving = false
       }
+      this.isSaving = false
     },
     batchSubmitNewRides: async function(rides) {
       // batch in collections of 25 max
@@ -278,22 +277,24 @@ export default {
             ...stats
           }
         })
-        let hopefulResponse = activities.map(c => {
-          let { activityTourId, ...response } = c
-          return response
-        })
+        // let hopefulResponse = activities.map(c => {
+        //   let { activityTourId, ...response } = c
+        //   return response
+        // })
         this.$apollo.mutate({
           mutation: CREATE_ACTIVITIES,
           variables: {
             input: activities, 
           },
-          update: ( store, { data: { createActivity } }) => {
-            if (this.$route.params.mapId != 'new') {
-              const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
-              data.getTour.activities.items.push(...createActivity)
-              store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
-            }
-          },
+          fetchPolicy: 'no-cache',
+          // update: ( store, { data: { createActivities } }) => {
+          //   if (this.$route.params.mapId != 'new') {
+          //     const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
+          //     data.getTour.activities.items.push(...createActivity)
+          //     store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
+          //   } else {
+          //   }
+          // },
           // optimisticResponse: {
           //   __typename: 'Mutation',
           //   createActivity: {

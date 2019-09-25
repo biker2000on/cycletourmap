@@ -1,39 +1,37 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app id="nav-drawer" v-if="signedIn">
+    <v-navigation-drawer v-model="drawer" app id="nav-drawer" v-if="displayNav" clipped >
       <router-view name="drawer"></router-view>
     </v-navigation-drawer>
 
-    <v-app-bar app color="indigo" dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="signedIn">
-        <v-icon>menu</v-icon>
-      </v-app-bar-nav-icon>
+    <v-app-bar app color="primary" dark clipped-left>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="displayNav"></v-app-bar-nav-icon>
       <img src="/bikeLogo.svg" alt="Cycle Tourmap" height="45" class="mr-2">
       <v-toolbar-title>Cycle Tourmap</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon :to="{name: 'profile'}" v-on="on">
+        <template v-slot:activator="{ home }">
+          <v-btn icon :to="{name: 'profile'}" v-on="home">
             <v-icon>home</v-icon>
           </v-btn>
         </template>
         <span>Home</span>
       </v-tooltip>
       <router-view name="header" :signedIn="signedIn"></router-view>
-      <v-btn :to="{name: 'auth'}" v-if="!signedIn" color="mediumseagreen" >Sign In</v-btn>
-      <v-btn v-if="signedIn" color="mediumseagreen" >
+      <v-btn :to="{name: 'auth'}" v-if="!signedIn" color="green" >Sign In</v-btn>
+      <v-btn v-if="signedIn" color="green" >
         <amplify-sign-out class="amplify-sign-out"></amplify-sign-out>
       </v-btn>
     </v-app-bar>
 
     <v-content>
-      <v-container fluid fill-height :class="isHome" >
+      <v-container fluid fill-height :class="home" >
         <v-layout align-center justify-center>
         <router-view :style="{ width: '100%' }" class="text-center" ></router-view>
         </v-layout>
       </v-container>
     </v-content>
-    <v-footer color="indigo" app>
+    <v-footer color="primary" app>
       <span class="white--text">&copy; 2019</span>
       <v-spacer></v-spacer>
       <img src="/strava/api_logo_pwrdBy_strava_horiz_white.svg" height="30" >
@@ -74,12 +72,18 @@ export default {
     }
   },
   computed: {
-    isHome() {
+    home() {
       if (!this.signedIn) {
         return 'home'
       } else {
         return ''
       }
+    },
+    displayNav() {
+      const name = this.$route.name
+      // if (!this.signedIn && path == '/') return false
+      if (!this.signedIn && (name == 'profile' || name == 'auth')) return false
+      return true
     },
     signedIn() {
       return this.$store.state.signedIn
@@ -128,9 +132,9 @@ export default {
   background-color: inherit;
   padding: 0;
 }
-#nav-drawer {
+/* #nav-drawer {
   z-index: 10000;
-}
+} */
 
 .home {
   background-image: url(/tour.jpg);

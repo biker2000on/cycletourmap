@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tooltip bottom v-if="$route.name != 'map'">
+    <v-tooltip bottom v-if="$route.name != 'map' && $route.params.mapId != 'new'">
       <template v-slot:activator="{ on }">
         <v-btn icon :to="{name: 'map'}" v-on="on">
           <v-icon>map</v-icon>

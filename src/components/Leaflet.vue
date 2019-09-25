@@ -1,7 +1,8 @@
 <template>
-  <div id="leaflet-comp" :style="computedHeight" :class="isOnTop">
+  <div id="leaflet-comp" :style="computedHeight" >
     <l-map 
       :bounds="bounds"
+      :class="isOnTop"
       :zoom="zoom" 
       :center="center"
       :maxBounds="maxBounds"
@@ -91,7 +92,7 @@ export default {
     //   return this.$store.state.activities.filter(c => c)
     // },
     isOnTop() {
-      return this.isFullscreen ? 'on-top' : ''
+      return this.isFullscreen ? 'on-top' : 'leaflet-regular'
     },
     isMetric() {
       return this.$store.state.isMetric
@@ -209,5 +210,8 @@ export default {
 }
 .on-top {
   z-index: 9999 !important;
+}
+.leaflet-regular {
+  z-index: 0;
 }
 </style>

@@ -44,6 +44,7 @@ export default {
             getTour: {
               __typename: 'Tour',
               id: prev.getTour.id,
+              isPublic: prev.getTour.isPublic,
               activities: {
                 __typename: 'ModelActivityConnection',
                 items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],

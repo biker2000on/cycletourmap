@@ -1,5 +1,5 @@
 <template>
-  <ApolloQuery :query="require('../gql/listTours.gql')" >
+  <ApolloQuery :query="require('../gql/listTours.gql')" :variable="{limit: 50}" >
     <template slot-scope="{ result: { loading, error, data } }">
       <v-progress-circular v-if="loading" indeterminate />
       <div v-else-if="error" class="error">We had an error</div>
@@ -49,7 +49,8 @@
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon class="mx-0" @click="deleteTourApollo(item)" >
+                  <!-- <v-btn icon class="mx-0" @click="deleteTourApollo(item)" > -->
+                  <v-btn icon class="mx-0" @click.stop="openDialog(item)" >
                     <v-icon color="pink">delete</v-icon>
                   </v-btn>
                 </template>
@@ -58,6 +59,19 @@
             </td>
           </template>
         </v-data-table>
+        <v-dialog v-model="dialog" max-width="290">
+          <v-card>
+            <v-card-title class="headline">Delete Tour?</v-card-title>
+            <v-card-text>Are you sure you want to delete {{ activeItem ? activeItem.name : '' }}?</v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="dialog = false" >Cancel</v-btn>
+              <v-btn text color="error" @click="deleteTourApollo(activeItem)" >Delete</v-btn>
+            </v-card-actions>
+          </v-card>
+
+        </v-dialog>
       </div>
     </template>
   </ApolloQuery>
@@ -87,16 +101,15 @@ export default {
         { text: "Public", value: "isPublic" },
         { text: "Actions", value: "action", align: "center" }
       ],
-      user: null
+      user: null,
+      activeItem: null,
+      dialog: false,
     };
   },
   methods: {
-    deletetour: async function(item) {
-      if (confirm('are you sure you want to delete this Tour?')) {
-        console.log(item)
-        const deleted = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(deleteTour, {input: {id: item.id }}))
-        console.log('deleted Tour', deleted)
-      }
+    openDialog(item) {
+      this.dialog = true
+      this.activeItem = item
     },
     deleteTourApollo: function(tour) {
       this.$apollo.mutate({
@@ -115,6 +128,7 @@ export default {
           }
         },
       })
+      this.dialog = false
     },
   },
   beforeCreate() {

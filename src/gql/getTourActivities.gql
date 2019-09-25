@@ -3,7 +3,7 @@ query GetActivities ($id: ID!, $nextToken: String) {
     getTour(id: $id) {
       id
       isPublic
-      activities(limit: 10, nextToken: $nextToken) {
+      activities(limit: 50, nextToken: $nextToken) {
         items {
           id
           name

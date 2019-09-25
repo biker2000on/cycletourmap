@@ -49,18 +49,18 @@ export default {
       this.$apollo.mutate({
         mutation: CREATE_AUTH,
         variables: { input },
-        update: (store, { data: { createAuth }}) => {
-          const data = store.readQuery({ query: LIST_AUTHS })
-          data.listAuths.items.push(createAuth)
-          store.writeQuery({ query: LIST_AUTHS, data })
-        },
-        optimisticResponse: {
-          __typename: 'Mutation',
-          createAuth: {
-            __typename: 'Auth',
-            ...input
-          }
-        }
+        // update: (store, { data: { createAuth }}) => {
+        //   const data = store.readQuery({ query: LIST_AUTHS })
+        //   data.listAuths.items.push(createAuth)
+        //   store.writeQuery({ query: LIST_AUTHS, data })
+        // },
+        // optimisticResponse: {
+        //   __typename: 'Mutation',
+        //   createAuth: {
+        //     __typename: 'Auth',
+        //     ...input
+        //   }
+        // }
       })
     },
     updateAuth: async function() {
@@ -89,21 +89,7 @@ export default {
           }
         }
       })
-      const updatedAuth = await this.$Amplify.API.graphql(
-        this.$Amplify.graphqlOperation(updateAuth, { input })
-      );
     },
-    // refreshToken() {
-    //   const vm = this;
-    //   if (this.auth) {
-    //     this.refresh = setInterval(() => {
-    //       let now = new Date();
-    //       if (vm.auth.expires_at < now.getTime() / 1000 + 3600) {
-    //         vm.getTokens();
-    //       }
-    //     }, 3600);
-    //   }
-    // },
     getTokens: async function() {
       let data;
       // Check here and set for refresh of access token
