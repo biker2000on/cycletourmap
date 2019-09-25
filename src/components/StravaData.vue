@@ -3,7 +3,7 @@
 
   <v-progress-circular v-if="$apollo.loading" indeterminate ></v-progress-circular>
   <!-- <div v-else-if="getTour"> -->
-    <strava v-if="isEdit" :tourData="getTour ? { getTour } : {}" :authProp="listAuths.items" />
+    <strava v-if="isEdit" :tourData="getTour ? { getTour } : {}" :authProp="listAuths ? listAuths.items : []" />
     <view-nav v-else-if="getTour" :tourData="getTour" />
     <view-nav v-else-if="getTourPublic" :tourData="getTourPublic" />
   <!-- </div> -->

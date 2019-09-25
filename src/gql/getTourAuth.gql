@@ -13,6 +13,7 @@ query GetTourActivities ($id: ID!) {
         elapsed_time
         moving_time
         name
+        distance
         start_date_local
         summary_polyline
         type

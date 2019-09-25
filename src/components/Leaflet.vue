@@ -21,10 +21,31 @@
         :attribution="tileProvider.attribution"
         layer-type="base" />
       <l-polyline v-for="(start, idx) in popups" :lat-lngs="popups[idx][2]" :key="'line' + idx" :fill="false">
-        <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop' + idx"></l-popup>
+        <l-popup :lat-lng="popups[idx][0]" :key="'pop' + idx">
+          <v-card>
+            <v-list-item two-line >
+              <v-list-item-content>
+                <v-list-item-title class="headline">{{popups[idx][3].name}}</v-list-item-title>
+                <v-list-item-subtitle>{{popups[idx][3].start_date_local.slice(0,10)}}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-card-text class="py-0">
+              <p class="mt-0">Distance: {{(true ? (popups[idx][3].distance / 1000).toFixed(2) + " km " : (popups[idx][3].distance / .0254 / 12 / 5280).toFixed(2) + " mi")}}</p>
+              <p>Type: {{popups[idx][3].type}}</p>
+              <p>Moving Time: {{(popups[idx][3].moving_time / 3600).toFixed(2)}} hrs</p>
+              <p>Elapsed Time: {{(popups[idx][3].elapsed_time / 3600).toFixed(2)}} hrs</p>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn :href="'https://www.strava.com/activities/' + popups[idx][3].strava_id" target="_blank" color="#FC4C02" dark small>View on Strava</v-btn>
+            </v-card-actions>
+          </v-card>
+        </l-popup>
       </l-polyline>
       <l-marker v-for="(start,idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
-        <l-popup :lat-lng="popups[idx][0]" :content="popups[idx][1]" :key="'pop2' + idx"></l-popup>
+        <popups :activity="popups[idx][3]" :latlng="start[0]" :key="'pop2' + idx" />
       </l-marker>
     </l-map>
   </div>
@@ -33,6 +54,7 @@
 <script>
 import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers, LControlScale } from 'vue2-leaflet'
 import LFullscreen from './Vue2LeafletFullscreen'
+import Popups from './Popups'
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import omnivore from "@mapbox/leaflet-omnivore";
@@ -56,6 +78,7 @@ export default {
     LControlLayers,
     LControlScale,
     LFullscreen,
+    Popups
   },
   props: {
     activities: {
@@ -117,11 +140,14 @@ export default {
         }
         return [coords ? coords[0] : null, 
                "<p>" + activity.name + "<br>" + lightFormat(new Date(activity.start_date_local), 'M/d/yyyy') + "<br>"  +
-               (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi ")+ 
+               (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi")+ 
                activity.type + "<br>" + 
                (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p><br>" +
                '<a href="https://www.strava.com/activities/' + activity.strava_id + '" target="_blank">View on Strava</a>',
-               coords ? coords : null
+               coords ? coords : null,
+               {
+                 ...activity
+               }
                ] 
       })
       return popup.filter(c => c[0])
@@ -214,5 +240,8 @@ export default {
 }
 .leaflet-regular {
   z-index: 0;
+}
+.leaflet-popup-content {
+  margin: 0;
 }
 </style>

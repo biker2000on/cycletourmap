@@ -1,24 +1,11 @@
 <template>
-  <v-list dense>
-    <!-- <v-list-item>
-      <v-img
-        v-if="athlete"
-        :src="athlete.profile"
-        :alt="athlete.firstname + ' ' + athlete.lastname"
-        :style="{borderRadius: 50 + '%'}"
-      />
-    </v-list-item>
-    <v-list-item v-if="athlete">
+  <v-list>
+    <v-list-item>
       <v-list-item-content>
-        <h2>{{ athlete.firstname + ' ' + athlete.lastname }}</h2>
-      </v-list-item-content>
-    </v-list-item> -->
-    <v-list-item dense>
-      <v-list-item-content>
-        <h2>{{tourData.name}}</h2>
+        <v-list-item-title class="headline">{{tourData.name}}</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item dense>
+    <v-list-item>
       <v-list-item-content>
         <p><strong>Start: </strong>{{tourData.start_date}} </p>
         <p><strong>End: </strong>{{tourData.end_date}}</p>
@@ -27,12 +14,11 @@
     <v-list-item dense>
       <v-list-item-content>
         <p><strong>Description: </strong>{{tourData.description}}</p>
-        <div>Activities: {{ tourData.activities.items.length }}</div>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item dense >
+    <v-list-item dense class="px-0">
       <v-list-item-content>
-        <v-card>
+        <v-card elevation="12">
           <v-card-title>Share Your Tourmap</v-card-title>
           <v-card-text v-if="tourData.isPublic" >
             <vue-goodshare-facebook
@@ -59,6 +45,14 @@
         </v-card>
       </v-list-item-content>
     </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <p class="title">Tour Stats:</p>
+        <p>Activities: {{ tourData.activities.items.length }}</p>
+        <p >Total Distance: {{ totalDistance.toFixed(1) }} km</p>
+        <p >Total Moving Time: {{ totalTime.toFixed(1) }} hrs</p>
+      </v-list-item-content>
+    </v-list-item>
   </v-list>
 </template>
 
@@ -66,6 +60,7 @@
 import VueGoodshareFacebook from 'vue-goodshare/src/providers/Facebook'
 import VueGoodshareTwitter from 'vue-goodshare/src/providers/Twitter'
 import VueGoodshareEmail from 'vue-goodshare/src/providers/Email'
+import { isNumber } from 'util'
 
 export default {
   props: {
@@ -80,6 +75,24 @@ export default {
   computed: {
     pageUrl() {
       return window.location.href
+    },
+    totalDistance() {
+      return this.tourData.activities.items.reduce((a,c) => {
+        if (isNumber(c.distance)) {
+          return a += c.distance
+        } else {
+          return a
+        }
+      }, 0) / 1000
+    },
+    totalTime() {
+      return this.tourData.activities.items.reduce((a,c) => {
+        if (isNumber(c.moving_time)) {
+          return a += c.moving_time
+        } else {
+          return a
+        }
+      }, 0) / 3600
     }
   }
 };
