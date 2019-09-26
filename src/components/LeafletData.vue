@@ -25,37 +25,70 @@ export default {
   },
   methods: {
     loadMore: function() {
-      // console.log("inside loadMore.");
-      this.$apollo.queries.getTour.fetchMore({
-        variables: {
-          id: this.$route.params.mapId,
-          nextToken: this.getTour.activities.nextToken, // need to update
-        },
-        updateQuery: ( prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
-            const newActivities = fetchMoreResult.getTour.activities.items
-            // console.log('fetchmore didn"t return')
-            return prev
-          }
-          // console.log("prev, fetchmoreresult", prev.getTour, fetchMoreResult.getTour)
-          // console.log('tokens',prev.getTour.activities.nextToken, fetchMoreResult.getTour.activities.nextToken)
-          this.nextToken = fetchMoreResult.getTour.activities.nextToken
-          const returnVal = Object.assign({}, prev, {
-            getTour: {
-              __typename: 'Tour',
-              id: prev.getTour.id,
-              isPublic: prev.getTour.isPublic,
-              activities: {
-                __typename: 'ModelActivityConnection',
-                items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
-                nextToken: fetchMoreResult.getTour.activities.nextToken
-              }
+      if (this.getTour) {
+        this.$apollo.queries.getTour.fetchMore({
+          variables: {
+            id: this.$route.params.mapId,
+            nextToken: this.getTour.activities.nextToken, // need to update
+          },
+          updateQuery: ( prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
+              const newActivities = fetchMoreResult.getTour.activities.items
+              // console.log('fetchmore didn"t return')
+              return prev
             }
-          })
-          // console.log('returnVal ', returnVal)
-          return returnVal
-        }
-      })
+            // console.log("prev, fetchmoreresult", prev.getTour, fetchMoreResult.getTour)
+            // console.log('tokens',prev.getTour.activities.nextToken, fetchMoreResult.getTour.activities.nextToken)
+            this.nextToken = fetchMoreResult.getTour.activities.nextToken
+            const returnVal = Object.assign({}, prev, {
+              getTour: {
+                __typename: 'Tour',
+                id: prev.getTour.id,
+                isPublic: prev.getTour.isPublic,
+                activities: {
+                  __typename: 'ModelActivityConnection',
+                  items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
+                  nextToken: fetchMoreResult.getTour.activities.nextToken
+                }
+              }
+            })
+            // console.log('returnVal ', returnVal)
+            return returnVal
+          }
+        })
+      } else {
+        this.$apollo.queries.getTourPublic.fetchMore({
+          variables: {
+            id: this.$route.params.mapId,
+            nextToken: this.getTourPublic.activities.nextToken, // need to update
+          },
+          updateQuery: ( prev, { fetchMoreResult }) => {
+            console.log('fetchmore', fetchMoreResult, prev)
+            if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
+              const newActivities = fetchMoreResult.getTour.activities.items
+              // console.log('fetchmore didn"t return')
+              return prev
+            }
+            // console.log("prev, fetchmoreresult", prev.getTour, fetchMoreResult.getTour)
+            // console.log('tokens',prev.getTour.activities.nextToken, fetchMoreResult.getTour.activities.nextToken)
+            this.nextToken = fetchMoreResult.getTour.activities.nextToken
+            const returnVal = Object.assign({}, prev, {
+              getTour: {
+                __typename: 'Tour',
+                id: prev.getTour.id,
+                isPublic: prev.getTour.isPublic,
+                activities: {
+                  __typename: 'ModelActivityConnection',
+                  items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
+                  nextToken: fetchMoreResult.getTour.activities.nextToken
+                }
+              }
+            })
+            // console.log('returnVal ', returnVal)
+            return returnVal
+          }
+        })
+      }
     }
   },
   computed: {
@@ -66,6 +99,13 @@ export default {
   watch: {
     getTour: async function() {
       if (!isNull(this.getTour.activities.nextToken)) {
+        await this.loadMore()
+        return
+      }
+      return
+    },
+    getTourPublic: async function() {
+      if (!isNull(this.getTourPublic.activities.nextToken)) {
         await this.loadMore()
         return
       }
