@@ -10,6 +10,7 @@ import Auth from '../components/Auth'
 import HomeWrapper from '../components/HomeWrapper'
 import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
+import ProfileNav from '../components/ProfileNav'
 
 Vue.use(VueRouter)
 
@@ -38,7 +39,10 @@ const routes = [
   {
     path: '/',
     name: 'profile',
-    component: HomeWrapper,
+    components: {
+      default: HomeWrapper,
+      drawer: ProfileNav,
+    },
     props: true,
     alias: '/profile',
     // meta: { requiresAuth: true }

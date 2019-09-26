@@ -12,6 +12,18 @@
       <l-fullscreen @enter-fullscreen="isFullscreen = true" @exit-fullscreen="isFullscreen = false" />
       <l-control-layers position="topright"  ></l-control-layers>
       <l-control-scale position="bottomright" :imperial="true" :metric="true"></l-control-scale>
+      <l-control position="bottomleft">
+        <v-card>
+        <v-radio-group v-model="isMetric" hide-details class="pa-1">
+          <v-radio
+            v-for="(item,idx) in units"
+            :key="'units' + idx"
+            :label="item.label"
+            :value="item.value"
+          ></v-radio>
+        </v-radio-group>
+        </v-card>
+      </l-control>
       <l-tile-layer
         v-for="tileProvider in tileProviders"
         :key="tileProvider.name"
@@ -21,28 +33,7 @@
         :attribution="tileProvider.attribution"
         layer-type="base" />
       <l-polyline v-for="(start, idx) in popups" :lat-lngs="popups[idx][2]" :key="'line' + idx" :fill="false">
-        <l-popup :lat-lng="popups[idx][0]" :key="'pop' + idx">
-          <v-card>
-            <v-list-item two-line >
-              <v-list-item-content>
-                <v-list-item-title class="headline">{{popups[idx][3].name}}</v-list-item-title>
-                <v-list-item-subtitle>{{popups[idx][3].start_date_local.slice(0,10)}}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <v-divider></v-divider>
-            <v-card-text class="py-0">
-              <p class="mt-0">Distance: {{(true ? (popups[idx][3].distance / 1000).toFixed(2) + " km " : (popups[idx][3].distance / .0254 / 12 / 5280).toFixed(2) + " mi")}}</p>
-              <p>Type: {{popups[idx][3].type}}</p>
-              <p>Moving Time: {{(popups[idx][3].moving_time / 3600).toFixed(2)}} hrs</p>
-              <p>Elapsed Time: {{(popups[idx][3].elapsed_time / 3600).toFixed(2)}} hrs</p>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn :href="'https://www.strava.com/activities/' + popups[idx][3].strava_id" target="_blank" color="#FC4C02" dark small>View on Strava</v-btn>
-            </v-card-actions>
-          </v-card>
-        </l-popup>
+        <popups :activity="popups[idx][3]" :latlng="start[0]" :key="'pop' + idx" />
       </l-polyline>
       <l-marker v-for="(start,idx) in popups" :lat-lng="start[0]" :key="'marker' + idx">
         <popups :activity="popups[idx][3]" :latlng="start[0]" :key="'pop2' + idx" />
@@ -52,7 +43,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers, LControlScale } from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker, LPolyline, LPopup, LControlLayers, LControlScale, LControl } from 'vue2-leaflet'
 import LFullscreen from './Vue2LeafletFullscreen'
 import Popups from './Popups'
 import "leaflet/dist/leaflet.css";
@@ -78,7 +69,8 @@ export default {
     LControlLayers,
     LControlScale,
     LFullscreen,
-    Popups
+    Popups,
+    LControl
   },
   props: {
     activities: {
@@ -108,6 +100,16 @@ export default {
           url: 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3d3c357594e04c67a183d3c95a1792c0',
           attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }
+      ],
+      units: [
+        {
+          label: 'Metric',
+          value: true,
+        },
+        {
+          label: 'Standard',
+          value: false,
+        }
       ]
     }
   },
@@ -118,8 +120,13 @@ export default {
     isOnTop() {
       return this.isFullscreen ? 'on-top' : 'leaflet-regular'
     },
-    isMetric() {
-      return this.$store.state.isMetric
+    isMetric: {
+      get() {
+        return this.$store.state.isMetric
+      },
+      set(val) {
+        this.$store.commit('setMetric', val)
+      }
     },
     rides() {
       let ride = this.activities.map(activity => {

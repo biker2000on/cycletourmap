@@ -49,7 +49,7 @@
       <v-list-item-content>
         <p class="title">Tour Stats:</p>
         <p>Activities: {{ tourData.activities.items.length }}</p>
-        <p >Total Distance: {{ totalDistance.toFixed(1) }} km</p>
+        <p >Total Distance: {{ isMetric ? totalDistance.toFixed(1) + ' km' : (totalDistance / 1.609).toFixed(1) + ' mi' }}</p>
         <p >Total Moving Time: {{ totalTime.toFixed(1) }} hrs</p>
       </v-list-item-content>
     </v-list-item>
@@ -73,6 +73,9 @@ export default {
     VueGoodshareFacebook, VueGoodshareTwitter, VueGoodshareEmail
   },
   computed: {
+    isMetric() {
+      return this.$store.state.isMetric
+    },
     pageUrl() {
       return window.location.href
     },

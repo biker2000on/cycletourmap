@@ -9,7 +9,7 @@
       </v-list-item>
       <v-divider></v-divider>
       <v-card-text class="py-0">
-        <p class="my-1">Distance: {{(true ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi")}}</p>
+        <p class="my-1">Distance: {{(isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi")}}</p>
         <p class="my-1">Type: {{activity.type}}</p>
         <p class="my-1">Moving Time: {{(activity.moving_time / 3600).toFixed(2)}} hrs</p>
         <p class="my-1">Elapsed Time: {{(activity.elapsed_time / 3600).toFixed(2)}} hrs</p>
@@ -38,6 +38,11 @@ export default {
     latlng: {
       type: Array,
       default: () => []
+    }
+  },
+  computed: {
+    isMetric() {
+      return this.$store.state.isMetric
     }
   }
 }
