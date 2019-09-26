@@ -19,7 +19,7 @@
           class="elevation-2 mx-md-6"
         >
           <template v-slot:top>
-            <div class="flex-row d-flex justify-space-around" >
+            <div class="flex-row d-flex justify-space-between" >
             <v-btn color="success" :to="{ name: 'edit', params: { mapId: 'new' }}" class="ma-2" :disabled="!$store.state.hasStravaAuth">
               <v-icon>add</v-icon>New Tour
             </v-btn>

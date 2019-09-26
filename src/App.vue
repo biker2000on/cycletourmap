@@ -7,7 +7,7 @@
     <v-app-bar app color="primary" dark clipped-left>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="displayNav"></v-app-bar-nav-icon>
       <img src="/bikeLogo.svg" alt="Cycle Tourmap" height="45" class="mr-2">
-      <v-toolbar-title>Cycle Tourmap</v-toolbar-title>
+      <v-toolbar-title class="font-weight-bold headline">Cycle Tourmap</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ home }">
@@ -135,13 +135,4 @@ export default {
 /* #nav-drawer {
   z-index: 10000;
 } */
-
-.home {
-  background-image: url(/tour.jpg);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: rgba(0, 0, 0, 0.3);
-  background-blend-mode: saturation;
-  width: 100%;
-}
 </style>
