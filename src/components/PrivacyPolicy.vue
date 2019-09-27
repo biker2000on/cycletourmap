@@ -3,9 +3,9 @@
     <v-card-title class="headline">Privacy Policy</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
-      <p>
-        Justin built the Tourmap app as
-        a Free app. This SERVICE is provided by
+      <p class="mt-3">
+        I built the Cycle Tourmap app as
+        a Free app. This SERVICE is provided by Crawford Creations
         at no cost and is intended for
         use as is.
       </p>
@@ -63,6 +63,11 @@
         version, the configuration of the app when utilizing
         my Service, the time and date of your use of the
         Service, and other statistics.
+      </p>
+      <p>
+        Click
+        <a href="#" @click.prevent="disableTracking">here</a>,
+        to disable the tracking through Google Analytics.
       </p>
       <p>
         <strong>Cookies</strong>
@@ -170,7 +175,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    disableTracking() {
+      this.$ga.disable();
+      alert('Tracking disabled');
+    }
+  }
+};
 </script>
 
 <style>

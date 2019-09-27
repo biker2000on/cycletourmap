@@ -26,6 +26,7 @@
     "tabulator-tables": "^4.4.1",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
+    "vue-analytics": "^5.17.2",
     "vue-apollo": "^3.0.0-rc.5",
     "vue-goodshare": "^1.3.2",
     "vue-router": "^3.1.3",
