@@ -33,7 +33,7 @@ export default {
           },
           updateQuery: ( prev, { fetchMoreResult }) => {
             if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
-              const newActivities = fetchMoreResult.getTour.activities.items
+              // const newActivities = fetchMoreResult.getTour.activities.items
               // console.log('fetchmore didn"t return')
               return prev
             }
@@ -63,9 +63,9 @@ export default {
             nextToken: this.getTourPublic.activities.nextToken, // need to update
           },
           updateQuery: ( prev, { fetchMoreResult }) => {
-            console.log('fetchmore', fetchMoreResult, prev)
+            // console.log('fetchmore', fetchMoreResult, prev)
             if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
-              const newActivities = fetchMoreResult.getTour.activities.items
+              // const newActivities = fetchMoreResult.getTour.activities.items
               // console.log('fetchmore didn"t return')
               return prev
             }

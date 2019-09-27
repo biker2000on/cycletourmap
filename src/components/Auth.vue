@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     handleSignin(val) {
-      console.log(val)
+      // console.log(val)
       if (val == 'signedIn') {
         this.$router.push({name: 'profile'})
       }

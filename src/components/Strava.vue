@@ -102,11 +102,9 @@
 
 <script>
 import axios from "axios";
-import { setInterval, clearInterval } from "timers";
 import uuid from 'uuid/v4'
 import { activityKeys } from '../utilities/activityKeys'
 import pick from 'lodash.pick'
-import isEqual from 'lodash.isequal'
 
 // queries
 import CREATE_TOUR from '../gql/createTour.gql'
@@ -116,7 +114,6 @@ import UPDATE_TOUR from '../gql/updateTour.gql'
 import UPDATE_ACTIVITY from '../gql/updateActivity.gql'
 import UPDATE_AUTH from '../gql/updateAuth.gql'
 import DELETE_ACTIVITY from '../gql/deleteActivity.gql'
-import GET_TOUR from '../gql/getTour.gql'
 import GET_TOUR_ACTIVITIES from '../gql/getTourActivities.gql'
 import LIST_AUTHS from '../gql/listAuths.gql'
 import LIST_TOURS from '../gql/listTours.gql'
@@ -173,7 +170,7 @@ export default {
       let { athlete, expires_in, ...auth } = res.data;
       auth['id'] = this.auth.id
       // const auths = await this.$Amplify.API.graphql(this.$Amplify.graphqlOperation(updateAuth, {input: auth}))
-      console.log('update auth', auth)
+      // console.log('update auth', auth)
       this.$apollo.mutate({
         mutation: UPDATE_AUTH,
         variables: { input: auth },
@@ -222,7 +219,7 @@ export default {
           variables: { input },
           update: (store, { data: { createTour }}) => {
             let data = store.readQuery({ query: LIST_TOURS })
-            console.log('cached tours', data.listTours.items, 'createTour', createTour)
+            // console.log('cached tours', data.listTours.items, 'createTour', createTour)
             let index = data.listTours.items.findIndex(c => c.id == input.id)
             if (index == -1) {
               data.listTours.items.push(createTour)
@@ -277,31 +274,12 @@ export default {
             ...stats
           }
         })
-        // let hopefulResponse = activities.map(c => {
-        //   let { activityTourId, ...response } = c
-        //   return response
-        // })
         this.$apollo.mutate({
           mutation: CREATE_ACTIVITIES,
           variables: {
             input: activities, 
           },
           fetchPolicy: 'no-cache',
-          // update: ( store, { data: { createActivities } }) => {
-          //   if (this.$route.params.mapId != 'new') {
-          //     const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
-          //     data.getTour.activities.items.push(...createActivity)
-          //     store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
-          //   } else {
-          //   }
-          // },
-          // optimisticResponse: {
-          //   __typename: 'Mutation',
-          //   createActivity: {
-          //     __typename: 'Activity',
-          //     ...hopefulResponse,
-          //   }
-          // }
         }) 
       }
     },
@@ -315,9 +293,7 @@ export default {
       let per_page = 50
       let acts = [];
       let activities = [];
-      let beforeStart = false
-      const boundSubmitRide = this.submitRide.bind(this)
-      let auth = await this.loadAuth()
+      await this.loadAuth()
       do {
         let strava = await axios.get(
           "https://www.strava.com/api/v3/athlete/activities",
@@ -344,29 +320,27 @@ export default {
       } while (activities.length == per_page);
 
       if (this.$route.params.mapId == 'new') {
-        console.log('inside new')
+        // console.log('inside new')
         this.$store.commit('setActivities', acts.map(c => { 
           return { ...c, summary_polyline: c.map.summary_polyline } 
         }))
-        // acts.map((c,i) => boundSubmitRide(c))
       } else {
         this.compareRides(acts, start, end)
       }
-      // acts.map(this.submitRide(c,i))
       return
     },
     compareRides(strava, start, end) {
       let toBeDeleted = this.tourData.getTour.activities.items.filter(c => {
-        console.log('before Start', rideStart < start, 'after End', rideStart > end)
+        // console.log('before Start', rideStart < start, 'after End', rideStart > end)
         let rideStart = new Date(c.start_date_local)
         if (rideStart < start || rideStart > end) return true
         return false
       })
       toBeDeleted.map(c => this.deleteRide(c.id))
-      console.log('toBeDeleted', toBeDeleted)
-      let stravaIds = new Set(strava.map(c => c.id))
-      let app = new Set(this.tourData.getTour.activities.items.map(c => c.strava_id))
-      console.log('strava', stravaIds, app, strava, this.tourData.getTour.activities.items)
+      // console.log('toBeDeleted', toBeDeleted)
+      // let stravaIds = new Set(strava.map(c => c.id))
+      // let app = new Set(this.tourData.getTour.activities.items.map(c => c.strava_id))
+      // console.log('strava', stravaIds, app, strava, this.tourData.getTour.activities.items)
       strava.map(c => this.compareRide(c))
     },
     compareRide(ride) {
@@ -374,11 +348,11 @@ export default {
       const rideSum = pick(ride, ['elapsed_time','moving_time', 'name','start_date_local','type'])
       rideSum['strava_id'] = ride.id
       rideSum['summary_polyline'] = ride.map.summary_polyline
-      console.log('compared', app.length, rideSum, app)
+      // console.log('compared', app.length, rideSum, app)
       if (app.length < 1) {
         this.submitRide(ride, 'create') // create
       } else if (app.length == 1) {
-        console.log('check equal rides', isEqual(rideSum, app[0]))
+        // console.log('check equal rides', isEqual(rideSum, app[0]))
         this.submitRide(ride, app[0].id)
       } else {
         this.handleMultipleRides(ride, app)
@@ -394,14 +368,14 @@ export default {
       })
     },
     deleteRide: async function(id) {
-      console.log('delete', id, {input: {id}})
+      // console.log('delete', id, {input: {id}})
       this.$apollo.mutate({
         mutation: DELETE_ACTIVITY,
         variables: { input: { id }},
         update: ( store, { data: {deleteActivity} }) => {
-          console.log('delete Activity', deleteActivity)
+          // console.log('delete Activity', deleteActivity)
           const data = store.readQuery({query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId } })
-          console.log('data from delete query', data)
+          // console.log('data from delete query', data)
           data.getTour.activities.items = data.getTour.activities.items.filter(c => c.id != id)
           store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
         },
@@ -413,7 +387,7 @@ export default {
           }
         }
       })
-      console.log('deleted')
+      // console.log('deleted')
       return
     },
     submitRide: async function(c, id = 'create') {
@@ -448,7 +422,7 @@ export default {
           }
         })
 
-        console.log('created')
+        // console.log('created')
       } else {
         input['id'] = id
         this.$apollo.mutate({
@@ -463,7 +437,7 @@ export default {
             }
           }
         })
-        console.log('updated')
+        // console.log('updated')
       }
       return
     },
@@ -488,9 +462,6 @@ export default {
     this.loadAuth()
     this.setTourId()
   },
-  destroyed() {
-    clearInterval(this.refresh);
-  }
 };
 </script>
 

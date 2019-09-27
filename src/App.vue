@@ -63,7 +63,7 @@ export default {
     getUser: async function() {
       try {
         let user = await Auth.currentAuthenticatedUser()
-        console.log("User Info: ", user);
+        // console.log("User Info: ", user);
         this.$store.commit('setSignedIn', true)
         this.user = user;
       } catch (error) {

@@ -79,7 +79,6 @@
 
 <script>
 import { Auth } from "aws-amplify";
-import { deleteTour } from '../graphql/mutations';
 import AuthStrava from './AuthStrava'
 import LIST_TOURS from '../gql/listTours.gql'
 import DELETE_TOUR from '../gql/deleteTour.gql'
