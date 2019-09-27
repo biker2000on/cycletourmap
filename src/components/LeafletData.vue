@@ -98,16 +98,20 @@ export default {
   },
   watch: {
     getTour: async function() {
-      if (!isNull(this.getTour.activities.nextToken)) {
-        await this.loadMore()
-        return
+      if (!isNull(this.getTour)) {
+        if (!isNull(this.getTour.activities.nextToken)) {
+          await this.loadMore()
+          return
+        }
       }
       return
     },
     getTourPublic: async function() {
-      if (!isNull(this.getTourPublic.activities.nextToken)) {
-        await this.loadMore()
-        return
+      if (!isNull(this.getTourPublic)) {
+        if (!isNull(this.getTourPublic.activities.nextToken)) {
+          await this.loadMore()
+          return
+        }
       }
       return
     }

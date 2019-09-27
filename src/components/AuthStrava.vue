@@ -1,5 +1,5 @@
 <template>
-  <ApolloQuery :query="require('../gql/listAuthsAthletes.gql')" ref="auth" @result="getTokens()">
+  <ApolloQuery :query="require('../gql/listAuths.gql')" ref="auth" @result="getTokens()">
     <template slot-scope="{ result: { loading, data, error }}">
       <div v-if="loading">Loading...</div>
       <div v-else-if="data">

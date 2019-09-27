@@ -1,18 +1,13 @@
-query ListAuths(
-  $filter: ModelAuthFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listAuths(filter: $filter, limit: $limit, nextToken: $nextToken) {
+query ListAuths {
+  listAuths {
     items {
       id
       access_token
       expires_at
       refresh_token
-      token_type
       strava_scope
+      token_type
       __typename
     }
-    nextToken
   }
 }
