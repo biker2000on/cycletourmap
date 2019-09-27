@@ -19,7 +19,7 @@
         v-for="(row, i) in text"
         :key="i"
       >
-        <v-col cols="6" :order="i % 2 == 0 ? 2 : 1">
+        <v-col sm="6" cols="12" :order="i % 2 == 0 ? 2 : 1">
           <v-hover>
             <template v-slot="{ hover }">
               <div
@@ -29,7 +29,7 @@
             </template>
           </v-hover>
         </v-col>
-        <v-col cols="6" :order="i % 2 == 0 ? 1 : 2">
+        <v-col sm="6" cols="12" :order="i % 2 == 0 ? 1 : 2">
           <v-hover>
             <template v-slot="{ hover }">
               <v-img
@@ -40,6 +40,7 @@
             </template>
           </v-hover>
         </v-col>
+        <v-responsive></v-responsive>
       </v-row>
     <div>
       <p class="display-3">Get Mapping Now</p>
