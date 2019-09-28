@@ -1,0 +1,12 @@
+{
+    "permissions": {
+        "api": {
+            "tourmap": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        }
+    }
+}
