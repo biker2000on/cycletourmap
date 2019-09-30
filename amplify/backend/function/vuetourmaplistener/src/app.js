@@ -19,6 +19,7 @@ Amplify Params - DO NOT EDIT */
 var express = require('express')
 var bodyParser = require('body-parser')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+// var axios = require('axios')
 
 // declare a new express app
 var app = express()
@@ -37,60 +38,59 @@ app.use(function(req, res, next) {
  * Example get method *
  **********************/
 
-app.get('/items', function(req, res) {
-  // Add your code here
-  res.json({success: 'get call succeed!', url: req.url});
-});
-
-app.get('/items/*', function(req, res) {
-  // Add your code here
-  res.json({success: 'get call succeed!', url: req.url});
+app.get('/strava/events', function(req, res) {
+  if(req.query['hub.challenge']) {
+    console.log('Subscription setup: ', req.query)
+    res.json({"hub.challenge": req.query['hub.challenge']})
+  } else {
+    res.status(500).json({error: 'did not receive hub.challenge', url: req.url});
+  }
 });
 
 /****************************
 * Example post method *
 ****************************/
 
-app.post('/items', function(req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
+app.post('/strava/events', function(req, res) {
+  console.log('New Strava Post event body', req.body)
+  res.status(200).end()
 });
 
-app.post('/items/*', function(req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
-});
+// app.post('/items/*', function(req, res) {
+//   // Add your code here
+//   res.json({success: 'post call succeed!', url: req.url, body: req.body})
+// });
 
 /****************************
 * Example put method *
 ****************************/
 
-app.put('/items', function(req, res) {
-  // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
-});
+// app.put('/items', function(req, res) {
+//   // Add your code here
+//   res.json({success: 'put call succeed!', url: req.url, body: req.body})
+// });
 
-app.put('/items/*', function(req, res) {
-  // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
-});
+// app.put('/items/*', function(req, res) {
+//   // Add your code here
+//   res.json({success: 'put call succeed!', url: req.url, body: req.body})
+// });
 
 /****************************
 * Example delete method *
 ****************************/
 
-app.delete('/items', function(req, res) {
-  // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
-});
+// app.delete('/items', function(req, res) {
+//   // Add your code here
+//   res.json({success: 'delete call succeed!', url: req.url});
+// });
 
-app.delete('/items/*', function(req, res) {
-  // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
-});
+// app.delete('/items/*', function(req, res) {
+//   // Add your code here
+//   res.json({success: 'delete call succeed!', url: req.url});
+// });
 
 app.listen(3000, function() {
-    console.log("App started")
+    // console.log("App started")
 });
 
 // Export the app object. When executing the application local this does nothing. However,
