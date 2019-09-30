@@ -1,0 +1,34 @@
+{
+    "paths": [
+        {
+            "name": "/strava/events",
+            "lambdaFunction": "tourmapStravaListener",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "stravaListener",
+    "apiName": "stravaListener",
+    "functionArns": [
+        {
+            "lambdaFunction": "tourmapStravaListener"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "vue-tourmap-tourmap-20190810131254-authRole",
+        "unAuthRoleName": "vue-tourmap-tourmap-20190810131254-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "tourmapStravaListener",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
