@@ -7,7 +7,6 @@ type Tour @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}, 
   end_date: String!
   isPublic: Boolean!
   activities: [Activity]! @connection(name: "TourActivities")
-  athlete: Athlete @connection
 }
 
 type Activity @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}, {allow: public, operations: [read]}]) 
@@ -84,7 +83,7 @@ type Athlete @model @auth(rules: [{allow: owner}, {allow: private, provider: iam
   date_preference: String
   measurement_preference: String
   weight: Float
-  auth: Auth @connection(name: "AthleteAuth")
+  auth: Auth @connection
   tours: [Tour] @connection
 }
 
@@ -95,7 +94,6 @@ type Auth @model @auth(rules: [{allow: owner}, {allow: private, provider: iam}])
   refresh_token: String!
   token_type: String!
   strava_scope: [String]!
-  athlete: Athlete @connection(name: "AthleteAuth")
 }
 
 enum ACTIVITY_TYPE {

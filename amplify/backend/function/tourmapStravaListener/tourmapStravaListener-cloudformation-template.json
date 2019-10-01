@@ -77,7 +77,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "vue-tourmap-tourmap-20190810131254-deployment",
-					"S3Key": "amplify-builds/tourmapStravaListener-4f645335534838787775-build.zip"
+					"S3Key": "amplify-builds/tourmapStravaListener-3630336f625a6b663737-build.zip"
 				}
 			}
 		},

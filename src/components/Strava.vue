@@ -1,6 +1,6 @@
 <template>
   <v-list dense >
-    <v-list-item v-if="athlete" >
+    <!-- <v-list-item v-if="athlete" >
       <v-img
         v-if="athlete"
         :src="athlete.profile"
@@ -12,7 +12,7 @@
       <v-list-item-content>
         <h2>{{ athlete.firstname + ' ' + athlete.lastname }}</h2>
       </v-list-item-content>
-    </v-list-item>
+    </v-list-item> -->
     <v-list-item dense>
       <v-list-item-content>
         <v-text-field label="Tour Name" v-model="name"></v-text-field>
@@ -72,7 +72,6 @@
       <v-list-item-content class="my-0 py-0">
         <v-switch label="Public" class="mx-auto" v-model="isPublic" ></v-switch>
         <br>
-        <!-- <p class="text-center">{{ '# of Activities: ' + tourdata ? tourData.getTour.activities.items.length : ''}}</p> -->
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
@@ -122,14 +121,13 @@ export default {
       type: Object,
       default: () => {},
     },
-    authProp: {
-      type: Array,
-      default: () => []
+    athlete: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
-      athlete: null,
       refresh: null, // timer for refreshing tokens
       stravaScope: null,
       isSaving: false,
@@ -151,7 +149,7 @@ export default {
   },
   methods: {
     loadAuth: function() {
-      this.auth = this.authProp[0]
+      this.auth = this.athlete.auth
       const expire = new Date(this.auth.expires_at * 1000 - 3600 * 1000) // 1 hour before expiry
       if (expire < new Date()) {
         this.refreshAuth()
@@ -210,6 +208,7 @@ export default {
         end_date: this.enddate,
         description: this.description,
         isPublic: this.isPublic,
+        athleteToursId: this.athlete ? this.athlete.id : null
       }
       if (this.$route.params.mapId == 'new') {
         await this.$apollo.mutate({

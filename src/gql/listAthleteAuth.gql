@@ -1,0 +1,17 @@
+query listAthleteAuth {
+  listAthletes {
+    items {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+      }
+    }
+  }
+}
