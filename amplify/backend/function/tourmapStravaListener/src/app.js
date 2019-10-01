@@ -18,6 +18,7 @@ Amplify Params - DO NOT EDIT */
 var express = require("express");
 var bodyParser = require("body-parser");
 var awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
+var { handleInput } = require("./graphql");
 
 // declare a new express app
 var app = express();
@@ -46,7 +47,7 @@ app.get("/strava/events", function(req, res) {
     res
       .status(500)
       .json({ error: "did not receive hub.challenge", url: req.url });
-  };
+  }
 });
 
 app.get("/strava/events/*", function(req, res) {
@@ -59,8 +60,9 @@ app.get("/strava/events/*", function(req, res) {
  ****************************/
 
 app.post("/strava/events", function(req, res) {
-  console.log('New Strava Post event body', req.body)
-  res.status(200).end()
+  console.log("New Strava Post event body", req.body);
+  handleInput(req.body);
+  res.status(200).end();
 });
 
 app.post("/strava/events/*", function(req, res) {
