@@ -3,7 +3,7 @@ const { API, graphqlOperation } = require("aws-amplify");
 const Amplify = require("aws-amplify");
 const axios = require("axios");
 const queries = require("./queries");
-const pick = require("lodash.pick");
+const _ = require("lodash");
 const { athleteKeys, activityKeys } = require("./keys");
 
 Amplify.default.configure({
@@ -127,7 +127,7 @@ const getActivity = async (id, access_token) => {
       }
     );
     const preppedActivity = {
-      ...pick(activity, activityKeys),
+      ..._.pick(activity, activityKeys),
       activity_type: "STRAVA",
       strava_id: activity.id,
       summary_polyline: activity.map.summary_polyline
@@ -167,7 +167,7 @@ const getAthlete = async auth => {
       }
     });
     const preppedAthlete = {
-      ...pick(athlete, athleteKeys),
+      ..._.pick(athlete, athleteKeys),
       strava_id: athlete.id
     };
     return preppedAthlete;
