@@ -1,0 +1,10 @@
+mutation CreateAthlete($input: CreateAthleteInput!) {
+  createAthlete(input: $input) {
+    id
+    strava_id
+    firstname
+    lastname
+    profile
+    __typename
+  }
+}

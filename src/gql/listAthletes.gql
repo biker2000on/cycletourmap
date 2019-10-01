@@ -1,0 +1,12 @@
+query listAthletes {
+  listAthletes {
+    items {
+      id
+      strava_id
+      firstname
+      lastname
+      profile
+      __typename
+    }
+  }
+}

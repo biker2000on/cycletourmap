@@ -79,6 +79,9 @@ type Athlete @model @auth(rules: [{allow: owner}, {allow: private, provider: iam
   city: String
   state: String
   country: String
+  date_preference: String
+  measurement_preference: String
+  weight: Float
   auth: Auth @connection(name: "AthleteAuth")
 }
 

@@ -1,5 +1,4 @@
 query listAuthsAthletes {
-  __typename
   listAuths {
     items {
       id
