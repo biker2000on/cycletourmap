@@ -7,6 +7,7 @@ const activityKeys = [
   'average_watts',
   'comment_count',
   'commute',
+  'description',
   'device_watts',
   'display_hide_heartrate_option',
   'distance',

@@ -25,6 +25,7 @@ type Activity @model @auth(rules: [{allow: owner}, {allow: private, provider: ia
   average_watts: Float
   comment_count: Int
   commute: Boolean
+  description: String
   device_watts: Boolean
   display_hide_heartrate_option: Boolean
   distance: Float
