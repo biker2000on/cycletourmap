@@ -64,7 +64,7 @@ const handleActivity = async (body, athleteInfo) => {
         let start = new Date(activity.start_date_local);
         const createPromises = athleteInfo.tours.items.map(async c => {
           const tourStart = new Date(c.start_date);
-          const tourEnd = new Date(c.end_date);
+          const tourEnd = c.end_date ? new Date(c.end_date) : new Date();
           if (start >= tourStart && start <= tourEnd) {
             let input = {
               ...activity,
