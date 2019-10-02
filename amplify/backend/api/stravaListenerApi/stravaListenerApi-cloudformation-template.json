@@ -14,15 +14,15 @@
         },
     
     
-          "functiontourmapStravaListenerName": {
+          "functionstravaListenerName": {
             "Type": "String",
-            "Default": "functiontourmapStravaListenerName"
+            "Default": "functionstravaListenerName"
           },
         
           
-          "functiontourmapStravaListenerArn": {
+          "functionstravaListenerArn": {
             "Type": "String",
-            "Default": "functiontourmapStravaListenerArn"
+            "Default": "functionstravaListenerArn"
           }
         
           
@@ -42,16 +42,16 @@
     "Resources": {
         
         
-      "stravaListener": {
+      "stravaListenerApi": {
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
           "Description": "",
-          "Name": "stravaListener",
+          "Name": "stravaListenerApi",
           "Body": {
             "swagger": "2.0",
             "info": {
               "version": "2018-05-24T17:52:00Z",
-              "title": "stravaListener"
+              "title": "stravaListenerApi"
             },
             "host": {
                 "Fn::Join": [
@@ -173,7 +173,7 @@
                             
                             {
                                 
-                                "Ref": "functiontourmapStravaListenerArn"
+                                "Ref": "functionstravaListenerArn"
                             },
                             
                             "/invocations"
@@ -272,7 +272,7 @@
                           
                           {
                             
-                            "Ref": "functiontourmapStravaListenerArn"
+                            "Ref": "functionstravaListenerArn"
                           },
                           
                           "/invocations"
@@ -329,12 +329,12 @@
                   
         
         
-        "functiontourmapStravaListenerPermissionstravaListener": {
+        "functionstravaListenerPermissionstravaListenerApi": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": 
                     {
-                        "Ref":  "functiontourmapStravaListenerName"
+                        "Ref":  "functionstravaListenerName"
                     },
                     
                     "Action": "lambda:InvokeFunction",
@@ -353,7 +353,7 @@
                             },
                             ":",
                             {
-                                "Ref": "stravaListener"
+                                "Ref": "stravaListenerApi"
                             },
                             "/*/*/*"
                         ]
@@ -364,7 +364,7 @@
         
         
         
-      "DeploymentAPIGWstravaListener": {
+      "DeploymentAPIGWstravaListenerApi": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "Description": "The Development stage deployment of your API.",
@@ -378,7 +378,7 @@
             ]
           },
           "RestApiId": {
-            "Ref": "stravaListener"
+            "Ref": "stravaListenerApi"
           }
         }
       }
@@ -386,11 +386,11 @@
     "Outputs": {
         "RootUrl": {
             "Description": "Root URL of the API gateway",
-            "Value": {"Fn::Join": ["", ["https://", {"Ref": "stravaListener"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
+            "Value": {"Fn::Join": ["", ["https://", {"Ref": "stravaListenerApi"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
         },
         "ApiName": {
           "Description": "API Friendly name",
-          "Value": "stravaListener"
+          "Value": "stravaListenerApi"
         }
     }
   }

@@ -1,24 +1,15 @@
 /* eslint-disable no-case-declarations */
-const { API, graphqlOperation } = require("aws-amplify");
-const Amplify = require("aws-amplify");
 const axios = require("axios");
 const queries = require("./queries");
-const _ = require("lodash");
 const { athleteKeys, activityKeys } = require("./keys");
-
-Amplify.default.configure({
-  aws_appsync_graphqlEndpoint: process.env.API_TOURMAP_GRAPHQLAPIENDPOINTOUTPUT,
-  aws_appsync_region: process.env.REGION,
-  aws_appsync_authenticationType: "AWS_IAM"
-});
+const { client } = require('./client')
 
 const handleInput = async body => {
   let athleteInfo;
+  // console.log("inside handleInput", body);
   try {
-    athleteInfo = await API.graphql(graphqlOperation(queries.getAthleteAll), {
-      strava_id: body.owner_id
-    });
-    console.log("result from API query", athleteInfo);
+    athleteInfo = await client(queries.getAthleteAll, { strava_id: body.owner_id })
+    console.log("result from API query", athleteInfo.data.getAthleteByStravaId.items[0].tours);
   } catch (error) {
     console.warn("couldn't retrieve athleteInfo", error);
   }
@@ -30,38 +21,34 @@ const handleInput = async body => {
           1800 * 1000
       ) < new Date()
     ) {
-      const auth = await refreshAuth(
-        athleteInfo.data.getAthleteByStravaId.items[0]
-      );
+      console.log('before refresh')
+      const auth = await refreshAuth(athleteInfo.data.getAthleteByStravaId.items[0]);
+      console.log('after refresh')
       athleteInfo.data.getAthleteByStravaId.items[0].auth = auth;
     }
     athleteInfo.data.getAthleteByStravaId.items.map(async c => {
       switch (body.object_type) {
         case "activity":
           await handleActivity(body, c);
-          return;
+          break;
         case "athlete":
           await handleAthlete(body, c);
-          return;
+          break;
         default:
-          return;
+          break;
       }
     });
-    return;
   } catch (error) {
-    console.warn('Errors in acquiring data from Strava and pushing to DB', error)
+    console.warn("Errors in acquiring data from Strava and pushing to DB", error);
   }
 };
 
 const handleActivity = async (body, athleteInfo) => {
   switch (body.aspect_type) {
     case "delete":
-      const activities = API.graphql(
-        graphqlOperation(queries.getActivityByStravaId),
-        { strava_id: body.object_id }
-      );
-      activities.data.listActivitiesByStravaId.items.map(c => {
-        API.graphql(graphqlOperation(queries.deleteActivity), {
+      const activities = await client((queries.getActivityByStravaId),{ strava_id: body.object_id });
+      activities.data.listActivitiesByStravaId.items.map(async c => {
+        await client((queries.deleteActivity), {
           input: { id: c.id }
         });
       });
@@ -73,7 +60,7 @@ const handleActivity = async (body, athleteInfo) => {
           athleteInfo.auth.access_token
         );
         let start = new Date(activity.start_date_local);
-        athleteInfo.tour.items.map(c => {
+        athleteInfo.tours.items.map(async c => {
           const tourStart = new Date(c.start_date);
           const tourEnd = new Date(c.end_date);
           if (start >= tourStart && start <= tourEnd) {
@@ -82,7 +69,8 @@ const handleActivity = async (body, athleteInfo) => {
               activityTourId: c.id,
               owner: athleteInfo.owner
             };
-            API.graphql(graphqlOperation(queries.createActivity), { input });
+            const act = await client((queries.createActivity), { input });
+            console.log(act.data.createActivity.tour)
           }
         });
       } catch (error) {
@@ -95,17 +83,13 @@ const handleActivity = async (body, athleteInfo) => {
           body.object_id,
           athleteInfo.auth.access_token
         );
-        let dbActivities = await API.graphql(
-          graphqlOperation(queries.getActivityByStravaId),
-          { strava_id: body.object_id }
-        );
-        dbActivities.data.listActivitiesByStravaId.items.map(c => {
+        let dbActivities = await client((queries.getActivityByStravaId), { strava_id: body.object_id });
+        dbActivities.data.listActivitiesByStravaId.items.map(async c => {
           let input = {
             ...activity,
             id: c.id,
-            owner: athleteInfo.owner
           };
-          API.graphql(graphqlOperation(queries.updateActivity), { input });
+          await client((queries.updateActivity), { input });
         });
       } catch (error) {
         console.warn("error updating activity/s", error);
@@ -118,7 +102,7 @@ const handleActivity = async (body, athleteInfo) => {
 
 const getActivity = async (id, access_token) => {
   try {
-    const activity = await axios.post(
+    const activity = await axios.get(
       "https://www.strava.com/api/v3/activities/" + id,
       {
         headers: {
@@ -127,10 +111,10 @@ const getActivity = async (id, access_token) => {
       }
     );
     const preppedActivity = {
-      ..._.pick(activity, activityKeys),
+      ...pick(activity.data, activityKeys),
       activity_type: "STRAVA",
-      strava_id: activity.id,
-      summary_polyline: activity.map.summary_polyline
+      strava_id: activity.data.id,
+      summary_polyline: activity.data.map.summary_polyline
     };
     return preppedActivity;
   } catch (error) {
@@ -145,14 +129,12 @@ const handleAthlete = async (body, athleteInfo) => {
       let input = {
         ...athlete,
         id: athleteInfo.id,
-        owner: athleteInfo.owner
+        // owner: athleteInfo.owner
       };
-      API.graphql(graphqlOperation(queries.updateAthlete), { input });
+      await client((queries.updateAthlete), { input });
       return;
     case "delete":
-      API.graphql(graphqlOperation(queries.deleteAthlete), {
-        input: { id: body.object_id }
-      });
+      await client((queries.deleteAthlete), { input: { id: body.object_id }});
       return;
     default:
       return;
@@ -161,14 +143,14 @@ const handleAthlete = async (body, athleteInfo) => {
 
 const getAthlete = async auth => {
   try {
-    const athlete = await axios.post("https://www.strava.com/api/v3/athlete", {
+    const athlete = await axios.get("https://www.strava.com/api/v3/athlete", {
       headers: {
         Authorization: "Bearer " + auth.access_token
       }
     });
     const preppedAthlete = {
-      ..._.pick(athlete, athleteKeys),
-      strava_id: athlete.id
+      ...pick(athlete.data, athleteKeys),
+      strava_id: athlete.data.id
     };
     return preppedAthlete;
   } catch (error) {
@@ -178,18 +160,26 @@ const getAthlete = async auth => {
 
 const refreshAuth = async athleteInfo => {
   const data = {
-    client_id: process.env.STRAVA_CLIENTID,
-    client_secret: process.env.STRAVA_CLIENT_SECRET,
+    client_id: "28538", //process.env.STRAVA_CLIENTID,
+    client_secret: "97c7dc5efcafb04becb6bbaedd0d9ba1e84efec9", // process.env.STRAVA_CLIENT_SECRET,
     refresh_token: athleteInfo.auth.refresh_token,
     grant_type: "refresh_token"
   };
   let res = await axios.post("https://www.strava.com/oauth/token", data);
   let { athlete, expires_in, ...auth } = res.data;
   auth["id"] = athleteInfo.auth.id;
-  auth["owner"] = athleteInfo.owner;
-  API.graphql(graphqlOperation(queries.updateAuth), { input: auth });
+  // auth["owner"] = athleteInfo.owner;
+  await client((queries.updateAuth), { input: auth });
   return auth;
 };
+
+const pick = (obj, keys) =>
+  Object.keys(obj)
+    .filter(i => keys.includes(i))
+    .reduce((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {});
 
 module.exports = {
   handleInput

@@ -2,17 +2,17 @@
     "paths": [
         {
             "name": "/strava/events",
-            "lambdaFunction": "tourmapStravaListener",
+            "lambdaFunction": "stravaListener",
             "privacy": {
                 "open": true
             }
         }
     ],
-    "resourceName": "stravaListener",
-    "apiName": "stravaListener",
+    "resourceName": "stravaListenerApi",
+    "apiName": "stravaListenerApi",
     "functionArns": [
         {
-            "lambdaFunction": "tourmapStravaListener"
+            "lambdaFunction": "stravaListener"
         }
     ],
     "privacy": {
@@ -24,7 +24,7 @@
     "dependsOn": [
         {
             "category": "function",
-            "resourceName": "tourmapStravaListener",
+            "resourceName": "stravaListener",
             "attributes": [
                 "Name",
                 "Arn"

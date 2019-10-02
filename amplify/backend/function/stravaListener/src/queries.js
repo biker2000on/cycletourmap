@@ -1,5 +1,33 @@
-const getAthleteAll = `query getAthleteAll {
+const getAthleteAll = `query getAthleteAll($strava_id: ID, $filter: ModelAthleteFilterInput, $limit: Int) {
   getAthleteByStravaId(strava_id: $strava_id, filter: $filter, limit: $limit) {
+    items {
+      id
+      strava_id
+      firstname
+      lastname
+      owner
+      auth {
+        id
+        access_token
+        expires_at
+        refresh_token
+        owner
+      }
+      tours(limit: 200) {
+        items {
+          id
+          name
+          start_date
+          end_date
+        }
+      }
+    }
+  }
+}
+`
+
+const getAthleteAllHardCoded = `query getAthleteAll {
+  getAthleteByStravaId(strava_id: 7594) {
     items {
       id
       strava_id
@@ -50,6 +78,10 @@ const createActivity = `mutation CreateActivity($input: CreateActivityInput!) {
     summary_polyline
     type
     strava_id
+    owner
+    tour {
+      name
+    }
   }
 }`
 
@@ -110,4 +142,5 @@ module.exports = {
   getActivityByStravaId,
   updateAthlete,
   deleteAthlete,
+  getAthleteAllHardCoded
 }

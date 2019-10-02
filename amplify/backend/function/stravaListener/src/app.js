@@ -59,10 +59,9 @@ app.get("/strava/events/*", function(req, res) {
  * Example post method *
  ****************************/
 
-app.post("/strava/events", function(req, res) {
-  console.log("New Strava Post event body", req.body);
-  handleInput(req.body);
+app.post("/strava/events", async function(req, res) {
   res.status(200).end();
+  // await handleInput(req.body);
 });
 
 app.post("/strava/events/*", function(req, res) {

@@ -33,13 +33,13 @@
 				}
 			}
 		},
-		"stravaListener": {
+		"stravaListenerApi": {
 			"service": "API Gateway",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": [
 				{
 					"category": "function",
-					"resourceName": "tourmapStravaListener",
+					"resourceName": "stravaListener",
 					"attributes": [
 						"Name",
 						"Arn"
@@ -55,11 +55,18 @@
 		}
 	},
 	"function": {
-		"tourmapStravaListener": {
+		"stravaListener": {
 			"service": "Lambda",
 			"providerPlugin": "awscloudformation",
 			"build": true,
 			"dependsOn": [
+				{
+					"category": "auth",
+					"resourceName": "vuetourmap5340ac92",
+					"attributes": [
+						"UserPoolId"
+					]
+				},
 				{
 					"category": "api",
 					"resourceName": "tourmap",

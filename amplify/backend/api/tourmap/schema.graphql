@@ -113,6 +113,7 @@ input CreateActivityInput {
   average_watts: Float
   comment_count: Int
   commute: Boolean
+  description: String
   device_watts: Boolean
   display_hide_heartrate_option: Boolean
   distance: Float
@@ -155,6 +156,7 @@ input CreateActivityInput {
   visibility: String
   workout_type: Int
   activityTourId: ID
+  owner: String
 }
 
 type Mutation {

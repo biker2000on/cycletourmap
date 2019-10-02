@@ -1,15 +1,13 @@
 {
-  "name": "tourmapStravaListener",
+  "name": "stravaListener",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "aws-amplify": "^1.1.40",
     "aws-serverless-express": "^3.3.5",
     "axios": "^0.19.0",
     "body-parser": "^1.17.1",
-    "express": "^4.15.2",
-    "lodash": "^4.17.15"
+    "express": "^4.15.2"
   },
   "devDependencies": {},
   "scripts": {
