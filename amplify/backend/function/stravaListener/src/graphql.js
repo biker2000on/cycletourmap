@@ -26,7 +26,7 @@ const handleInput = async body => {
       console.log('after refresh')
       athleteInfo.data.getAthleteByStravaId.items[0].auth = auth;
     }
-    athleteInfo.data.getAthleteByStravaId.items.map(async c => {
+    const athletePromises = athleteInfo.data.getAthleteByStravaId.items.map(async c => {
       switch (body.object_type) {
         case "activity":
           await handleActivity(body, c);
@@ -38,6 +38,7 @@ const handleInput = async body => {
           break;
       }
     });
+    await Promise.all(athletePromises)
   } catch (error) {
     console.warn("Errors in acquiring data from Strava and pushing to DB", error);
   }
@@ -47,11 +48,12 @@ const handleActivity = async (body, athleteInfo) => {
   switch (body.aspect_type) {
     case "delete":
       const activities = await client((queries.getActivityByStravaId),{ strava_id: body.object_id });
-      activities.data.listActivitiesByStravaId.items.map(async c => {
+      const deletePromises = activities.data.listActivitiesByStravaId.items.map(async c => {
         await client((queries.deleteActivity), {
           input: { id: c.id }
         });
       });
+      await Promise.all(deletePromises)
       return;
     case "create":
       try {
@@ -60,7 +62,7 @@ const handleActivity = async (body, athleteInfo) => {
           athleteInfo.auth.access_token
         );
         let start = new Date(activity.start_date_local);
-        athleteInfo.tours.items.map(async c => {
+        const createPromises = athleteInfo.tours.items.map(async c => {
           const tourStart = new Date(c.start_date);
           const tourEnd = new Date(c.end_date);
           if (start >= tourStart && start <= tourEnd) {
@@ -70,9 +72,10 @@ const handleActivity = async (body, athleteInfo) => {
               owner: athleteInfo.owner
             };
             const act = await client((queries.createActivity), { input });
-            console.log(act.data.createActivity.tour)
+            console.log('activity created', act.data.createActivity.tour)
           }
         });
+        await Promise.all(createPromises)
       } catch (error) {
         console.warn("error creating new activities", error);
       }
@@ -84,13 +87,15 @@ const handleActivity = async (body, athleteInfo) => {
           athleteInfo.auth.access_token
         );
         let dbActivities = await client((queries.getActivityByStravaId), { strava_id: body.object_id });
-        dbActivities.data.listActivitiesByStravaId.items.map(async c => {
+        const updatePromises = dbActivities.data.listActivitiesByStravaId.items.map(async c => {
           let input = {
             ...activity,
             id: c.id,
           };
-          await client((queries.updateActivity), { input });
+          const act = await client((queries.updateActivity), { input });
+          console.log('activity updated', act.data.updateActivity)
         });
+        await Promise.all(updatePromises)
       } catch (error) {
         console.warn("error updating activity/s", error);
       }

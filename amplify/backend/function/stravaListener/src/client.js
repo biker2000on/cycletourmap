@@ -6,6 +6,8 @@ const region = 'us-east-1';
 const endpoint = new urlParse(appsyncUrl).hostname.toString();
 const apiKey = process.env.API_KEY;
 
+const replacer = (key, value) => value == "" ? null : value
+
 const client = async (query, variables) => {
     const req = new AWS.HttpRequest(appsyncUrl, region);
 
@@ -16,7 +18,7 @@ const client = async (query, variables) => {
         query: query,
         // operationName: "query",
         variables: variables
-    });
+    }, replacer);
 
     if (apiKey) {
         req.headers["x-api-key"] = apiKey;
@@ -36,7 +38,7 @@ const client = async (query, variables) => {
         httpRequest.write(req.body);
         httpRequest.end();
     });
-    // console.log('client data', data)
+    console.log('client data', data)
     return data
 };
 
