@@ -376,13 +376,13 @@ export default {
           data.getTour.activities.items = data.getTour.activities.items.filter(c => c.id != id)
           store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
         },
-        optimisticResponse: {
-          __typename: 'Mutation',
-          deleteActivity: {
-            __typename: 'Activity',
-            id: id,
-          }
-        }
+        // optimisticResponse: {
+        //   __typename: 'Mutation',
+        //   deleteActivity: {
+        //     __typename: 'Activity',
+        //     id: id,
+        //   }
+        // }
       })
       // console.log('deleted')
       return
@@ -409,14 +409,14 @@ export default {
               store.writeQuery({ query: GET_TOUR_ACTIVITIES, variables: { id: this.tourId }, data })
             }
           },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            createActivity: {
-              __typename: 'Activity',
-              ...hopefulResponse,
-              id: input.id
-            }
-          }
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   createActivity: {
+          //     __typename: 'Activity',
+          //     ...hopefulResponse,
+          //     id: input.id
+          //   }
+          // }
         })
 
         // console.log('created')
@@ -425,14 +425,14 @@ export default {
         this.$apollo.mutate({
           mutation: UPDATE_ACTIVITY,
           variables: { input },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            updateActivity: {
-              __typename: 'Activity',
-              ...hopefulResponse,
-              id
-            }
-          }
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   updateActivity: {
+          //     __typename: 'Activity',
+          //     ...hopefulResponse,
+          //     id
+          //   }
+          // }
         })
         // console.log('updated')
       }

@@ -1,9 +1,9 @@
 <template>
   <l-popup :lat-lng="latlng">
-    <v-card>
+    <v-card min-width="256">
       <v-list-item two-line >
         <v-list-item-content>
-          <v-list-item-title class="headline">{{activity.name}}</v-list-item-title>
+          <v-list-item-title class="headline text-wrap">{{activity.name}}</v-list-item-title>
           <v-list-item-subtitle>{{activity.start_date_local.slice(0,10)}}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>

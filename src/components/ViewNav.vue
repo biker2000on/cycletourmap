@@ -2,7 +2,7 @@
   <v-list>
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="headline">{{tourData.name}}</v-list-item-title>
+        <v-list-item-title class="headline text-wrap">{{tourData.name}}</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
@@ -11,7 +11,7 @@
         <p><strong>End: </strong>{{tourData.end_date}}</p>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item dense>
+    <v-list-item dense v-if="tourData.description">
       <v-list-item-content>
         <p><strong>Description: </strong>{{tourData.description}}</p>
       </v-list-item-content>
@@ -53,6 +53,14 @@
         <p >Total Moving Time: {{ totalTime.toFixed(1) }} hrs</p>
       </v-list-item-content>
     </v-list-item>
+    <v-list-item v-if="tourData && tourData.activities">
+      <v-list-item-content>
+        <p class="title">Rides:</p>
+        <ol class="text-left">
+          <li v-for="activity in activities" :key="activity.id">{{activity.name}}</li>
+        </ol>
+      </v-list-item-content>
+    </v-list-item>
   </v-list>
 </template>
 
@@ -73,6 +81,16 @@ export default {
     VueGoodshareFacebook, VueGoodshareTwitter, VueGoodshareEmail
   },
   computed: {
+    activities() {
+      if (this.tourData) {
+        let acts = this.tourData.activities.items.sort((a,b) => {
+          if (a.start_date_local > b.start_date_local) return 1
+          return -1
+        })
+        return acts
+      }
+      return []
+    },
     isMetric() {
       return this.$store.state.isMetric
     },

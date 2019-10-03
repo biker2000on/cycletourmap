@@ -2,7 +2,12 @@
 query GetActivities ($id: ID!, $nextToken: String) {
     getTour(id: $id) {
       id
+      description
+      end_date
       isPublic
+      name
+      start_date
+      __typename
       activities(limit: 50, nextToken: $nextToken) {
         items {
           id
@@ -15,6 +20,7 @@ query GetActivities ($id: ID!, $nextToken: String) {
           summary_polyline
           type
           strava_id
+          __typename
         }
         nextToken
       } 

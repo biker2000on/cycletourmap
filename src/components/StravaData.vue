@@ -14,7 +14,7 @@
 <script>
 import Strava from "./Strava";
 import ViewNav from "./ViewNav";
-import GET_TOUR_AUTH from "../gql/getTourAuth.gql";
+import GET_TOUR_ACTIVITIES from "../gql/getTourActivities.gql";
 import LIST_AUTHS from "../gql/listAuths.gql";
 import LIST_ATHLETE_AUTH from '../gql/listAthleteAuth.gql'
 
@@ -37,7 +37,7 @@ export default {
       }
     },
     getTour: {
-      query: GET_TOUR_AUTH,
+      query: GET_TOUR_ACTIVITIES,
       variables() {
         return { id: this.$route.params.mapId };
       },
@@ -48,7 +48,7 @@ export default {
       }
     },
     getTourPublic: {
-      query: GET_TOUR_AUTH,
+      query: GET_TOUR_ACTIVITIES,
       client: "apikey",
       update: data => data.getTour,
       variables() {

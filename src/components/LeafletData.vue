@@ -10,7 +10,7 @@
 
 <script>
 import Leaflet from "./Leaflet";
-import { isNull, isNullOrUndefined } from "util";
+import { isNullOrUndefined } from "util";
 import GET_TOUR_ACTIVITIES from "../gql/getTourActivities.gql";
 
 export default {
@@ -98,8 +98,8 @@ export default {
   },
   watch: {
     getTour: async function() {
-      if (!isNull(this.getTour)) {
-        if (!isNull(this.getTour.activities.nextToken)) {
+      if (!isNullOrUndefined(this.getTour)) {
+        if (!isNullOrUndefined(this.getTour.activities.nextToken)) {
           await this.loadMore()
           return
         }
@@ -107,8 +107,8 @@ export default {
       return
     },
     getTourPublic: async function() {
-      if (!isNull(this.getTourPublic)) {
-        if (!isNull(this.getTourPublic.activities.nextToken)) {
+      if (!isNullOrUndefined(this.getTourPublic)) {
+        if (!isNullOrUndefined(this.getTourPublic.activities.nextToken)) {
           await this.loadMore()
           return
         }

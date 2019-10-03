@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app id="nav-drawer" v-if="displayNav" clipped >
+    <v-navigation-drawer v-model="drawer" app id="nav-drawer" v-if="displayNav" clipped width="300">
       <router-view name="drawer"></router-view>
     </v-navigation-drawer>
 
