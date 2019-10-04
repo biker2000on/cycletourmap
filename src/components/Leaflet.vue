@@ -44,6 +44,7 @@
         :visible="false"
         lang="en-US"
         :options="{ type: type.type }"
+        :ready="ready"
       />
       <l-polyline
         v-for="(start, idx) in popups"
@@ -116,6 +117,7 @@ export default {
       windowHeight: 300,
       computedHeight: { height: 600 },
       isFullscreen: false,
+      ready: false,
       googleAPIKey: process.env.VUE_APP_GOOGLE_MAPS_APIKEY,
       googleMapTypes: [
         { type: "roadmap", name: "Google" },
@@ -281,6 +283,17 @@ export default {
     }
   },
   mounted() {
+    if (!(typeof google === 'object' && typeof google.maps === 'object')) {
+      let googleapisscript = document.createElement('script');
+      let scriptUrl = 'https://maps.googleapis.com/maps/api/js?key='+this.googleAPIKey;
+      
+      scriptUrl += this.lang ? '&language='+this.lang : '';
+      scriptUrl += this.region ? '&region='+this.region : '';
+      
+      googleapisscript.setAttribute('src', scriptUrl);
+      document.head.appendChild(googleapisscript);
+    }
+    this.ready = true
     this.$nextTick(() => {
       window.addEventListener("resize", () => {
         this.windowHeight = window.innerHeight;

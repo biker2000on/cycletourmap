@@ -90,12 +90,9 @@ export default {
   data() {
     return {
       headers: [
-        {
-          text: "Name",
-          value: "name"
-        },
-        { text: "Start", value: "start_date" },
-        { text: "End", value: "end_date" },
+        { text: "Name", value: "name", width: 200 },
+        { text: "Start", value: "start_date", width: 120 },
+        { text: "End", value: "end_date", width: 120 },
         { text: "Description", value: "description" },
         { text: "Public", value: "isPublic" },
         { text: "Actions", value: "action", align: "center" }

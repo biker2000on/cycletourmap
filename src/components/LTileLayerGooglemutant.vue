@@ -39,32 +39,40 @@ const props = {
     type: Boolean,
     default: true,
   },
+  props: {
+    type: Boolean,
+    default: false,
+  },
+  ready: {
+      type: Boolean,
+      default: false,
+    },
 };
 
 export default {
   props,
-  data() {
-    return {
-      ready: false,
-    };
-  },
+  // data() {
+  //   return {
+  //     ready: false,
+  //   };
+  // },
   mounted() {
     this.mapObject = L.gridLayer.googleMutant(this.options);
     L.DomEvent.on(this.mapObject, this.$listeners);
     propsBinder(this, this.mapObject, props);
 
-    if (!(typeof google === 'object' && typeof google.maps === 'object')) {
-      let googleapisscript = document.createElement('script');
-      let scriptUrl = 'https://maps.googleapis.com/maps/api/js?key='+this.apikey;
+    // if (!(typeof google === 'object' && typeof google.maps === 'object')) {
+    //   let googleapisscript = document.createElement('script');
+    //   let scriptUrl = 'https://maps.googleapis.com/maps/api/js?key='+this.apikey;
       
-      scriptUrl += this.lang ? '&language='+this.lang : '';
-      scriptUrl += this.region ? '&region='+this.region : '';
+    //   scriptUrl += this.lang ? '&language='+this.lang : '';
+    //   scriptUrl += this.region ? '&region='+this.region : '';
       
-      googleapisscript.setAttribute('src', scriptUrl);
-      document.head.appendChild(googleapisscript);
-    }
+    //   googleapisscript.setAttribute('src', scriptUrl);
+    //   document.head.appendChild(googleapisscript);
+    // }
 
-    this.ready = true;
+    // this.ready = true;
     this.parentContainer = findRealParent(this.$parent);
     this.parentContainer.addLayer(this, !this.visible);
   },
