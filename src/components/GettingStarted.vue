@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-8">
+  <div class="pa-8" :style="{maxWidth: 800}">
     <div class="text-left">
       <h2 class="display-1 mb-3">Getting Started</h2>
     <h2 class="title">1. Create an account</h2>
