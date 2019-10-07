@@ -38,10 +38,8 @@
       #end
       ## [End] Owner Authorization Checks **
 
-
-      #if( ($isLocalDynamicGroupAuthorized == true || $isLocalOwnerAuthorized == true || $authMode == "public" ) )
-        $util.qr($items.add($item))
-      #end
+      $util.qr($items.add($item))
+      
     #end
     #set( $ctx.result.items = $items )
   #end

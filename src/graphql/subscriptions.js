@@ -23,6 +23,7 @@ export const onCreateTour = `subscription OnCreateTour($owner: String!) {
         average_watts
         comment_count
         commute
+        description
         device_watts
         display_hide_heartrate_option
         distance
@@ -93,6 +94,7 @@ export const onUpdateTour = `subscription OnUpdateTour($owner: String!) {
         average_watts
         comment_count
         commute
+        description
         device_watts
         display_hide_heartrate_option
         distance
@@ -163,6 +165,7 @@ export const onDeleteTour = `subscription OnDeleteTour($owner: String!) {
         average_watts
         comment_count
         commute
+        description
         device_watts
         display_hide_heartrate_option
         distance
@@ -224,6 +227,7 @@ export const onCreateActivity = `subscription OnCreateActivity($owner: String!) 
     average_watts
     comment_count
     commute
+    description
     device_watts
     display_hide_heartrate_option
     distance
@@ -294,6 +298,7 @@ export const onUpdateActivity = `subscription OnUpdateActivity($owner: String!) 
     average_watts
     comment_count
     commute
+    description
     device_watts
     display_hide_heartrate_option
     distance
@@ -364,6 +369,7 @@ export const onDeleteActivity = `subscription OnDeleteActivity($owner: String!) 
     average_watts
     comment_count
     commute
+    description
     device_watts
     display_hide_heartrate_option
     distance
@@ -433,6 +439,21 @@ export const onCreateAthlete = `subscription OnCreateAthlete($owner: String!) {
     city
     state
     country
+    date_preference
+    measurement_preference
+    weight
+    tours {
+      items {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+        owner
+      }
+      nextToken
+    }
     owner
     auth {
       id
@@ -441,19 +462,6 @@ export const onCreateAthlete = `subscription OnCreateAthlete($owner: String!) {
       refresh_token
       token_type
       strava_scope
-      athlete {
-        id
-        strava_id
-        firstname
-        lastname
-        profile
-        profile_medium
-        sex
-        city
-        state
-        country
-        owner
-      }
       owner
     }
   }
@@ -471,6 +479,21 @@ export const onUpdateAthlete = `subscription OnUpdateAthlete($owner: String!) {
     city
     state
     country
+    date_preference
+    measurement_preference
+    weight
+    tours {
+      items {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+        owner
+      }
+      nextToken
+    }
     owner
     auth {
       id
@@ -479,19 +502,6 @@ export const onUpdateAthlete = `subscription OnUpdateAthlete($owner: String!) {
       refresh_token
       token_type
       strava_scope
-      athlete {
-        id
-        strava_id
-        firstname
-        lastname
-        profile
-        profile_medium
-        sex
-        city
-        state
-        country
-        owner
-      }
       owner
     }
   }
@@ -509,6 +519,21 @@ export const onDeleteAthlete = `subscription OnDeleteAthlete($owner: String!) {
     city
     state
     country
+    date_preference
+    measurement_preference
+    weight
+    tours {
+      items {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+        owner
+      }
+      nextToken
+    }
     owner
     auth {
       id
@@ -517,19 +542,6 @@ export const onDeleteAthlete = `subscription OnDeleteAthlete($owner: String!) {
       refresh_token
       token_type
       strava_scope
-      athlete {
-        id
-        strava_id
-        firstname
-        lastname
-        profile
-        profile_medium
-        sex
-        city
-        state
-        country
-        owner
-      }
       owner
     }
   }
@@ -543,28 +555,6 @@ export const onCreateAuth = `subscription OnCreateAuth($owner: String!) {
     refresh_token
     token_type
     strava_scope
-    athlete {
-      id
-      strava_id
-      firstname
-      lastname
-      profile
-      profile_medium
-      sex
-      city
-      state
-      country
-      owner
-      auth {
-        id
-        access_token
-        expires_at
-        refresh_token
-        token_type
-        strava_scope
-        owner
-      }
-    }
     owner
   }
 }
@@ -577,28 +567,6 @@ export const onUpdateAuth = `subscription OnUpdateAuth($owner: String!) {
     refresh_token
     token_type
     strava_scope
-    athlete {
-      id
-      strava_id
-      firstname
-      lastname
-      profile
-      profile_medium
-      sex
-      city
-      state
-      country
-      owner
-      auth {
-        id
-        access_token
-        expires_at
-        refresh_token
-        token_type
-        strava_scope
-        owner
-      }
-    }
     owner
   }
 }
@@ -611,28 +579,6 @@ export const onDeleteAuth = `subscription OnDeleteAuth($owner: String!) {
     refresh_token
     token_type
     strava_scope
-    athlete {
-      id
-      strava_id
-      firstname
-      lastname
-      profile
-      profile_medium
-      sex
-      city
-      state
-      country
-      owner
-      auth {
-        id
-        access_token
-        expires_at
-        refresh_token
-        token_type
-        strava_scope
-        owner
-      }
-    }
     owner
   }
 }

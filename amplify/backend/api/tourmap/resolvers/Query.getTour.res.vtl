@@ -2,10 +2,8 @@
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = "userPools" )
 #end
-#if( $util.isNull($ctx.identity) )
-  #set( $authMode = "public" )
-#end
 ## [End] Determine request authentication mode **
+
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == "userPools" )
   ## No Static Group Authorization Rules **
@@ -32,17 +30,13 @@
     #end
   #end
   ## [End] Owner Authorization Checks **
-
-
-  ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true ) )
-    $util.unauthorized()
-  #end
-  ## [End] Throw if unauthorized **
 #end
 
-#if( $authMode == "public" && $ctx.result.isPublic == false )
-    $util.unauthorized()
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true ) && $ctx.result.isPublic == false)
+  $util.unauthorized()
 #end
+## [End] Throw if unauthorized **
+
 ## [End] Check authMode and execute owner/group checks **
 $util.toJson($context.result)
