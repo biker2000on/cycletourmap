@@ -1,6 +1,8 @@
 <template>
   <div>
-    <v-progress-circular v-if="$apollo.loading" indeterminate></v-progress-circular>
+    <v-layout v-if="$apollo.loading" justify-center align-center fill-height>
+      <v-progress-circular color="primary" indeterminate />
+    </v-layout>
     <strava
       v-if="isEdit && listAthletes"
       :tourData="getTour ? { getTour } : {}"

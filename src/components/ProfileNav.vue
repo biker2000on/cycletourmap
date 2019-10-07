@@ -45,6 +45,12 @@
       </v-list-item-icon>
       <v-list-item-title>Privacy Policy</v-list-item-title>
     </v-list-item>
+    <v-list-item :to="{name: 'faq'}">
+      <v-list-item-icon>
+        <v-icon>question_answer</v-icon>
+      </v-list-item-icon>
+      <v-list-item-title>FAQ</v-list-item-title>
+    </v-list-item>
     <v-dialog v-model="dialog" max-width="500">
       <privacy-policy @close="dialog = false" />
     </v-dialog>

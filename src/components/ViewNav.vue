@@ -19,7 +19,7 @@
     <v-list-item dense class="px-0">
       <v-list-item-content>
         <v-card elevation="12">
-          <v-card-title>Share Your Tourmap</v-card-title>
+          <v-card-title class="text-center">Share Your Tourmap</v-card-title>
           <v-card-text v-if="tourData.isPublic" >
             <vue-goodshare-facebook
               :page_url="pageUrl"

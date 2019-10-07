@@ -6,18 +6,19 @@ import LeafletData from '../components/LeafletData'
 import Auth from '../components/Auth'
 // import Summary from '../components/Summary'
 // import Rides from '../components/Rides'
-// import Profile from '../components/Profile'
-import HomeWrapper from '../components/HomeWrapper'
+import Profile from '../components/Profile'
 import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
 import ProfileNav from '../components/ProfileNav'
 import Error404 from '../components/Error404'
+import Home from '../components/Home'
+import GettingStarted from '../components/GettingStarted'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/tourmap/:mapId', //   /tourmap/:id   and   /tourmap/new for new map
+    path: '/tourmap/:mapId', 
     name: 'map',
     components: {
       default: LeafletData,
@@ -27,7 +28,7 @@ const routes = [
     props: true
   },
   {
-    path: '/tourmap/:mapId/edit', //   /tourmap/:id   and   /tourmap/new for new map
+    path: '/tourmap/:mapId/edit',
     name: 'edit',
     components: {
       default: LeafletData,
@@ -38,20 +39,29 @@ const routes = [
     props: true
   },
   {
-    path: '/',
+    path: '/dashboard',
     name: 'profile',
     components: {
-      default: HomeWrapper,
+      default: Profile,
       drawer: ProfileNav,
     },
     props: true,
-    alias: '/profile',
-    // meta: { requiresAuth: true }
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/',
+    name: 'home',
+    component: Home
   },
   {
     path: '/auth',
     name: 'auth',
     component: Auth,
+  },
+  {
+    path: '/faq',
+    name: 'faq',
+    component: GettingStarted,
   },
   {
     path: '**',
@@ -89,6 +99,13 @@ router.beforeResolve((to, from, next) => {
         name: 'auth'
       });
     });
+  }
+  if (to.name === 'home') {
+    Vue.prototype.$Amplify.Auth.currentAuthenticatedUser().then(() => {
+      next({
+        name: 'profile'
+      })
+    })
   }
   next()
 })
