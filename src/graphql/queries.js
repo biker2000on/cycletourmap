@@ -1,28 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const listTours = `query ListTours(
-  $filter: ModelTourFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listTours(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      name
-      description
-      start_date
-      end_date
-      isPublic
-      owner
-      activities {
-        nextToken
-      }
-    }
-    nextToken
-  }
-}
-`;
 export const getTour = `query GetTour($id: ID!) {
   getTour(id: $id) {
     id
@@ -45,6 +23,7 @@ export const getTour = `query GetTour($id: ID!) {
         average_watts
         comment_count
         commute
+        description
         device_watts
         display_hide_heartrate_option
         distance
@@ -93,6 +72,28 @@ export const getTour = `query GetTour($id: ID!) {
   }
 }
 `;
+export const listTours = `query ListTours(
+  $filter: ModelTourFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listTours(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      name
+      description
+      start_date
+      end_date
+      isPublic
+      owner
+      activities {
+        nextToken
+      }
+    }
+    nextToken
+  }
+}
+`;
 export const getActivity = `query GetActivity($id: ID!) {
   getActivity(id: $id) {
     id
@@ -106,6 +107,7 @@ export const getActivity = `query GetActivity($id: ID!) {
     average_watts
     comment_count
     commute
+    description
     device_watts
     display_hide_heartrate_option
     distance
@@ -181,6 +183,7 @@ export const listActivitys = `query ListActivitys(
       average_watts
       comment_count
       commute
+      description
       device_watts
       display_hide_heartrate_option
       distance
@@ -263,6 +266,7 @@ export const listActivitiesByStravaId = `query ListActivitiesByStravaId(
       average_watts
       comment_count
       commute
+      description
       device_watts
       display_hide_heartrate_option
       distance
@@ -319,6 +323,46 @@ export const listActivitiesByStravaId = `query ListActivitiesByStravaId(
   }
 }
 `;
+export const getAthlete = `query GetAthlete($id: ID!) {
+  getAthlete(id: $id) {
+    id
+    strava_id
+    firstname
+    lastname
+    profile
+    profile_medium
+    sex
+    city
+    state
+    country
+    date_preference
+    measurement_preference
+    weight
+    tours {
+      items {
+        id
+        name
+        description
+        start_date
+        end_date
+        isPublic
+        owner
+      }
+      nextToken
+    }
+    owner
+    auth {
+      id
+      access_token
+      expires_at
+      refresh_token
+      token_type
+      strava_scope
+      owner
+    }
+  }
+}
+`;
 export const listAthletes = `query ListAthletes(
   $filter: ModelAthleteFilterInput
   $limit: Int
@@ -336,6 +380,12 @@ export const listAthletes = `query ListAthletes(
       city
       state
       country
+      date_preference
+      measurement_preference
+      weight
+      tours {
+        nextToken
+      }
       owner
       auth {
         id
@@ -348,44 +398,6 @@ export const listAthletes = `query ListAthletes(
       }
     }
     nextToken
-  }
-}
-`;
-export const getAthlete = `query GetAthlete($id: ID!) {
-  getAthlete(id: $id) {
-    id
-    strava_id
-    firstname
-    lastname
-    profile
-    profile_medium
-    sex
-    city
-    state
-    country
-    owner
-    auth {
-      id
-      access_token
-      expires_at
-      refresh_token
-      token_type
-      strava_scope
-      athlete {
-        id
-        strava_id
-        firstname
-        lastname
-        profile
-        profile_medium
-        sex
-        city
-        state
-        country
-        owner
-      }
-      owner
-    }
   }
 }
 `;
@@ -414,6 +426,12 @@ export const getAthleteByStravaId = `query GetAthleteByStravaId(
       city
       state
       country
+      date_preference
+      measurement_preference
+      weight
+      tours {
+        nextToken
+      }
       owner
       auth {
         id
@@ -442,19 +460,6 @@ export const listAuths = `query ListAuths(
       refresh_token
       token_type
       strava_scope
-      athlete {
-        id
-        strava_id
-        firstname
-        lastname
-        profile
-        profile_medium
-        sex
-        city
-        state
-        country
-        owner
-      }
       owner
     }
     nextToken
@@ -469,28 +474,6 @@ export const getAuth = `query GetAuth($id: ID!) {
     refresh_token
     token_type
     strava_scope
-    athlete {
-      id
-      strava_id
-      firstname
-      lastname
-      profile
-      profile_medium
-      sex
-      city
-      state
-      country
-      owner
-      auth {
-        id
-        access_token
-        expires_at
-        refresh_token
-        token_type
-        strava_scope
-        owner
-      }
-    }
     owner
   }
 }

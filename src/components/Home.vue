@@ -11,6 +11,11 @@
       >Your #1 Place to Build and Share Tourmaps</h2>
       <v-btn :to="{name: 'auth'}" color="green" dark>Sign Up</v-btn>
     </div>
+    <div class="pa-md-10 title">
+      <h2 class="headline-3 mb-6">Getting Started</h2>
+      <p>Head on over to our Getting Started and FAQ page to learn how to get started building your new maps.</p>
+      <v-btn x-large color="primary" dark class="elevation-8" :to="{name: 'faq'}"><v-icon>question_answer</v-icon>Getting Started</v-btn>
+    </div>
     <div class="pa-md-10 title white">
       <v-row
         align="center"
