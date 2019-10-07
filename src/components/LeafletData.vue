@@ -3,7 +3,9 @@
     <leaflet v-if="$route.params.mapId == 'new'" :activities="$store.state.activities" />
     <leaflet v-else-if="getTour" :activities="getTour.activities.items" />
     <leaflet v-else-if="getTourPublic" :activities="getTourPublic.activities.items" />
-    <v-progress-circular v-else-if="$apollo.loading" indeterminate />
+    <v-layout v-else-if="$apollo.loading" justify-center align-center fill-height>
+      <v-progress-circular color="primary" indeterminate />
+    </v-layout>
     <div v-else-if="error">{{ error }}</div>
   </div>
 </template>
@@ -20,8 +22,8 @@ export default {
   data() {
     return {
       error: null,
-      nextToken: null,
-    }
+      nextToken: null
+    };
   },
   methods: {
     loadMore: function() {
@@ -29,91 +31,125 @@ export default {
         this.$apollo.queries.getTour.fetchMore({
           variables: {
             id: this.$route.params.mapId,
-            nextToken: this.getTour.activities.nextToken, // need to update
+            nextToken: this.getTour.activities.nextToken // need to update
           },
-          updateQuery: ( prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (
+              !fetchMoreResult ||
+              isNullOrUndefined(fetchMoreResult.getTour.activities.items)
+            ) {
               // const newActivities = fetchMoreResult.getTour.activities.items
               // console.log('fetchmore didn"t return')
-              return prev
+              return prev;
             }
             // console.log("prev, fetchmoreresult", prev.getTour, fetchMoreResult.getTour)
             // console.log('tokens',prev.getTour.activities.nextToken, fetchMoreResult.getTour.activities.nextToken)
-            this.nextToken = fetchMoreResult.getTour.activities.nextToken
-            const returnVal = Object.assign({}, prev, {
+            this.nextToken = fetchMoreResult.getTour.activities.nextToken;
+            const { activities, ...rest } = prev.getTour;
+            // const returnVal = Object.assign({}, prev, {
+            //   getTour: {
+            //     __typename: 'Tour',
+            //     id: prev.getTour.id,
+            //     isPublic: prev.getTour.isPublic,
+            //     activities: {
+            //       __typename: 'ModelActivityConnection',
+            //       items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
+            //       nextToken: fetchMoreResult.getTour.activities.nextToken
+            //     }
+            //   }
+            // })
+            const returnVal = {
               getTour: {
-                __typename: 'Tour',
-                id: prev.getTour.id,
-                isPublic: prev.getTour.isPublic,
+                ...rest,
                 activities: {
-                  __typename: 'ModelActivityConnection',
-                  items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
+                  __typename: "ModelActivityConnection",
+                  items: [
+                    ...prev.getTour.activities.items,
+                    ...fetchMoreResult.getTour.activities.items
+                  ],
                   nextToken: fetchMoreResult.getTour.activities.nextToken
                 }
               }
-            })
+            };
             // console.log('returnVal ', returnVal)
-            return returnVal
+            return returnVal;
           }
-        })
+        });
       } else {
         this.$apollo.queries.getTourPublic.fetchMore({
           variables: {
             id: this.$route.params.mapId,
-            nextToken: this.getTourPublic.activities.nextToken, // need to update
+            nextToken: this.getTourPublic.activities.nextToken // need to update
           },
-          updateQuery: ( prev, { fetchMoreResult }) => {
+          updateQuery: (prev, { fetchMoreResult }) => {
             // console.log('fetchmore', fetchMoreResult, prev)
-            if (!fetchMoreResult || isNullOrUndefined(fetchMoreResult.getTour.activities.items)) {
+            if (
+              !fetchMoreResult ||
+              isNullOrUndefined(fetchMoreResult.getTour.activities.items)
+            ) {
               // const newActivities = fetchMoreResult.getTour.activities.items
               // console.log('fetchmore didn"t return')
-              return prev
+              return prev;
             }
             // console.log("prev, fetchmoreresult", prev.getTour, fetchMoreResult.getTour)
             // console.log('tokens',prev.getTour.activities.nextToken, fetchMoreResult.getTour.activities.nextToken)
-            this.nextToken = fetchMoreResult.getTour.activities.nextToken
-            const returnVal = Object.assign({}, prev, {
+            this.nextToken = fetchMoreResult.getTour.activities.nextToken;
+            // const returnVal = Object.assign({}, prev, {
+            //   getTour: {
+            //     __typename: 'Tour',
+            //     id: prev.getTour.id,
+            //     isPublic: prev.getTour.isPublic,
+            //     activities: {
+            //       __typename: 'ModelActivityConnection',
+            //       items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
+            //       nextToken: fetchMoreResult.getTour.activities.nextToken
+            //     }
+            //   }
+            // })
+            const { activities, ...rest } = prev.getTour;
+            const returnVal = {
               getTour: {
-                __typename: 'Tour',
-                id: prev.getTour.id,
-                isPublic: prev.getTour.isPublic,
+                ...rest,
                 activities: {
-                  __typename: 'ModelActivityConnection',
-                  items: [...prev.getTour.activities.items, ...fetchMoreResult.getTour.activities.items],
+                  __typename: "ModelActivityConnection",
+                  items: [
+                    ...prev.getTour.activities.items,
+                    ...fetchMoreResult.getTour.activities.items
+                  ],
                   nextToken: fetchMoreResult.getTour.activities.nextToken
                 }
               }
-            })
+            };
             // console.log('returnVal ', returnVal)
-            return returnVal
+            return returnVal;
           }
-        })
+        });
       }
     }
   },
   computed: {
     signedIn() {
-      return this.$store.state.signedIn
-    },
+      return this.$store.state.signedIn;
+    }
   },
   watch: {
     getTour: async function() {
       if (!isNullOrUndefined(this.getTour)) {
         if (!isNullOrUndefined(this.getTour.activities.nextToken)) {
-          await this.loadMore()
-          return
+          await this.loadMore();
+          return;
         }
       }
-      return
+      return;
     },
     getTourPublic: async function() {
       if (!isNullOrUndefined(this.getTourPublic)) {
         if (!isNullOrUndefined(this.getTourPublic.activities.nextToken)) {
-          await this.loadMore()
-          return
+          await this.loadMore();
+          return;
         }
       }
-      return
+      return;
     }
   },
   apollo: {
@@ -126,27 +162,27 @@ export default {
         };
       },
       skip() {
-        return this.$route.params.mapId === 'new' || this.signedIn == false
+        return this.$route.params.mapId === "new" || this.signedIn == false;
       },
       error(error) {
-        this.error = error
-      },
+        this.error = error;
+      }
     },
     getTourPublic: {
       query: GET_TOUR_ACTIVITIES,
-      client: 'apikey',
+      client: "apikey",
       variables() {
         return {
           id: this.$route.params.mapId
         };
       },
       update: data => data.getTour,
-      // skip() {
-      //   return ( this.$route.params.mapId === 'new' || this.signedIn == true )
-      // },
-      error(error) {
-        this.error = error
+      skip() {
+        return this.$route.params.mapId === "new" || this.signedIn == true;
       },
+      error(error) {
+        this.error = error;
+      }
     }
   }
 };

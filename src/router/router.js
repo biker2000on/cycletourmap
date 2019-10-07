@@ -11,6 +11,7 @@ import HomeWrapper from '../components/HomeWrapper'
 import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
 import ProfileNav from '../components/ProfileNav'
+import Error404 from '../components/Error404'
 
 Vue.use(VueRouter)
 
@@ -52,6 +53,10 @@ const routes = [
     name: 'auth',
     component: Auth,
   },
+  {
+    path: '**',
+    component: Error404,
+  }
   // {
   //   path: '/summary/:mapId',
   //   name: 'summary',
@@ -67,6 +72,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes,
 })
 

@@ -1,5 +1,5 @@
 <template>
-  <ApolloQuery :query="require('../gql/listTours.gql')" :variables="{limit: 50}" >
+  <ApolloQuery :query="require('../gql/listTours.gql')" >
     <template slot-scope="{ result: { loading, error, data } }">
       <v-progress-circular v-if="loading" indeterminate />
       <div v-else-if="error" class="error">We had an error</div>

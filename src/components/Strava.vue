@@ -1,18 +1,5 @@
 <template>
   <v-list dense >
-    <!-- <v-list-item v-if="athlete" >
-      <v-img
-        v-if="athlete"
-        :src="athlete.profile"
-        :alt="athlete.firstname + ' ' + athlete.lastname"
-        :style="{borderRadius: 50 + '%'}"
-      />
-    </v-list-item>
-    <v-list-item v-if="athlete">
-      <v-list-item-content>
-        <h2>{{ athlete.firstname + ' ' + athlete.lastname }}</h2>
-      </v-list-item-content>
-    </v-list-item> -->
     <v-list-item dense>
       <v-list-item-content>
         <v-text-field label="Tour Name" v-model="name"></v-text-field>
@@ -216,7 +203,7 @@ export default {
           variables: { input },
           update: (store, { data: { createTour }}) => {
             let data = store.readQuery({ query: LIST_TOURS })
-            // console.log('cached tours', data.listTours.items, 'createTour', createTour)
+            console.log('cached tours', data.listTours.items, 'createTour', createTour)
             let index = data.listTours.items.findIndex(c => c.id == input.id)
             if (index == -1) {
               data.listTours.items.push(createTour)

@@ -32,7 +32,7 @@
       </v-container>
     </v-content>
     <v-footer color="primary" app>
-      <span class="white--text">&copy; 2019</span>
+      <span class="white--text"><v-icon color="white" size="medium">copyright</v-icon> 2019</span>
       <v-spacer></v-spacer>
       <img src="/strava/api_logo_pwrdBy_strava_horiz_white.svg" height="30" >
     </v-footer>
@@ -88,6 +88,13 @@ export default {
     signedIn() {
       return this.$store.state.signedIn
     },
+  },
+  watch: {
+    $route(to, from) {
+      if (to.name === 'edit') {
+        this.drawer = true
+      }
+    }
   },
   async beforeCreate() {
     AmplifyEventBus.$on("authState", async (info) => {
