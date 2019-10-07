@@ -61,7 +61,10 @@ const routes = [
   {
     path: '/faq',
     name: 'faq',
-    component: GettingStarted,
+    components: {
+      drawer: ProfileNav,
+      default: GettingStarted,
+    }
   },
   {
     path: '**',
