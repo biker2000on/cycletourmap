@@ -61,6 +61,8 @@ const handleActivity = async (body, athleteInfo) => {
           body.object_id,
           athleteInfo.auth.access_token
         );
+        let dbActivities = await client((queries.getActivityByStravaId), { strava_id: body.object_id });
+        if (dbActivities.data.listActivitiesByStravaId.items.length) break
         let start = new Date(activity.start_date_local);
         const createPromises = athleteInfo.tours.items.map(async c => {
           const tourStart = new Date(c.start_date);
