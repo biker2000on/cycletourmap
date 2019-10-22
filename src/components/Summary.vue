@@ -60,7 +60,7 @@ export default {
         a.moving_time += c.moving_time
         a.distance += c.distance
         a.total_elevation_gain += c.total_elevation_gain
-        if (!a.day.includes(c.start_date_local.slice(0,10)) && !c.name.includes("Rest Day")) {
+        if (c.start_date_local && !a.day.includes(c.start_date_local.slice(0,10)) && !c.name.includes("Rest Day")) {
           a.day.push(c.start_date_local.slice(0,10))
         }
         return a
@@ -95,7 +95,3 @@ export default {
     float: right;
   }
 </style>
-
-
-distance per day
-time per day

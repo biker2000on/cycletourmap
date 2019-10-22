@@ -43,6 +43,27 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+const activitiesQuery = `query {
+  getTour(id:"a6acc9ed-fa03-4341-a4ce-0e0aa651773d") {
+    activities(limit:300) {
+      items {
+        distance
+        elapsed_time
+        moving_time
+        type
+        summary_polyline
+        name
+        start_latlng
+        strava_id
+        start_date_local
+        total_elevation_gain
+        average_speed
+      }
+    }
+  }
+}
+`
+
 export default {
   components: {
     LMap,
@@ -99,8 +120,8 @@ export default {
     },
     polylines() {
       let poly = this.$store.state.activities.map(activity => {
-        if (activity.map.summary_polyline) {
-          let poly = omnivore.polyline.parse(activity.map.summary_polyline)
+        if (activity.summary_polyline) {
+          let poly = omnivore.polyline.parse(activity.summary_polyline)
           let coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
           if (coords) {
             coords = coords.map(c => c.reverse())
@@ -114,8 +135,8 @@ export default {
     popups() {
       let popup = this.$store.state.activities.map(activity => {
         let coords
-        if (activity.map.summary_polyline) {
-          let poly = omnivore.polyline.parse(activity.map.summary_polyline)
+        if (activity.summary_polyline) {
+          let poly = omnivore.polyline.parse(activity.summary_polyline)
           coords = poly._layers[poly._leaflet_id - 1].feature.geometry.coordinates
           if (coords) {
             coords = coords.map(c => c.reverse())
@@ -126,7 +147,7 @@ export default {
                (this.isMetric ? (activity.distance / 1000).toFixed(2) + " km " : (activity.distance / .0254 / 12 / 5280).toFixed(2) + " mi ")+ 
                activity.type + "<br>" + 
                (activity.moving_time / 3600).toFixed(2) + " hrs Moving   " + (activity.elapsed_time / 3600).toFixed(2) + " hrs Total</p><br>" +
-               '<a href="https://www.strava.com/activities/' + activity.id + '" target="_blank">View on Strava</a>',
+               '<a href="https://www.strava.com/activities/' + activity.strava_id + '" target="_blank">View on Strava</a>',
                coords ? coords : null
                ] 
       })
@@ -207,12 +228,28 @@ export default {
       this.$store.commit('setActivities', acts)
       return
     },
+    getTourmapActivities: async function() {
+      try {
+        const activities = await fetch('https://yi7zd2l4ejcsnmqr6r2ib26aum.appsync-api.us-east-1.amazonaws.com/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json',
+          'x-api-key': 'da2-44gj5hf6ara3bjz545wexlqddq' },
+          body: JSON.stringify({query: activitiesQuery})
+        })
+        const activitiesData = await activities.json()
+        console.log(activitiesData)
+        this.$store.commit('setActivities', activitiesData.data.getTour.activities.items)
+      } catch (error) {
+        console.log('error retrieving activities', error)
+      }
+    },
     zoomUpdated (zoom) {
       this.zoom = zoom;
     },
   },
   mounted() {
-    this.getAllActivities()
+    // this.getAllActivities()
+    this.getTourmapActivities()
   }
 }
 </script>

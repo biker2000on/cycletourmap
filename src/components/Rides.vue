@@ -38,8 +38,8 @@ export default {
     tableData2() {
       return this.$store.state.activities.map(c => {
         return {
-          date: c.start_date_local.slice(0, 10),
-          time: c.start_date_local.slice(11, 16),
+          date: c.start_date_local ? c.start_date_local.slice(0, 10) : 'no date',
+          time: c.start_date_local ? c.start_date_local.slice(11, 16) : 'no date',
           name: c.name,
           distance: this.isMetric
             ? (c.distance / 1000).toFixed(2)
