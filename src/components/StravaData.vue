@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     isEdit() {
-      return this.$route.name == "edit";
+      return this.$route.name.includes('edit');
     }
   },
   apollo: {

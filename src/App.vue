@@ -25,10 +25,10 @@
     </v-app-bar>
 
     <v-content>
-      <v-container fluid fill-height :class="home">
-        <v-layout align-center justify-center>
+      <v-container fluid :class="home">
+        <!-- <v-layout align-center justify-center> -->
           <router-view :style="{ width: '100%' }" class="text-center"></router-view>
-        </v-layout>
+        <!-- </v-layout> -->
       </v-container>
     </v-content>
     <v-footer color="primary" app>

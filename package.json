@@ -26,7 +26,6 @@
     "lodash.isequal": "^4.5.0",
     "lodash.pick": "^4.4.0",
     "moment": "^2.24.0",
-    "tabulator-tables": "^4.4.1",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
     "vue-analytics": "^5.17.2",

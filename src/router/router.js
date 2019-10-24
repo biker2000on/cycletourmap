@@ -3,9 +3,10 @@ import VueRouter from 'vue-router'
 
 // components
 import LeafletData from '../components/LeafletData'
+import Leaflet from '../components/Leaflet'
 import Auth from '../components/Auth'
 // import Summary from '../components/Summary'
-// import Rides from '../components/Rides'
+import Rides from '../components/Rides'
 import Profile from '../components/Profile'
 import StravaData from '../components/StravaData'
 import Buttons from '../components/Buttons'
@@ -19,17 +20,35 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/tourmap/:mapId', 
-    name: 'map',
+    // name: 'map',
     components: {
       default: LeafletData,
       drawer: StravaData,
       header: Buttons,
     },
+    children: [
+      {path: 'table', name: 'table', component: Rides},
+      {path: '', name: 'map', component: Leaflet}
+    ],
     props: true
   },
   {
     path: '/tourmap/:mapId/edit',
-    name: 'edit',
+    components: {
+      default: LeafletData,
+      drawer: StravaData,
+      header: Buttons,
+    },
+    children: [
+      {path: 'table', name: 'editTable', component: Rides},
+      {path: '', name: 'edit', component: Leaflet}
+    ],
+    meta: { requiresAuth: true },
+    props: true
+  },
+  {
+    path: '/tourmap/:mapId/edit/table',
+    name: 'edit-table',
     components: {
       default: LeafletData,
       drawer: StravaData,

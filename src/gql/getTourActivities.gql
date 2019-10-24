@@ -20,6 +20,8 @@ query GetActivities ($id: ID!, $nextToken: String) {
           summary_polyline
           type
           strava_id
+          average_speed
+          total_elevation_gain
           __typename
         }
         nextToken

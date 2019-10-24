@@ -1,8 +1,9 @@
 <template>
   <div>
-    <leaflet v-if="$route.params.mapId == 'new'" :activities="$store.state.activities" />
-    <leaflet v-else-if="getTour" :activities="getTour.activities.items" />
-    <leaflet v-else-if="getTourPublic" :activities="getTourPublic.activities.items" />
+    <!-- <leaflet v-if="activities" :activities="activities" /> -->
+    <!-- <leaflet v-else-if="getTour" :activities="getTour.activities.items" />
+    <leaflet v-else-if="getTourPublic" :activities="getTourPublic.activities.items" /> -->
+    <router-view v-if="activities" :activities="activities"></router-view>
     <v-layout v-else-if="$apollo.loading" justify-center align-center fill-height>
       <v-progress-circular color="primary" indeterminate />
     </v-layout>
@@ -130,6 +131,13 @@ export default {
   computed: {
     signedIn() {
       return this.$store.state.signedIn;
+    },
+    activities() {
+      if (this.$route.params.mapId == 'new') {
+        return this.$store.state.activities
+      } 
+      if (this.getTour) return this.getTour.activities.items
+      if (this.getTourPublic) return this.getTourPublic.activities.items
     }
   },
   watch: {
