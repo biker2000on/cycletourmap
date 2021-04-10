@@ -76,7 +76,7 @@
       <v-card :loading="isSaving">
         <v-card-title class="headline" >Successfully Saved Tourmap</v-card-title>
         <v-card-text>
-          <p><a :href="'/#/tourmap/' + tourId">View your tourmap here</a></p>
+          <p><a :href="'/tourmap/' + tourId">View your tourmap here</a></p>
           <p>or click outside the dialog to continue editing your tourmap.</p>  
         </v-card-text>
       </v-card>

@@ -51,6 +51,7 @@
         :lat-lngs="popups[idx][2]"
         :key="'line' + idx"
         :fill="false"
+        :weight="activeActivityId == popups[idx][3].id ? 8 : 3"
       >
         <popups :activity="popups[idx][3]" :latlng="start[0]" :key="'pop' + idx" />
       </l-polyline>
@@ -160,6 +161,9 @@ export default {
     // },
     isOnTop() {
       return this.isFullscreen ? "on-top" : "leaflet-regular";
+    },
+    activeActivityId() {
+      return this.$store.state.activeActivityId
     },
     isMetric: {
       get() {

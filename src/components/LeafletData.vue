@@ -12,7 +12,6 @@
 
 <script>
 import Leaflet from "./Leaflet";
-import { isNullOrUndefined } from "util";
 import GET_TOUR_ACTIVITIES from "../gql/getTourActivities.gql";
 
 export default {
@@ -134,8 +133,8 @@ export default {
   },
   watch: {
     getTour: async function() {
-      if (!isNullOrUndefined(this.getTour)) {
-        if (!isNullOrUndefined(this.getTour.activities.nextToken)) {
+      if (!(this.getTour === null || this.getTour === undefined)) {
+        if (!(this.getTour.activities.nextToken === null || this.getTour.activities.nextToken === undefined)) {
           await this.loadMore();
           return;
         }
@@ -143,8 +142,8 @@ export default {
       return;
     },
     getTourPublic: async function() {
-      if (!isNullOrUndefined(this.getTourPublic)) {
-        if (!isNullOrUndefined(this.getTourPublic.activities.nextToken)) {
+      if (!(this.getTourPublic === null || this.getTourPublic === undefined)) {
+        if (!(this.getTourPublic.activities.nextToken === null || this.getTourPublic.activities.nextToken === undefined)) {
           await this.loadMore();
           return;
         }

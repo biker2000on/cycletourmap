@@ -28,7 +28,6 @@ import LIST_AUTHS from "../gql/listAuths.gql";
 import LIST_ATHLETES from "../gql/listAthletes.gql";
 import CREATE_ATHLETE from "../gql/createAthlete.gql";
 import UPDATE_ATHLETE from "../gql/updateAthlete.gql";
-import { isNull } from "util";
 import pick from "lodash.pick";
 import { athleteKeys } from "../utilities/athleteKeys";
 
@@ -42,7 +41,8 @@ export default {
       client_id: process.env.VUE_APP_STRAVA_CLIENTID,
       client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
       auth: null,
-      newAuthId: null
+      newAuthId: null, 
+      params: null //temporary for windows parameters
     };
   },
   methods: {
@@ -107,13 +107,18 @@ export default {
         ...athlete,
         id: this.$refs.auth.result.data.listAthletes.items[0].id,
       };
+      // console.log(input)
       this.$apollo.mutate({
         mutation: UPDATE_ATHLETE,
         variables: { input },
         update: (store, { data: { updateAthlete } }) => {
           const data = store.readQuery({ query: LIST_ATHLETES });
+          // console.log("listed athletes", data.listAthletes)
           let updatedIndex = data.listAthletes.items.findIndex(
-            c => c.id == updateAthlete.id
+            c => {
+              console.log("athlete", c)
+              c.id == updateAthlete.id
+            }
           );
           data.listAthletes.items[updatedIndex] = updateAthlete;
           store.writeQuery({ query: LIST_ATHLETES, data });
@@ -137,8 +142,10 @@ export default {
           : null
         console.log('picked athlete', pickedAthleteProps)
         if (this.$refs.auth.result.data.listAthletes.items.length) {
+          console.log("updating athlete")
           this.updateAthlete(pickedAthleteProps);
         } else {
+          console.log("creating athlete")
           this.createAthlete(pickedAthleteProps);
         }
       } catch (error) {
@@ -177,12 +184,17 @@ export default {
     },
     getTokens: async function(result) {
       let data;
+      console.log("data: ", data)
       const results = result.data;
+      console.log("results: ", results)
+      console.log(window.location.search)
       if (window.location.search) {
         const params = new window.URLSearchParams(window.location.search);
-        window.history.replaceState({}, document.title, "/"); // removes query string from URL
+        this.params = params
+        console.log("params: ", params)
+        // window.history.replaceState({}, document.title, "/"); // removes query string from URL
         if (params.has("error")) {
-          // console.error("You didn't give us the right permissions");
+          console.error("You didn't give us the right permissions");
           return;
         }
         const code = params.get("code");
@@ -202,14 +214,15 @@ export default {
           ? results.listAuths.items[0]
           : null;
         if (
-          !isNull(this.auth) &&
+          this.auth !== null &&
           new Date(this.auth.expires_at * 1000 - 1800 * 1000) < new Date()
         )
           await this.refreshAuth();
         this.athlete = results.listAthletes.items.length
           ? results.listAthletes.items[0]
           : null;
-        if (isNull(this.athlete)) this.getAthlete();
+        if (this.athlete == null) this.getAthlete();
+        console.log("ended with blank !data", data)
         return;
       }
       let res = await axios.post("https://www.strava.com/oauth/token", data);

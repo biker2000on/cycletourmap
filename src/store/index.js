@@ -11,6 +11,7 @@ export default new Vuex.Store({
     isMetric: false,
     athlete: '',
     activities: [],
+    activeActivityId: null,
     user: null,
     signedIn: null,
     hasStravaAuth: false,
@@ -46,6 +47,9 @@ export default new Vuex.Store({
     },
     resetUser (state) {
       state.user = null
+    },
+    setActiveActivityId (state, activityId) {
+      state.activeActivityId = activityId
     },
   }
 })

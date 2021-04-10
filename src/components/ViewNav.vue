@@ -56,8 +56,9 @@
     <v-list-item v-if="tourData && tourData.activities">
       <v-list-item-content>
         <p class="title">Rides:</p>
+        <p class="titile">I'm hovering {{ act }}</p>
         <ol class="text-left">
-          <li v-for="activity in activities" :key="activity.id">{{activity.name}}</li>
+          <li v-for="activity in activities" :key="activity.id" @mouseover="act = activity.id" @mouseleave="act = null">{{activity.name}}</li>
         </ol>
       </v-list-item-content>
     </v-list-item>
@@ -79,6 +80,16 @@ export default {
   },
   components: {
     VueGoodshareFacebook, VueGoodshareTwitter, VueGoodshareEmail
+  },
+  data() {
+    return {
+      act: null
+    }
+  },
+  watch: {
+    act(newId) {
+      this.$store.commit('setActiveActivityId', newId)
+    }
   },
   computed: {
     activities() {
