@@ -1,4 +1,4 @@
-# Vue-Tourmap
+# Cycle Tourmap
 
 ## Project setup
 ```
