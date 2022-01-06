@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String
+  email        String
+  passwordHash String
+  passwordSalt String
+  lastLogin    DateTime
+  createdAt    DateTime
+  updatedAt    DateTime
+  tours        Tour[]
+  activities   Activity[]
+  auth         Auth?
+  athlete      Athlete?
+}
+
+model Tour {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  start_date  DateTime
+  end_date    DateTime?
+  isPublic    Boolean
+  userId      String           @db.Uuid
+  user        User             @relation(fields: [userId], references: [id])
+  athlete     Athlete?         @relation(fields: [athleteId], references: [id])
+  athleteId   String?          @db.Uuid
+  activities  TourActivities[]
+}
+
+model Activity {
+  id                            String           @id @default(uuid()) @db.Uuid
+  activity_type                 String
+  strava_id                     Int?
+  achievement_count             Int?
+  athlete_count                 Int?
+  average_heartrate             Int?
+  average_speed                 Int?
+  average_temp                  Float?
+  average_watts                 Int?
+  comment_count                 Int?
+  commute                       Boolean?
+  description                   String?
+  device_watts                  Float?
+  display_hide_heartrate_option Boolean?
+  distance                      Float?
+  elapsed_time                  Float?
+  elev_high                     Float?
+  elev_low                      Float?
+  end_latlng                    String?
+  flagged                       Boolean?
+  gear_id                       Int?
+  has_heartrate                 Boolean?
+  has_kudoed                    Boolean?
+  heartrate_opt_out             Boolean?
+  kilojoules                    Int?
+  kudos_count                   Int?
+  location_city                 String?
+  location_country              String?
+  location_state                String?
+  manual                        Boolean?
+  summary_polyline              String?
+  max_heartrate                 Int?
+  max_speed                     Float?
+  moving_time                   Float?
+  name                          String?
+  photo_count                   Int?
+  pr_count                      Int?
+  private                       Boolean?
+  resource_state                String?
+  start_date                    DateTime?
+  start_date_local              DateTime?
+  start_latitude                Float?
+  start_longitude               Float?
+  start_latlng                  String?
+  timezone                      String?
+  total_elevation_gain          Float?
+  total_photo_count             Int?
+  trainer                       Boolean?
+  type                          String?
+  upload_id                     Int?
+  utc_offset                    String? // maybe an Int
+  visibility                    Boolean?
+  workout_type                  String?
+  user                          User             @relation(fields: [userId], references: [id])
+  userId                        String           @db.Uuid
+  tours                         TourActivities[]
+}
+
+model Auth {
+  id            String   @id @default(uuid()) @db.Uuid
+  access_token  String
+  expires_at    DateTime
+  refresh_token String
+  token_type    String
+  strava_scope  String
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @unique @db.Uuid
+}
+
+model Athlete {
+  id                     String  @id @default(uuid()) @db.Uuid
+  strava_id              Int?
+  firstname              String?
+  lastname               String?
+  profile                String?
+  profile_medium         String?
+  sex                    String?
+  city                   String?
+  state                  String?
+  country                String?
+  date_preference        String?
+  measurement_preference String?
+  weight                 Float?
+  tours                  Tour[]
+  userId                 String  @unique @db.Uuid
+  user                   User    @relation(fields: [userId], references: [id])
+}
+
+model TourActivities {
+  tour       Tour     @relation(fields: [tourId], references: [id])
+  activity   Activity @relation(fields: [activityId], references: [id])
+  tourId     String   @db.Uuid
+  activityId String   @db.Uuid
+
+  @@unique([tourId, activityId])
+}
