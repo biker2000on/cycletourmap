@@ -24,3 +24,11 @@ npm run test
 ```
 npm run lint
 ```
+
+The backend database is Postgres with the pg_graphql extension installed and Postgrest exposing the API. 
+
+* https://v4.apollo.vuejs.org/guide/installation.html#compatibility
+* https://vitejs.dev/guide/
+* https://next.vuetifyjs.com/en/getting-started/installation
+* https://github.com/vue-leaflet/vue-leaflet
+
