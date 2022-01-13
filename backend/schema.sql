@@ -1,6 +1,13 @@
+--Create roles
+CREATE role anon noinherit NOLOGIN;
+CREATE role authenticator noinherit NOLOGIN;
+CREATE ROLE webuser NOLOGIN;
+--Role grant permissions
+GRANT webuser TO authenticator;
+GRANT anon TO authenticator;
 -- CreateTable
 CREATE TABLE "User" (
-  "id" UUID NOT NULL,
+  "id" UUID DEFAULT gen_random_uuid(),
   "name" VARCHAR(30) NOT NULL,
   "email" VARCHAR(30) NOT NULL,
   "passwordHash" VARCHAR(255) NOT NULL,
@@ -10,10 +17,9 @@ CREATE TABLE "User" (
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
-
 -- CreateTable
 CREATE TABLE "Tour" (
-  "id" UUID NOT NULL,
+  "id" UUID DEFAULT gen_random_uuid(),
   "name" VARCHAR(255) NOT NULL,
   "description" TEXT,
   "start_date" TIMESTAMP(3) NOT NULL,
@@ -23,10 +29,9 @@ CREATE TABLE "Tour" (
   "athleteId" UUID,
   CONSTRAINT "Tour_pkey" PRIMARY KEY ("id")
 );
-
 -- CreateTable
 CREATE TABLE "Activity" (
-  "id" UUID NOT NULL,
+  "id" UUID DEFAULT gen_random_uuid(),
   "activity_type" TEXT NOT NULL,
   "strava_id" INTEGER,
   "achievement_count" INTEGER,
@@ -82,10 +87,9 @@ CREATE TABLE "Activity" (
   "userId" UUID NOT NULL,
   CONSTRAINT "Activity_pkey" PRIMARY KEY ("id")
 );
-
 -- CreateTable
 CREATE TABLE "Auth" (
-  "id" UUID NOT NULL,
+  "id" UUID DEFAULT gen_random_uuid(),
   "access_token" TEXT NOT NULL,
   "expires_at" TIMESTAMP(3) NOT NULL,
   "refresh_token" TEXT NOT NULL,
@@ -94,10 +98,9 @@ CREATE TABLE "Auth" (
   "userId" UUID NOT NULL,
   CONSTRAINT "Auth_pkey" PRIMARY KEY ("id")
 );
-
 -- CreateTable
 CREATE TABLE "Athlete" (
-  "id" UUID NOT NULL,
+  "id" UUID DEFAULT gen_random_uuid(),
   "strava_id" INTEGER,
   "firstname" TEXT,
   "lastname" TEXT,
@@ -113,62 +116,78 @@ CREATE TABLE "Athlete" (
   "userId" UUID NOT NULL,
   CONSTRAINT "Athlete_pkey" PRIMARY KEY ("id")
 );
-
 -- CreateTable
 CREATE TABLE "TourActivities" (
   "tourId" UUID NOT NULL,
   "activityId" UUID NOT NULL
 );
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Auth_userId_key" ON "Auth"("userId");
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Athlete_userId_key" ON "Athlete"("userId");
-
 -- CreateIndex
 CREATE UNIQUE INDEX "TourActivities_tourId_activityId_key" ON "TourActivities"("tourId", "activityId");
-
 -- AddForeignKey
 ALTER TABLE
   "Tour"
 ADD
-  CONSTRAINT "Tour_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
+  CONSTRAINT "Tour_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON
+DELETE
+  RESTRICT ON
+UPDATE
+  CASCADE;
 -- AddForeignKey
 ALTER TABLE
   "Tour"
 ADD
-  CONSTRAINT "Tour_athleteId_fkey" FOREIGN KEY ("athleteId") REFERENCES "Athlete"("id") ON DELETE
+  CONSTRAINT "Tour_athleteId_fkey" FOREIGN KEY ("athleteId") REFERENCES "Athlete"("id") ON
+DELETE
 SET
-  NULL ON UPDATE CASCADE;
-
+  NULL ON
+UPDATE
+  CASCADE;
 -- AddForeignKey
 ALTER TABLE
   "Activity"
 ADD
-  CONSTRAINT "Activity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
+  CONSTRAINT "Activity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON
+DELETE
+  RESTRICT ON
+UPDATE
+  CASCADE;
 -- AddForeignKey
 ALTER TABLE
   "Auth"
 ADD
-  CONSTRAINT "Auth_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
+  CONSTRAINT "Auth_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON
+DELETE
+  RESTRICT ON
+UPDATE
+  CASCADE;
 -- AddForeignKey
 ALTER TABLE
   "Athlete"
 ADD
-  CONSTRAINT "Athlete_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
+  CONSTRAINT "Athlete_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON
+DELETE
+  RESTRICT ON
+UPDATE
+  CASCADE;
 -- AddForeignKey
 ALTER TABLE
   "TourActivities"
 ADD
-  CONSTRAINT "TourActivities_tourId_fkey" FOREIGN KEY ("tourId") REFERENCES "Tour"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
+  CONSTRAINT "TourActivities_tourId_fkey" FOREIGN KEY ("tourId") REFERENCES "Tour"("id") ON
+DELETE
+  RESTRICT ON
+UPDATE
+  CASCADE;
 -- AddForeignKey
 ALTER TABLE
   "TourActivities"
 ADD
-  CONSTRAINT "TourActivities_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "Activity"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+  CONSTRAINT "TourActivities_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "Activity"("id") ON
+DELETE
+  RESTRICT ON
+UPDATE
+  CASCADE;

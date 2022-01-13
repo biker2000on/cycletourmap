@@ -7,7 +7,8 @@
     "build": "vite build",
     "dev": "vite --host",
     "app": "concurrently -n vue,amplify \"npm run serve\" \"npm run api\"",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "graphql": "npx postgraphile -c postgresql://cyclist:cyclist@192.168.4.134:5432/cycletourmap?schema=public --enhance-graphiql"
   },
   "dependencies": {
     "@apollo/client": "^3.5.6",
