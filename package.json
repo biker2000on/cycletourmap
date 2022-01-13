@@ -39,6 +39,7 @@
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "5.0.0-beta.7",
     "@vuetify/vite-plugin": "^1.0.0-alpha.3",
+    "postgraphile": "^4.12.8",
     "prisma": "^3.7.0",
     "sass": "^1.38.0",
     "sass-loader": "^10.0.0",

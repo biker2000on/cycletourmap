@@ -1,0 +1,17 @@
+version: '3.6'
+
+services:
+  db:
+    image: postgres:14
+    ports:
+      - 5432:5432/tcp
+    environment:
+      POSTGRES_DB: cycletourmap
+      POSTGRES_USER: cyclist
+      POSTGRES_PASSWORD: cyclist
+    volumes: 
+       - db:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  db:
