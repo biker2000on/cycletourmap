@@ -16,7 +16,9 @@ CREATE TABLE "Tour" (
   "start_date" timestamp(3) NOT NULL,
   "end_date" timestamp(3),
   "is_public" boolean NOT NULL,
-  "user_id" uuid NOT NULL,
+  "user_id" uuid,
+  "created_at" timestamp DEFAULT now(),
+  "modified_at" timestamp DEFAULT now(),
   CONSTRAINT "Tour_pkey" PRIMARY KEY ("id")
 );
 
@@ -74,7 +76,9 @@ CREATE TABLE "Activity" (
   "utc_offset" text,
   "visibility" boolean,
   "workout_type" text,
-  "user_id" uuid NOT NULL,
+  "user_id" uuid,
+  "created_at" timestamp DEFAULT now(),
+  "modified_at" timestamp DEFAULT now(),
   CONSTRAINT "Activity_pkey" PRIMARY KEY ("id")
 );
 
@@ -85,7 +89,9 @@ CREATE TABLE "Auth" (
   "refresh_token" text NOT NULL,
   "token_type" text NOT NULL,
   "strava_scope" text NOT NULL,
-  "user_id" uuid NOT NULL,
+  "user_id" uuid,
+  "created_at" timestamp DEFAULT now(),
+  "modified_at" timestamp DEFAULT now(),
   CONSTRAINT "Auth_pkey" PRIMARY KEY ("id")
 );
 
@@ -103,7 +109,9 @@ CREATE TABLE "Athlete" (
   "date_preference" text,
   "measurement_preference" text,
   "weight" double precision,
-  "user_id" uuid NOT NULL,
+  "user_id" uuid,
+  "created_at" timestamp DEFAULT now(),
+  "modified_at" timestamp DEFAULT now(),
   CONSTRAINT "Athlete_pkey" PRIMARY KEY ("id")
 );
 
@@ -121,6 +129,12 @@ CREATE TABLE IF NOT EXISTS basic_auth.users (
   "created_at" timestamp DEFAULT now(),
   "modified_at" timestamp DEFAULT now()
 );
+
+-- CreateIndex FK
+CREATE INDEX "Tour_user_id_fk" ON "Tour" ("user_id");
+
+-- CreateIndex FK
+CREATE INDEX "Activity_user_id_fk" ON "Activity" ("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Auth_user_id_key" ON "Auth" ("user_id");
@@ -212,10 +226,11 @@ STRICT
 SECURITY DEFINER;
 
 CREATE FUNCTION current_user_id ()
-  RETURNS integer
+  RETURNS uuid
   AS $$
   SELECT
-    nullif (current_setting('jwt.claims.user_id', TRUE), '')::integer;
+    nullif (current_setting('jwt.claims.user_id', TRUE), '')::uuid;
+
 $$
 LANGUAGE sql
 STABLE;
@@ -233,3 +248,72 @@ LANGUAGE plpgsql
 STRICT
 SECURITY DEFINER;
 
+--Tour Trigger
+CREATE OR REPLACE FUNCTION set_user ()
+  RETURNS TRIGGER
+  AS $$
+BEGIN
+  IF tg_op = 'INSERT' THEN
+    NEW.user_id = current_user_id ();
+  END IF;
+  NEW.modified_at = now();
+  RETURN NEW;
+END
+$$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS tour_user ON "Tour";
+
+DROP TRIGGER IF EXISTS activity_user ON "Activity";
+
+DROP TRIGGER IF EXISTS athlete_user ON "Athlete";
+
+DROP TRIGGER IF EXISTS auth_user ON "Auth";
+
+CREATE TRIGGER tour_user
+  BEFORE INSERT OR UPDATE ON "Tour"
+  FOR EACH ROW
+  EXECUTE PROCEDURE set_user ();
+
+CREATE TRIGGER activity_user
+  BEFORE INSERT OR UPDATE ON "Activity"
+  FOR EACH ROW
+  EXECUTE PROCEDURE set_user ();
+
+CREATE TRIGGER athlete_user
+  BEFORE INSERT OR UPDATE ON "Athlete"
+  FOR EACH ROW
+  EXECUTE PROCEDURE set_user ();
+
+CREATE TRIGGER auth_user
+  BEFORE INSERT OR UPDATE ON "Auth"
+  FOR EACH ROW
+  EXECUTE PROCEDURE set_user ();
+
+ALTER TABLE "Tour" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "Activity" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "Athlete" ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE "Auth" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY tour_user_check ON "Tour"
+  USING (user_id = current_user_id ());
+
+CREATE POLICY activity_user_check ON "Activity"
+  USING (user_id = current_user_id ());
+
+CREATE POLICY athlete_user_check ON "Athlete"
+  USING (user_id = current_user_id ());
+
+CREATE POLICY auth_user_check ON "Auth"
+  USING (user_id = current_user_id ());
+
+GRANT SELECT ON "public"."Tour" TO anon;
+GRANT SELECT ON "public"."Tour" TO webuser;
+GRANT INSERT ("name", "description", "start_date", "end_date", "is_public", "user_id") ON "public"."Tour" TO webuser;
+GRANT UPDATE ("name", "description", "start_date", "end_date", "is_public", "user_id") ON "public"."Tour" TO webuser;
+GRANT DELETE ON "public"."Tour" TO webuser;
+
+  
