@@ -1,79 +1,50 @@
 {
-  "name": "test",
-  "version": "0.1.0",
+  "name": "cycletourmap",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm run serve",
+    "serve": "vite preview --host",
+    "build": "vite build",
+    "dev": "vite --host",
     "app": "concurrently -n vue,amplify \"npm run serve\" \"npm run api\"",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "api": "amplify mock api",
-    "push": "amplify push --yes",
-    "publish": "amplify publish --yes -c"
+    "graphql": "npx postgraphile -c postgresql://cyclist:cyclist@192.168.4.134:5432/cycletourmap?schema=public --enhance-graphiql --default-role anon --jwt-secret myverysecurestring --jwt-token-identifier public.jwt_token"
   },
   "dependencies": {
+    "@apollo/client": "^3.5.6",
     "@mapbox/leaflet-omnivore": "^0.3.4",
-    "aws-amplify": "^1.1.40",
-    "aws-amplify-vue": "^0.2.17",
-    "aws-appsync": "^2.0.0",
-    "axios": "^0.21.2",
-    "date-fns": "^2.3.0",
-    "graphql-tag": "^2.10.1",
-    "leaflet": "^1.5.1",
-    "leaflet.fullscreen": "^1.6.0",
-    "leaflet.gridlayer.googlemutant": "^0.8.0",
-    "lodash.isequal": "^4.5.0",
-    "lodash.pick": "^4.4.0",
-    "moment": "^2.24.0",
-    "tabulator-tables": "^4.4.1",
-    "uuid": "^3.3.3",
-    "vue": "^2.6.10",
-    "vue-analytics": "^5.17.2",
-    "vue-apollo": "^3.0.0-rc.5",
-    "vue-goodshare": "^1.3.2",
-    "vue-router": "^3.1.3",
-    "vue2-leaflet": "^2.2.1",
-    "vue2-leaflet-googlemutant": "^1.2.0",
-    "vuetify": "^2.0.19",
-    "vuex": "^3.1.1"
+    "@mdi/font": "5.9.55",
+    "axios": "^0.24.0",
+    "date-fns": "^2.28.0",
+    "graphql": "^16.2.0",
+    "graphql-tag": "^2.12.6",
+    "leaflet": "^1.7.1",
+    "leaflet.fullscreen": "^2.2.0",
+    "leaflet.gridlayer.googlemutant": "^0.13.4",
+    "moment": "^2.29.1",
+    "roboto-fontface": "*",
+    "uuid": "^8.3.2",
+    "vue": "^3.2.26",
+    "vue-router": "^4.0.0-0",
+    "vue3-analytics": "^1.0.0",
+    "vuetify": "^3.0.0-alpha.0",
+    "vuex": "^4.0.0-0",
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@mdi/font": "^4.4.95",
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "babel-runtime": "^6.26.0",
-    "css-loader": "^3.2.0",
-    "node-icecream": "^1.0.0",
-    "sass": "^1.22.12",
-    "sass-loader": "^7.1.0",
-    "vue-cli-plugin-vuetify": "^0.6.3",
-    "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.3.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+    "@vitejs/plugin-vue": "^1.2.4",
+    "@vue-leaflet/vue-leaflet": "^0.6.1",
+    "@vue/cli-plugin-babel": "5.0.0-beta.7",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "5.0.0-beta.7",
+    "@vuetify/vite-plugin": "^1.0.0-alpha.3",
+    "postgraphile": "^4.12.8",
+    "sass": "^1.38.0",
+    "sass-loader": "^10.0.0",
+    "vite": "^2.0.0",
+    "vue-cli-plugin-apollo": "~0.22.2",
+    "vue-cli-plugin-vuetify": "~2.4.5",
+    "vuetify-loader": "^2.0.0-alpha.0"
+  }
 }

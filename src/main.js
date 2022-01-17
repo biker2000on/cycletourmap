@@ -1,18 +1,13 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router/router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { appsyncProvider } from './plugins/apollo'
-import './plugins/analytics'
-import './plugins/amplify'
+import { loadFonts } from './plugins/webfontloader'
+import router from './router'
 
-Vue.config.productionTip = false
+loadFonts()
 
-new Vue({
-  router,
-  vuetify,
-  store,
-  apolloProvider: appsyncProvider,
-  render: h => h(App)
-}).$mount('#app')
+createApp(App).use(store).use(router)
+  .use(store)
+  .use(vuetify)
+  .mount('#app')

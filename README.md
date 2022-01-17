@@ -3,24 +3,16 @@
 ## Project setup
 ```
 npm install
+npm run serve  # Compiles and hot-reloads for development
+npm run build  # Compiles and minifies for production
+npm run test  # Run your tests
+npm run lint  # Lints and fixes files
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+The backend database is Postgres using postgraphile to expose it as a graphql API. SQL Schema development and migration done using `tusker`.  
 
-### Compiles and minifies for production
-```
-npm run build
-```
+* https://v4.apollo.vuejs.org/guide/installation.html#compatibility
+* https://vitejs.dev/guide/
+* https://next.vuetifyjs.com/en/getting-started/installation
+* https://github.com/vue-leaflet/vue-leaflet
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```

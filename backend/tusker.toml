@@ -1,0 +1,8 @@
+[schema]
+filename = "*.sql"
+
+[migrations]
+filename = "migrations/*.sql"
+
+[database]
+url = "postgresql://cyclist:cyclist@192.168.4.134:5432/cycletourmap"
