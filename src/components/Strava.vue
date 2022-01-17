@@ -86,9 +86,8 @@
 
 <script>
 import axios from "axios";
-import uuid from 'uuid/v4'
 import { activityKeys } from '../utilities/activityKeys'
-import pick from 'lodash.pick'
+// import pick from 'lodash.pick'
 
 // queries
 import CREATE_TOUR from '../gql/createTour.gql'
@@ -248,9 +247,9 @@ export default {
       while (rides.length) {
         let activities = rides.splice(0,25)
         activities = activities.map(c => {
-          let stats = pick(c, activityKeys)
+          // let stats = pick(c, activityKeys)
           return {
-            id: uuid(),
+            // id: uuid(),
             activity_type: 'STRAVA',
             strava_id: c.id,
             activityTourId: this.tourId,
@@ -329,7 +328,7 @@ export default {
     },
     compareRide(ride) {
       let app = this.tourData.getTour.activities.items.filter(c => ride.id == c.strava_id)
-      const rideSum = pick(ride, ['elapsed_time','moving_time', 'name','start_date_local','type'])
+      // const rideSum = pick(ride, ['elapsed_time','moving_time', 'name','start_date_local','type'])
       rideSum['strava_id'] = ride.id
       rideSum['summary_polyline'] = ride.map.summary_polyline
       // console.log('compared', app.length, rideSum, app)
@@ -375,7 +374,7 @@ export default {
       return
     },
     submitRide: async function(c, id = 'create') {
-      let stats = pick(c, activityKeys)
+      // let stats = pick(c, activityKeys)
       const input = {
         activity_type: 'STRAVA',
         strava_id: c.id,
@@ -385,7 +384,7 @@ export default {
       }
       let { activityTourID, ...hopefulResponse } = input
       if (id == 'create') {
-        input['id'] = uuid()
+        // input['id'] = uuid()
         this.$apollo.mutate({
           mutation: CREATE_ACTIVITY,
           variables: { input },
@@ -428,7 +427,7 @@ export default {
     setTourId() {
       let id = this.$route.params.mapId
       if (id == 'new') {
-        id = uuid()
+        // id = uuid()
       }
       this.tourId = id
     }
