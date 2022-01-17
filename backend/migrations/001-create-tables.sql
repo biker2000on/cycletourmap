@@ -1,8 +1,14 @@
-ALTER ROLE anon NOINHERIT;
+DROP ROLE IF EXISTS anon;
 
-ALTER ROLE authenticator NOINHERIT;
+DROP ROLE IF EXISTS webuser;
 
-ALTER ROLE webuser NOLOGIN;
+DROP ROLE IF EXISTS authenticator;
+
+CREATE ROLE anon NOINHERIT;
+
+CREATE ROLE authenticator NOINHERIT;
+
+CREATE ROLE webuser NOLOGIN;
 
 GRANT webuser TO authenticator;
 

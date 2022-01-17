@@ -1,9 +1,14 @@
---tusker creates on the first time running diff
-ALTER ROLE anon NOINHERIT;
+DROP ROLE IF EXISTS anon;
 
-ALTER ROLE authenticator NOINHERIT;
+DROP ROLE IF EXISTS webuser;
 
-ALTER ROLE webuser NOLOGIN;
+DROP ROLE IF EXISTS authenticator;
+
+CREATE ROLE anon NOINHERIT;
+
+CREATE ROLE authenticator NOINHERIT;
+
+CREATE ROLE webuser NOLOGIN;
 
 GRANT webuser TO authenticator;
 
@@ -248,6 +253,17 @@ LANGUAGE plpgsql
 STRICT
 SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION public.get_public_tour (id UUID)
+  RETURNS "Tour"
+  AS $$
+BEGIN
+SELECT * FROM "Tour" WHERE id = get_public_tour.id AND is_public = TRUE;
+END;
+$$
+LANGUAGE plpgsql
+STRICT
+SECURITY DEFINER;
+
 --Tour Trigger
 CREATE OR REPLACE FUNCTION set_user ()
   RETURNS TRIGGER
@@ -311,9 +327,24 @@ CREATE POLICY auth_user_check ON "Auth"
   USING (user_id = current_user_id ());
 
 GRANT SELECT ON "public"."Tour" TO anon;
-GRANT SELECT ON "public"."Tour" TO webuser;
-GRANT INSERT ("name", "description", "start_date", "end_date", "is_public", "user_id") ON "public"."Tour" TO webuser;
-GRANT UPDATE ("name", "description", "start_date", "end_date", "is_public", "user_id") ON "public"."Tour" TO webuser;
-GRANT DELETE ON "public"."Tour" TO webuser;
 
-  
+GRANT SELECT, DELETE ON "public"."Tour" TO webuser;
+
+GRANT INSERT ("name", "description", "start_date", "end_date", "is_public") ON "public"."Tour" TO webuser;
+GRANT UPDATE ("name", "description", "start_date", "end_date", "is_public") ON "public"."Tour" TO webuser;
+
+GRANT SELECT, DELETE ON "public"."Activity" TO webuser;
+
+GRANT INSERT ("activity_type", "strava_id", "achievement_count", "athlete_count", "average_heartrate", "average_speed", "average_temp", "average_watts", "comment_count", "commute", "description", "device_watts", "display_hide_heartrate_option", "distance", "elapsed_time", "elev_high", "elev_low", "end_latlng", "flagged", "gear_id", "has_heartrate", "has_kudoed", "heartrate_opt_out", "kilojoules", "kudos_count", "location_city", "location_country", "location_state", "manual", "summary_polyline", "max_heartrate", "max_speed", "moving_time", "name", "photo_count", "pr_count", "private", "resource_state", "start_date", "start_date_local", "start_latitude", "start_longitude", "start_latlng", "timezone", "total_elevation_gain", "total_photo_count", "trainer", "type", "upload_id", "utc_offset", "visibility", "workout_type") ON "public"."Activity" TO webuser;
+GRANT UPDATE ("activity_type", "strava_id", "achievement_count", "athlete_count", "average_heartrate", "average_speed", "average_temp", "average_watts", "comment_count", "commute", "description", "device_watts", "display_hide_heartrate_option", "distance", "elapsed_time", "elev_high", "elev_low", "end_latlng", "flagged", "gear_id", "has_heartrate", "has_kudoed", "heartrate_opt_out", "kilojoules", "kudos_count", "location_city", "location_country", "location_state", "manual", "summary_polyline", "max_heartrate", "max_speed", "moving_time", "name", "photo_count", "pr_count", "private", "resource_state", "start_date", "start_date_local", "start_latitude", "start_longitude", "start_latlng", "timezone", "total_elevation_gain", "total_photo_count", "trainer", "type", "upload_id", "utc_offset", "visibility", "workout_type") ON "public"."Activity" TO webuser;
+
+GRANT SELECT, DELETE ON "public"."Auth" TO webuser;
+
+GRANT INSERT ("access_token", "expires_at", "refresh_token", "token_type", "strava_scope", "user_id") ON "public"."Auth" TO webuser;
+GRANT UPDATE ("access_token", "expires_at", "refresh_token", "token_type", "strava_scope", "user_id") ON "public"."Auth" TO webuser;
+
+GRANT SELECT, DELETE ON "public"."Athlete" TO webuser;
+
+GRANT INSERT ("strava_id", "firstname", "lastname", "profile", "profile_medium", "sex", "city", "state", "country", "date_preference", "measurement_preference", "weight") ON "public"."Athlete" TO webuser;
+GRANT UPDATE ("strava_id", "firstname", "lastname", "profile", "profile_medium", "sex", "city", "state", "country", "date_preference", "measurement_preference", "weight") ON "public"."Athlete" TO webuser;
+
