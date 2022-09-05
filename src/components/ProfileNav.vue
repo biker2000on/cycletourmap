@@ -1,7 +1,7 @@
 <template>
   <v-list>
     <v-list-item
-      href="mailto:justin@crawfordcreations.org?subject=Tourmap Feedback&body=Message"
+      href="mailto:bikerhiker10@gmail.com?subject=Tourmap Feedback&body=Message"
       target="_blank"
     >
       <v-list-item-icon>
@@ -12,7 +12,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-list-item
-      href="mailto:justin@crawfordcreations.org?subject=Tourmap Contact&body=Message"
+      href="mailto:bikerhiker10@gmail.com?subject=Tourmap Contact&body=Message"
       target="_blank"
     >
       <v-list-item-icon>
@@ -64,9 +64,9 @@
 </template>
 
 <script>
-import PrivacyPolicy from "./PrivacyPolicy";
-import FutureFeatures from './FutureFeatures'
-import SupportMe from './SupportMe'
+import PrivacyPolicy from "./PrivacyPolicy.vue";
+import FutureFeatures from './FutureFeatures.vue'
+import SupportMe from './SupportMe.vue'
 
 export default {
   components: {

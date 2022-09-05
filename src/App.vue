@@ -44,14 +44,14 @@
 
 <script>
 import store from "./store/index";
-import Strava from "./components/Strava.vue";
+// import Strava from "./components/Strava.vue";
 
 export default {
   name: "app",
   store,
-  components: {
-    Strava // Leaflet, Summary, Rides,
-  },
+  // components: {
+  //   Strava // Leaflet, Summary, Rides,
+  // },
   data() {
     return {
       drawer: null,
