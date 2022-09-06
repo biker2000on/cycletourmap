@@ -1,0 +1,65 @@
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th class="border-gray-200">Monday Date</th>
+            <th class="border-gray-200">A</th>
+            <th class="border-gray-200">B</th>
+            <th class="border-gray-200">C</th>
+            <th class="border-gray-200">D</th>
+            <th class="border-gray-200">Daylight</th>
+            <th class="border-gray-200">Anniversary</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in calendar %}
+        <tr>
+            <td>
+                {{row.date}}
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    {% for employee in row.A %}
+                    <li><a href="{% url 'employee' employee.employeeID %}">{{employee.preferredName}}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    {% for employee in row.B %}
+                    <li><a href="{% url 'employee' employee.employeeID %}">{{employee.preferredName}}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    {% for employee in row.C %}
+                    <li><a href="{% url 'employee' employee.employeeID %}">{{employee.preferredName}}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    {% for employee in row.D %}
+                    <li><a href="{% url 'employee' employee.employeeID %}">{{employee.preferredName}}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    {% for employee in row.Daylight %}
+                    <li><a href="{% url 'employee' employee.employeeID %}">{{employee.preferredName}}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    {% for employee in row.Anniversary %}
+                    <li><a href="{% url 'employee' employee.employeeID %}">{{employee.preferredName}}</a></li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+        <!-- Item -->
+    </tbody>
+</table>
