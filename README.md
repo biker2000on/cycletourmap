@@ -16,3 +16,6 @@ The backend database is Postgres using postgraphile to expose it as a graphql AP
 * https://next.vuetifyjs.com/en/getting-started/installation
 * https://github.com/vue-leaflet/vue-leaflet
 
+Playing with Django to recreate the entire app. 
+
+Left off with strava auth from Dashboard. URL resolution not working for /strava/exchange_token. 

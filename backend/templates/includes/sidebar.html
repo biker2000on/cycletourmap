@@ -27,7 +27,7 @@
     </div>
     <ul class="nav flex-column pt-3 pt-md-0">
       <li class="nav-item">
-        <a href="{% url 'employees' %}" class="nav-link d-flex align-items-center">
+        <a href="#" class="nav-link d-flex align-items-center">
           <span class="sidebar-icon">
             <img src="{{ ASSETS_ROOT }}/img/brand/ingevitysquare.svg" height="20" width="20" alt="Volt Logo">
           </span>
@@ -35,7 +35,7 @@
         </a>
       </li>
       <li class="nav-item {% if 'settings' in segment %} active {% endif %}">
-        <a href="{% url 'schedule-index' %}" class="nav-link">
+        <a href="#" class="nav-link">
           <span class="sidebar-icon">
             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
@@ -46,7 +46,7 @@
         </a>
       </li>
       <li class="nav-item {% if 'settings' in segment %} active {% endif %}">
-        <!-- <a href="{% url 'vacation-index' %}" class="nav-link">
+        <!-- <a href="#" class="nav-link">
           <span class="sidebar-icon">
             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
@@ -81,12 +81,12 @@
           id="submenu-examples" aria-expanded="false">
           <ul class="nav flex-column pt-3 pt-md-0">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'vacation-index' %}">
+              <a class="nav-link" href="#">
                 <span class="sidebar-text">Table</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'vacation-eligibility' %}">
+              <a class="nav-link" href="#">
                 <span class="sidebar-text">Eligibility Table</span>
               </a>
             </li>
@@ -94,7 +94,7 @@
         </div>
       </li>
       <li class="nav-item {% if 'settings' in segment %} active {% endif %}">
-        <a href="{% url 'employees' %}" class="nav-link">
+        <a href="#" class="nav-link">
           <span class="sidebar-icon">
             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
@@ -108,7 +108,7 @@
       </li>
       {% if user.is_staff %}
       <li class="nav-item {% if 'settings' in segment %} active {% endif %}">
-        <a href="{% url 'vacation-settings' %}" class="nav-link">
+        <a href="#" class="nav-link">
           <span class="sidebar-icon">
             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd"

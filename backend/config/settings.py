@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "apps.authentication",
     "apps.home",
     "apps.cycletourmap",
-    "apps.strava_listener",
+    "apps.strava",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -146,4 +146,9 @@ ASSETS_ROOT = os.getenv("ASSETS_ROOT", "/static/assets")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Setting to use custom user model
 AUTH_USER_MODEL = "authentication.Athlete"
+
+# Strava details
+STRAVA_CLIENTID = os.getenv("STRAVA_CLIENTID")
+STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")

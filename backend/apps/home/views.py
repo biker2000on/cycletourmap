@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
+from django.conf import settings
+import requests as r
 
 
 @login_required(login_url="/login/")
@@ -19,20 +21,21 @@ def index(request):
 
 
 @login_required(login_url="/login/")
-def pages(request):
+def pages(request, resource):
     context = {}
+    context["client_id"] = settings.STRAVA_CLIENTID
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
 
-        path = request.path.split("/")
-        load_template = path[-1]
+        # path = resource
+        # load_template = path[-1]
 
-        if load_template == "admin":
+        if resource == "admin":
             return HttpResponseRedirect(reverse("admin:index"))
-        context["segment"] = load_template
+        context["segment"] = resource
 
-        html_template = loader.get_template("home/" + load_template)
+        html_template = loader.get_template("home/" + resource)
         return HttpResponse(html_template.render(context, request))
 
     except template.TemplateDoesNotExist:
