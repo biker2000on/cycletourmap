@@ -1,18 +1,11 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-
-from .forms import UserCreationForm, UserChangeForm
-from .models import Athlete as User
+from django.apps import apps
 
 
-class UserAdmin(UserAdmin):
-    add_form = UserCreationForm
-    form = UserChangeForm
-    model = User
-    list_display = [
-        "email",
-        "username",
-    ]
+class ModelAdmin(admin.ModelAdmin):
+    def __init__(self, model, admin_site):
+        self.list_display = [field.name for field in model._meta.fields]
+        super().__init__(model, admin_site)
 
 
-admin.site.register(User, UserAdmin)
+admin.site.register(apps.all_models["authentication"].values(), ModelAdmin)

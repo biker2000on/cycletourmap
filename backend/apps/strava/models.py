@@ -6,12 +6,12 @@ import uuid
 
 class StravaAuth(TimeStampedModel, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    access_token = models.TextField()
+    access_token = models.CharField(max_length=70)
     expires_at = models.DateTimeField(null=True)
-    refresh_token = models.TextField(null=True)
-    token_type = models.TextField()
-    strava_scope = models.TextField(null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    refresh_token = models.CharField(max_length=70, null=True)
+    token_type = models.CharField(max_length=250)
+    strava_scope = models.CharField(max_length=250, null=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "strava_auth"

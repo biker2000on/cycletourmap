@@ -8,7 +8,7 @@
 {% block content %}
 
 <div class="py-4">
-    <a href="http://www.strava.com/oauth/authorize?client_id={{client_id}}&response_type=code&redirect_uri=http://localhost:8000/strava/exchange_token&approval_prompt=force&scope=read"
+    <a href="http://www.strava.com/oauth/authorize?client_id={{client_id}}&response_type=code&redirect_uri=http://localhost:8000/strava/exchange_token&approval_prompt=auto&scope=read,activity:read_all"
         class="btn btn-primary">Strava Auth</a>
     <div class="dropdown">
         <button class="btn btn-gray-800 d-inline-flex align-items-center me-2 dropdown-toggle" data-bs-toggle="dropdown"

@@ -50,4 +50,4 @@ def exchange_token(request):
     auth.strava_scope = scope
     auth.save()
 
-    return redirect(request.user)
+    return redirect("/map/")

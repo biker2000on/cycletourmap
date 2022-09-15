@@ -1,0 +1,26 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="py-4">
+    <a href="http://www.strava.com/oauth/authorize?client_id={{client_id}}&response_type=code&redirect_uri=http://localhost:8000/strava/exchange_token&approval_prompt=auto&scope=read,activity:read_all"
+        class="btn btn-primary mb-4">Strava Auth</a>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow p-4">
+                Placeholder for table of tours
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="500" version="1.1" viewBox="0 0 500.00001 500.00001" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="g" x1="271.92" x2="212.86" y1="140.81" y2="61.156" gradientTransform="matrix(.99044 0 0 .99044 2.3235 64.3)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#6fddff" offset="0"/>
+   <stop stop-color="#005990" offset="1"/>
+  </linearGradient>
+  <linearGradient id="i" x1="242.16" x2="242.16" y1="329.84" y2="30.818" gradientTransform="matrix(1.2086 0 0 1.2086 -491.86 -97.895)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#0091d0" offset="0"/>
+   <stop stop-color="#61d0ff" offset="1"/>
+  </linearGradient>
+  <linearGradient id="h" x1="229.64" x2="287.9" y1="235.94" y2="253.09" gradientTransform="matrix(1.2086 0 0 1.2086 -491.86 -97.895)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#99d3ff" offset="0"/>
+   <stop stop-color="#0085eb" offset="1"/>
+  </linearGradient>
+  <filter id="f" x="-.19152" y="-.9576" width="1.383" height="2.9152" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="9.2701699"/>
+  </filter>
+  <radialGradient id="j" cx="250" cy="380.27" r="80.332" gradientTransform="matrix(1 0 0 .42156 0 219.96)" gradientUnits="userSpaceOnUse">
+   <stop offset="0"/>
+   <stop offset=".094469"/>
+   <stop stop-opacity=".49" offset=".15106"/>
+   <stop stop-opacity=".439" offset=".2265"/>
+   <stop stop-opacity="0" offset="1"/>
+  </radialGradient>
+ </defs>
+ <rect width="500" height="500" fill-opacity="0"/>
+ <g transform="matrix(1.066 0 0 1.066 -16.488 -2.6527)">
+  <ellipse transform="matrix(1.1197 0 0 .42732 -29.917 217.77)" cx="250" cy="380.27" rx="58.084" ry="11.617" fill="url(#j)" filter="url(#f)" opacity=".392"/>
+  <g transform="matrix(.82567 0 0 .82567 413.48 129.67)">
+   <path d="m-197.99-62.212a87.937 87.937 0 0 0 -87.937 87.937 87.937 87.937 0 0 0 2.5989 20.834h-0.0968l0.29741 0.89226a87.937 87.937 0 0 0 4.0058 11.991l81.132 242.86 80.57-241.46a87.937 87.937 0 0 0 4.7115 -14.127l0.38712-1.1566h-0.0897a87.937 87.937 0 0 0 2.3558 -19.837 87.937 87.937 0 0 0 -87.935 -87.937z" fill="url(#i)" stroke="url(#h)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4171"/>
+   <g transform="matrix(1.2086 0 0 1.2086 -491.86 -174.43)">
+    <circle cx="243.16" cy="165.61" r="45.58" fill="url(#g)"/>
+    <circle cx="243.16" cy="165.61" r="43.532" fill="#57585b"/>
+    <circle cx="243.16" cy="165.61" r="41.748"/>
+    <circle cx="243.16" cy="165.61" r="36.039" fill="#383735"/>
+    <circle cx="243.16" cy="165.61" r="34.255" fill="#2b2a28"/>
+    <circle cx="243.16" cy="165.61" r="25.691" fill="#363533"/>
+    <circle cx="243.16" cy="165.61" r="12.995" fill="#3f3b3a"/>
+    <circle cx="243.16" cy="165.61" r="8.7134" fill="#373332"/>
+   </g>
+   <circle cx="-219.16" cy="2.6953" r="7.1145" fill="#e1e1e1"/>
+  </g>
+ </g>
+</svg>
