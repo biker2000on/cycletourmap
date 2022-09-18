@@ -15,6 +15,34 @@
         <div class="col-12 mb-4">
             <div class="card border-0 shadow p-4">
                 Placeholder for table of tours
+                {% if tours %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Public</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tour in tours %}
+                        <tr>
+                            <td>{{tour.name}}</td>
+                            <td>{{tour.description}}</td>
+                            <td>{{tour.start_date}}</td>
+                            <td>{{tour.end_date}}</td>
+                            <td>{{tour.is_public}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="m-4">No Tours yet</p>
+                <a class="btn btn-primary" href="{% url 'tour' %}">Create First Tour</a>
+                {% endif %}
             </div>
         </div>
     </div>

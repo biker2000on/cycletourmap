@@ -8,10 +8,11 @@
 from django.conf import settings
 from django_extensions.db.models import TimeStampedModel
 from django.contrib.gis.db import models
+from uuid import uuid4
 
 
 class Activity(TimeStampedModel, models.Model):
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     activity_type = models.CharField(max_length=20)
     strava_id = models.IntegerField(blank=True, null=True)
     achievement_count = models.IntegerField(blank=True, null=True)
@@ -71,13 +72,13 @@ class Activity(TimeStampedModel, models.Model):
 
 
 class Tour(TimeStampedModel, models.Model):
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField(blank=True, null=True)
     is_public = models.BooleanField(default=False)
-    tours = models.ManyToManyField(
+    activities = models.ManyToManyField(
         Activity, related_name="tours", db_table="tour_activities"
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

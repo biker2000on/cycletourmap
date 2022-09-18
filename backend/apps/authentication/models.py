@@ -6,8 +6,6 @@ import uuid
 class Athlete(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     strava_id = models.IntegerField(blank=True, null=True)
-    firstname = models.TextField(blank=True, null=True)
-    lastname = models.TextField(blank=True, null=True)
     profile = models.TextField(blank=True, null=True)
     profile_medium = models.TextField(blank=True, null=True)
     sex = models.TextField(blank=True, null=True)

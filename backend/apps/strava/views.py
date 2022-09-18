@@ -29,8 +29,8 @@ def exchange_token(request):
     res = r.post("https://www.strava.com/oauth/token", data=payload)
     data = res.json()
 
-    request.user.firstname = data["athlete"]["firstname"]
-    request.user.lastname = data["athlete"]["lastname"]
+    request.user.first_name = data["athlete"]["firstname"]
+    request.user.last_name = data["athlete"]["lastname"]
     request.user.profile = data["athlete"]["profile"]
     request.user.profile_medium = data["athlete"]["profile_medium"]
     request.user.sex = data["athlete"]["sex"]
