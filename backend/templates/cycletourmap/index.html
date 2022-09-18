@@ -14,9 +14,8 @@
     <div class="row">
         <div class="col-12 mb-4">
             <div class="card border-0 shadow p-4">
-                Placeholder for table of tours
                 {% if tours %}
-                <table>
+                <table class="table table-responsive mb-4">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -41,8 +40,10 @@
                 </table>
                 {% else %}
                 <p class="m-4">No Tours yet</p>
-                <a class="btn btn-primary" href="{% url 'tour' %}">Create First Tour</a>
                 {% endif %}
+                <button hx-get="{% url 'tour_modal' %}" hx-target="#dialog" class="btn btn-primary">
+                    Create Tour
+                </button>
             </div>
         </div>
     </div>

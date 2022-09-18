@@ -38,9 +38,8 @@
 
 <!-- Volt JS -->
 <script src="{{ ASSETS_ROOT }}/js/volt.js"></script>
-<script src="{{ ASSETS_ROOT }}/js/dialog.js"></script>
-<script src="{{ ASSETS_ROOT }}/js/toast.js"></script>
 
+<!-- HTMX -->
 <script src="https://unpkg.com/htmx.org@1.8.0"
     integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc"
     crossorigin="anonymous"></script>
@@ -49,3 +48,7 @@
         e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
 </script>
+
+<!-- My Javascript additions -->
+<script src="{{ ASSETS_ROOT }}/js/dialog.js"></script>
+<script src="{{ ASSETS_ROOT }}/js/toast.js"></script>

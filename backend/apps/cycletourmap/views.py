@@ -25,6 +25,14 @@ def tour(request, tour_id=None):
 
 
 @login_required(login_url="/login/")
+def tour_modal(request, tour_id=None):
+    context = {}
+    context["form"] = TourForm()
+
+    return render(request, "components/tour-form.html", context)
+
+
+@login_required(login_url="/login/")
 @require_http_methods(["GET", "POST"])
 def tour_submit(request):
     form = TourForm(data=request.POST)
