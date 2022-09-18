@@ -82,6 +82,23 @@
 
     {% block content %}{% endblock content %}
 
+    <!-- Placeholder for the modal -->
+    <div id="modal" class="modal fade">
+      <div id="dialog" class="modal-dialog modal-dialog-centered" hx-target="this"></div>
+    </div>
+
+    <!-- Empty toast to show the message -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+        aria-atomic="true">
+        <div class="d-flex">
+          <div id="toast-body" class="toast-body"></div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
     <!-- {% include 'includes/settings-box.html' %} -->
 
     <!-- {% include 'includes/footer.html' %} -->
@@ -93,14 +110,6 @@
   <!-- Specific Page JS goes HERE  -->
   {% block javascripts %}{% endblock javascripts %}
 
-  <script src="https://unpkg.com/htmx.org@1.8.0"
-    integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc"
-    crossorigin="anonymous"></script>
-  <script>
-    document.body.addEventListener('htmx:configRequest', (e) => {
-      e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    })
-  </script>
 </body>
 
 </html>
