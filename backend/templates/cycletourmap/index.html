@@ -26,16 +26,8 @@
                             <th>Options</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for tour in tours %}
-                        <tr>
-                            <td>{{tour.name}}</td>
-                            <td>{{tour.description}}</td>
-                            <td>{{tour.start_date}}</td>
-                            <td>{{tour.end_date}}</td>
-                            <td>{{tour.is_public}}</td>
-                        </tr>
-                        {% endfor %}
+                    <tbody hx-trigger="tourListChanged from:body" hx-get="{% url 'tour_list' %}" hx-target="this">
+                        {% include 'components/tour-table-body.html' %}
                     </tbody>
                 </table>
                 {% else %}

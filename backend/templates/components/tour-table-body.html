@@ -1,0 +1,23 @@
+{% for tour in tours %}
+<tr>
+    <td>{{tour.name}}</td>
+    <td>{{tour.description}}</td>
+    <td>{{tour.start_date}}</td>
+    <td>{{tour.end_date}}</td>
+    <td>
+        {% if tour.is_public %}
+        <i class="bi bi-eye-fill"></i>
+        {% else %}
+        <i class="bi bi-eye-slash-fill"></i>
+        {% endif %}
+    </td>
+    <td>
+        <a hx-get="{% url 'tour_view' tour.id %}"><i class="bi bi-eye-fill"></i></a>
+        <a hx-get="{% url 'tour_edit' tour.id %}" hx-target="#dialog"><i class="bi bi-pencil-fill"></i></a>
+        <a hx-trigger="confirmed" hx-delete="{% url 'tour_delete' tour.id %}" _="on click
+        call Swal.fire({icon: 'error', title: 'Delete Tour', text:'Are you sure you want to delete this tour?',
+        confirmButtonText: 'Yes, Delete', confirmButtonColor: '#FF0000'})
+        if result.isConfirmed trigger confirmed"><i class="bi bi-trash-fill text-danger"></i></a>
+    </td>
+</tr>
+{% endfor %}

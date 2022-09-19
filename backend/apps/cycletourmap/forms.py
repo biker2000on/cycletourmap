@@ -16,6 +16,7 @@ class TourForm(forms.ModelForm):
     class Meta:
         model = Tour
         fields = (
+            "id",
             "name",
             "description",
             "start_date",
@@ -23,4 +24,4 @@ class TourForm(forms.ModelForm):
             "is_public",
         )
 
-        widgets = {}
+        widgets = {"id": forms.HiddenInput()}
