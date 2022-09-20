@@ -14,6 +14,7 @@
     <div class="row">
         <div class="col-12 mb-4">
             <div class="card border-0 shadow p-4" id="card">
+                {% if object_list %}
                 <table class="table table-responsive mb-4">
                     <thead>
                         <tr>
@@ -29,6 +30,10 @@
                         {% include 'components/tour-table-body.html' %}
                     </tbody>
                 </table>
+                {% else %}
+                <p>No tours created yet.</p>
+                <p>Create your first tour now!</p>
+                {% endif %}
                 <button hx-get="{% url 'tour_create' %}" hx-target="#dialog" class="btn btn-primary">
                     Create Tour
                 </button>

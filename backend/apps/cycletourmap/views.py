@@ -2,11 +2,13 @@ from multiprocessing import context
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
-from .forms import TourForm
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
+from django.contrib.messages.views import SuccessMessageMixin
 from .models import Tour
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import redirect
 import json
 
 
@@ -14,16 +16,49 @@ import json
 def index(request):
     context = {}
     context["client_id"] = settings.STRAVA_CLIENTID
-    context["tours"] = Tour.objects.filter(user=request.user).all()
     return render(request, "cycletourmap/index.html", context)
 
 
-@login_required(login_url="/login/")
-def tour(request, tour_id=None):
-    context = {}
-    context["form"] = TourForm()
+class TourList(ListView):
+    model = Tour
+    allow_empty = True
 
-    return render(request, "cycletourmap/tour.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["client_id"] = settings.STRAVA_CLIENTID
+        return context
+
+
+@login_required(login_url="/login/")
+def tour_list(request):
+    context = {}
+    context["object_list"] = Tour.objects.filter(user=request.user)
+    return render(request, "components/tour-table-body.html", context)
+
+
+class TourDetail(DetailView):
+    model = Tour
+
+
+class TourCreate(SuccessMessageMixin, CreateView):
+    model = Tour
+    fields = ["name", "description", "start_date", "end_date", "is_public"]
+    success_message = "%(name)s was successfully submitted"
+    success_url = "/tour/msg"
+    template_name_suffix = "_create_form"
+
+    def form_valid(self, form):
+        form.instance.user_id = self.request.user.pk
+        form.save()
+        return super().form_valid(form)
+
+
+class TourUpdate(SuccessMessageMixin, UpdateView):
+    model = Tour
+    fields = ["name", "description", "start_date", "end_date", "is_public"]
+    success_message = "%(name)s was successfully updated"
+    success_url = "/tour/msg"
+    template_name_suffix = "_update_form"
 
 
 @login_required
@@ -33,41 +68,12 @@ def tour_delete(request, tour_id):
     return HttpResponse(status=204, headers={"HX-Trigger": "tourListChanged"})
 
 
-@login_required(login_url="/login/")
-def tour_modal(request, tour_id=None):
-    context = {}
-    if tour_id:
-        context["form"] = TourForm(instance=Tour.objects.get(id=tour_id))
-    else:
-        context["form"] = TourForm()
+def send_message(request, message=None):
+    message = request._messages._loaded_messages[-1].message
 
-    return render(request, "components/tour-form.html", context)
-
-
-@login_required
-def tour_list(request):
-    context = {}
-    context["tours"] = Tour.objects.filter(user=request.user).all()
-    return render(request, "components/tour-table-body.html", context)
-
-
-@login_required(login_url="/login/")
-@require_http_methods(["GET", "POST"])
-def tour_submit(request, tour_id=None):
-    form = TourForm(data=request.POST)
-    if form.is_valid():
-        if tour_id:
-            form.id = tour_id
-        form = form.save(commit=False)
-        form.user = request.user
-        form.save()
-
-        return HttpResponse(
-            status=204,
-            headers={
-                "HX-Trigger": json.dumps(
-                    {"tourListChanged": None, "showMessage": f"{form.name} submitted."}
-                )
-            },
-        )
-    return render(request, "components/tour-form.html", {"form": form})
+    return HttpResponse(
+        status=204,
+        headers={
+            "HX-Trigger": json.dumps({"tourListChanged": None, "showMessage": message})
+        },
+    )
