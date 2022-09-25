@@ -8,5 +8,6 @@ urlpatterns = [
     path("tour/<pk>", views.TourDetail.as_view(), name="tour_view"),
     path("tour/<pk>/edit", views.TourUpdate.as_view(), name="tour_edit"),
     path("tour/<tour_id>/delete", views.tour_delete, name="tour_delete"),
+    path("tour/<tour_id>/activities", views.get_activities, name="tour_activities"),
     path("msg", views.send_message, name="message"),
 ]

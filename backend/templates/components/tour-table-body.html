@@ -12,7 +12,8 @@
         {% endif %}
     </td>
     <td>
-        <a hx-get="{% url 'tour_view' tour.id %}" hx-target="#card"><i class="bi bi-eye-fill"></i></a>
+        <a hx-get="{% url 'tour_view' tour.id %}" hx-target="#card" hx-push-url="true"><i
+                class="bi bi-eye-fill"></i></a>
         <a hx-get="{% url 'tour_edit' tour.id %}" hx-target="#dialog"><i class="bi bi-pencil-fill"></i></a>
         <a hx-trigger="confirmed" hx-delete="{% url 'tour_delete' tour.id %}" _="on click
         call Swal.fire({icon: 'error', title: 'Delete Tour', text:'Are you sure you want to delete this tour?',
