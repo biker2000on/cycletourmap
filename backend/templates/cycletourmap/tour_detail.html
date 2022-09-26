@@ -3,4 +3,5 @@
 <p>{{ object.start_date }}</p>
 <p>{{ object.end_date }}</p>
 <p>{{ object.is_public }}</p>
-<a href="{% url 'tour_activities' object.id %}">Click to get activities</a>
+<a hx-get="{% url 'tour_activities' object.id %}" hx-target="#activities">Click to get activities</a>
+<div id="activities"></div>

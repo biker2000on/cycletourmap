@@ -88,63 +88,75 @@ def send_message(request, message=None):
 
 
 def get_activities(request, tour_id):
+    context = {}
     access_token = get_token(request.user)
     tour = Tour.objects.get(id=tour_id)
     activities = get_strava_activities(request.user, tour, access_token)
     for a in activities:
+
         act, created = Activity.objects.get_or_create(
             strava_id=a["id"], activity_type=a["type"], user=request.user
         )
+
         if created:
-            act.achievement_count = a["achievement_count"]
-            act.athlete_count = a["athlete_count"]
-            act.average_heartrate = a["average_heartrate"]
-            act.average_speed = a["average_speed"]
-            # act.average_temp = a["average_temp"]
-            act.average_watts = a["average_watts"]
-            act.comment_count = a["comment_count"]
-            act.commute = a["commute"]
-            # act.description = a["description"]
-            act.device_watts = a["device_watts"]
-            act.display_hide_heartrate_option = a["display_hide_heartrate_option"]
-            act.distance = a["distance"]
-            act.elapsed_time = a["elapsed_time"]
-            act.elev_high = a["elev_high"]
-            act.elev_low = a["elev_low"]
-            act.end_latlng = Point(a["end_latlng"][1], a["end_latlng"][0])
-            act.flagged = a["flagged"]
-            act.gear_id = a["gear_id"]
-            act.has_heartrate = a["has_heartrate"]
-            act.has_kudoed = a["has_kudoed"]
-            act.heartrate_opt_out = a["heartrate_opt_out"]
-            act.kilojoules = a["kilojoules"]
-            act.kudos_count = a["kudos_count"]
-            act.location_city = a["location_city"]
-            act.location_country = a["location_country"]
-            act.location_state = a["location_state"]
-            act.manual = a["manual"]
-            act.summary_polyline = a["map"]["summary_polyline"]
-            act.max_heartrate = a["max_heartrate"]
-            act.max_speed = a["max_speed"]
-            act.moving_time = a["moving_time"]
-            act.name = a["name"]
-            act.photo_count = a["photo_count"]
-            act.pr_count = a["pr_count"]
-            act.private = a["private"]
-            act.resource_state = a["resource_state"]
-            act.start_date = a["start_date"]
-            act.start_date_local = a["start_date_local"]
-            act.start_latlng = Point(a["start_latlng"][1], a["start_latlng"][0])
-            act.timezone = a["timezone"]
-            act.total_elevation_gain = a["total_elevation_gain"]
-            act.total_photo_count = a["total_photo_count"]
-            act.trainer = a["trainer"]
-            act.type = a["type"]
-            act.upload_id = a["upload_id"]
-            act.utc_offset = a["utc_offset"]
-            act.visibility = a["visibility"]
-            act.workout_type = a["workout_type"]
+            act.achievement_count = a.get("achievement_count", None)
+            act.athlete_count = a.get("athlete_count", None)
+            act.average_heartrate = a.get("average_heartrate", None)
+            act.average_speed = a.get("average_speed", None)
+            act.average_temp = a.get("average_temp", None)
+            act.average_watts = a.get("average_watts", None)
+            act.comment_count = a.get("comment_count", None)
+            act.commute = a.get("commute", None)
+            act.description = a.get("description", None)
+            act.device_watts = a.get("device_watts", None)
+            act.display_hide_heartrate_option = a.get(
+                "display_hide_heartrate_option", None
+            )
+            act.distance = a.get("distance", None)
+            act.elapsed_time = a.get("elapsed_time", None)
+            act.elev_high = a.get("elev_high", None)
+            act.elev_low = a.get("elev_low", None)
+            act.flagged = a.get("flagged", None)
+            act.gear_id = a.get("gear_id", None)
+            act.has_heartrate = a.get("has_heartrate", None)
+            act.has_kudoed = a.get("has_kudoed", None)
+            act.heartrate_opt_out = a.get("heartrate_opt_out", None)
+            act.kilojoules = a.get("kilojoules", None)
+            act.kudos_count = a.get("kudos_count", None)
+            act.location_city = a.get("location_city", None)
+            act.location_country = a.get("location_country", None)
+            act.location_state = a.get("location_state", None)
+            act.manual = a.get("manual", None)
+            act.max_heartrate = a.get("max_heartrate", None)
+            act.max_speed = a.get("max_speed", None)
+            act.moving_time = a.get("moving_time", None)
+            act.name = a.get("name", None)
+            act.photo_count = a.get("photo_count", None)
+            act.pr_count = a.get("pr_count", None)
+            act.private = a.get("private", None)
+            act.resource_state = a.get("resource_state", None)
+            act.start_date = a.get("start_date", None)
+            act.start_date_local = a.get("start_date_local", None)
+            act.timezone = a.get("timezone", None)
+            act.total_elevation_gain = a.get("total_elevation_gain", None)
+            act.total_photo_count = a.get("total_photo_count", None)
+            act.trainer = a.get("trainer", None)
+            act.type = a.get("type", None)
+            act.upload_id = a.get("upload_id", None)
+            act.utc_offset = a.get("utc_offset", None)
+            act.visibility = a.get("visibility", None)
+            act.workout_type = a.get("workout_type", None)
+
+            if start := a.get("start_latlng", None):
+                act.start_latlng = Point(start[1], start[0])
+
+            if end := a.get("start_latlng", None):
+                act.end_latlng = Point(end[1], end[0])
+
+            if map := a.get("map"):
+                act.polyline = map.get("polyline", None)
+                act.summary_polyline = map.get("summary_polyline", None)
 
             act.save()
-
-    return HttpResponse(status=204)
+    context["activities"] = Activity.objects.all()
+    return render(request, "cycletourmap/activity-table.html", context)

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "crispy_forms",
     "crispy_bootstrap5",
+    "mathfilters",
 ]
 
 MIDDLEWARE = [
