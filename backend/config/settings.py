@@ -14,6 +14,8 @@ from distutils.util import strtobool
 from pathlib import Path
 import os
 import environ
+import logging
+from django.utils.log import DEFAULT_LOGGING
 
 env = environ.Env()
 
@@ -159,3 +161,45 @@ STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 # Crispy Forms Config
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+LOGGING_CONFIG = None
+
+LOGLEVEL = os.environ.get("DJANGO_LOG_LEVEL", "info").upper()
+
+logging.config.dictConfig(
+    {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "default": {
+                # exact format is not important, this is the minimum information
+                "format": "[DJANGO] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: %(message)s",
+            },
+            # "django.server": DEFAULT_LOGGING["formatters"]["django.server"],
+        },
+        "handlers": {
+            # console logs to stderr
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+            },
+            # "django.server": DEFAULT_LOGGING["handlers"]["django.server"],
+        },
+        "loggers": {
+            # default for all undefined Python modules
+            "": {
+                "level": "INFO",
+                "handlers": ["console"],
+            },
+            # Our application code
+            "app": {
+                "level": LOGLEVEL,
+                "handlers": ["console"],
+                # Avoid double logging because of root logger
+                "propagate": False,
+            },
+            # Default runserver request logging
+            # "django.server": DEFAULT_LOGGING["loggers"]["django.server"],
+        },
+    }
+)
