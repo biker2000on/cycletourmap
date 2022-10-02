@@ -1,10 +1,3 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.conf import settings
 from django_extensions.db.models import TimeStampedModel
 from django.contrib.gis.db import models
@@ -14,7 +7,7 @@ from uuid import uuid4
 class Activity(TimeStampedModel, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     activity_type = models.CharField(max_length=20)
-    strava_id = models.IntegerField(blank=True, null=True)
+    strava_id = models.PositiveBigIntegerField(blank=True, null=True)
     achievement_count = models.IntegerField(blank=True, null=True)
     athlete_count = models.IntegerField(blank=True, null=True)
     average_heartrate = models.IntegerField(blank=True, null=True)
@@ -60,7 +53,7 @@ class Activity(TimeStampedModel, models.Model):
     total_photo_count = models.IntegerField(blank=True, null=True)
     trainer = models.BooleanField(blank=True, null=True)
     type = models.TextField(blank=True, null=True)
-    upload_id = models.IntegerField(blank=True, null=True)
+    upload_id = models.PositiveBigIntegerField(blank=True, null=True)
     utc_offset = models.TextField(blank=True, null=True)
     visibility = models.CharField(max_length=50, blank=True, null=True)
     workout_type = models.TextField(blank=True, null=True)

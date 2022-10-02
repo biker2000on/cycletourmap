@@ -19,3 +19,5 @@ The backend database is Postgres using postgraphile to expose it as a graphql AP
 Playing with Django to recreate the entire app. 
 
 Left off with strava auth from Dashboard. URL resolution not working for /strava/exchange_token. 
+
+https://developers.strava.com/docs/webhooks/

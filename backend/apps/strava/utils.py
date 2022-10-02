@@ -1,5 +1,6 @@
 from os import access
 from .models import StravaAuth
+from apps.cycletourmap.models import Activity
 import requests as r
 from django.conf import settings
 from datetime import datetime
@@ -33,14 +34,15 @@ def get_token(user):
     return auth.access_token
 
 
-def get_strava_activities(user, tour, access_token):
+def get_strava_activities(user, tour, access_token, page=1, last_timestamp=0):
+
     resp = r.get(
         "https://www.strava.com/api/v3/athlete/activities",
         params={
             "per_page": 50,
-            "page": 1,
+            "page": page,
             # "before": tour.end_date,
-            "after": tour.start_date,
+            "after": last_timestamp,
         },
         headers={"Authorization": f"Bearer {access_token}"},
     )

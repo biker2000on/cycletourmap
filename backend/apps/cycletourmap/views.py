@@ -13,6 +13,11 @@ from django.views.decorators.http import require_http_methods
 import json
 from apps.strava.utils import get_token, get_strava_activities
 from django.contrib.gis.geos import Point
+import time
+import logging
+from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 
 
 @login_required(login_url="/login/")
@@ -91,72 +96,105 @@ def get_activities(request, tour_id):
     context = {}
     access_token = get_token(request.user)
     tour = Tour.objects.get(id=tour_id)
-    activities = get_strava_activities(request.user, tour, access_token)
-    for a in activities:
+    page = 1
+    last_act = (
+        Activity.objects.filter(user=request.user, start_date__isnull=False)
+        .order_by("start_date")
+        .last()
+    )
+    if last_act:
+        last_timestamp = int(time.mktime(last_act.start_date.timetuple()))
+    else:
+        last_timestamp = int(time.mktime(Tour.start_date.timetuple()))
+    activities = get_strava_activities(
+        request.user, tour, access_token, page=page, last_timestamp=last_timestamp
+    )
+    while True:
+        for a in activities:
 
-        act, created = Activity.objects.get_or_create(
-            strava_id=a["id"], activity_type=a["type"], user=request.user
-        )
-
-        if created:
-            act.achievement_count = a.get("achievement_count", None)
-            act.athlete_count = a.get("athlete_count", None)
-            act.average_heartrate = a.get("average_heartrate", None)
-            act.average_speed = a.get("average_speed", None)
-            act.average_temp = a.get("average_temp", None)
-            act.average_watts = a.get("average_watts", None)
-            act.comment_count = a.get("comment_count", None)
-            act.commute = a.get("commute", None)
-            act.description = a.get("description", None)
-            act.device_watts = a.get("device_watts", None)
-            act.display_hide_heartrate_option = a.get(
-                "display_hide_heartrate_option", None
+            act, created = Activity.objects.get_or_create(
+                strava_id=a["id"], activity_type=a["type"], user=request.user
             )
-            act.distance = a.get("distance", None)
-            act.elapsed_time = a.get("elapsed_time", None)
-            act.elev_high = a.get("elev_high", None)
-            act.elev_low = a.get("elev_low", None)
-            act.flagged = a.get("flagged", None)
-            act.gear_id = a.get("gear_id", None)
-            act.has_heartrate = a.get("has_heartrate", None)
-            act.has_kudoed = a.get("has_kudoed", None)
-            act.heartrate_opt_out = a.get("heartrate_opt_out", None)
-            act.kilojoules = a.get("kilojoules", None)
-            act.kudos_count = a.get("kudos_count", None)
-            act.location_city = a.get("location_city", None)
-            act.location_country = a.get("location_country", None)
-            act.location_state = a.get("location_state", None)
-            act.manual = a.get("manual", None)
-            act.max_heartrate = a.get("max_heartrate", None)
-            act.max_speed = a.get("max_speed", None)
-            act.moving_time = a.get("moving_time", None)
-            act.name = a.get("name", None)
-            act.photo_count = a.get("photo_count", None)
-            act.pr_count = a.get("pr_count", None)
-            act.private = a.get("private", None)
-            act.resource_state = a.get("resource_state", None)
-            act.start_date = a.get("start_date", None)
-            act.start_date_local = a.get("start_date_local", None)
-            act.timezone = a.get("timezone", None)
-            act.total_elevation_gain = a.get("total_elevation_gain", None)
-            act.total_photo_count = a.get("total_photo_count", None)
-            act.trainer = a.get("trainer", None)
-            act.type = a.get("type", None)
-            act.upload_id = a.get("upload_id", None)
-            act.utc_offset = a.get("utc_offset", None)
-            act.visibility = a.get("visibility", None)
-            act.workout_type = a.get("workout_type", None)
 
-            if start := a.get("start_latlng", None):
-                act.start_latlng = Point(start[1], start[0])
+            if created:
+                act.achievement_count = a.get("achievement_count", None)
+                act.athlete_count = a.get("athlete_count", None)
+                act.average_heartrate = a.get("average_heartrate", None)
+                act.average_speed = a.get("average_speed", None)
+                act.average_temp = a.get("average_temp", None)
+                act.average_watts = a.get("average_watts", None)
+                act.comment_count = a.get("comment_count", None)
+                act.commute = a.get("commute", None)
+                act.description = a.get("description", None)
+                act.device_watts = a.get("device_watts", None)
+                act.display_hide_heartrate_option = a.get(
+                    "display_hide_heartrate_option", None
+                )
+                act.distance = a.get("distance", None)
+                act.elapsed_time = a.get("elapsed_time", None)
+                act.elev_high = a.get("elev_high", None)
+                act.elev_low = a.get("elev_low", None)
+                act.flagged = a.get("flagged", None)
+                act.gear_id = a.get("gear_id", None)
+                act.has_heartrate = a.get("has_heartrate", None)
+                act.has_kudoed = a.get("has_kudoed", None)
+                act.heartrate_opt_out = a.get("heartrate_opt_out", None)
+                act.kilojoules = a.get("kilojoules", None)
+                act.kudos_count = a.get("kudos_count", None)
+                act.location_city = a.get("location_city", None)
+                act.location_country = a.get("location_country", None)
+                act.location_state = a.get("location_state", None)
+                act.manual = a.get("manual", None)
+                act.max_heartrate = a.get("max_heartrate", None)
+                act.max_speed = a.get("max_speed", None)
+                act.moving_time = a.get("moving_time", None)
+                act.name = a.get("name", None)
+                act.photo_count = a.get("photo_count", None)
+                act.pr_count = a.get("pr_count", None)
+                act.private = a.get("private", None)
+                act.resource_state = a.get("resource_state", None)
+                act.start_date = a.get("start_date", None)
+                act.start_date_local = a.get("start_date_local", None)
+                act.timezone = a.get("timezone", None)
+                act.total_elevation_gain = a.get("total_elevation_gain", None)
+                act.total_photo_count = a.get("total_photo_count", None)
+                act.trainer = a.get("trainer", None)
+                act.type = a.get("type", None)
+                act.upload_id = a.get("upload_id", None)
+                act.utc_offset = a.get("utc_offset", None)
+                act.visibility = a.get("visibility", None)
+                act.workout_type = a.get("workout_type", None)
 
-            if end := a.get("start_latlng", None):
-                act.end_latlng = Point(end[1], end[0])
+                if start := a.get("start_latlng", None):
+                    act.start_latlng = Point(start[1], start[0])
 
-            if map := a.get("map"):
-                act.polyline = map.get("polyline", None)
-                act.summary_polyline = map.get("summary_polyline", None)
+                if end := a.get("start_latlng", None):
+                    act.end_latlng = Point(end[1], end[0])
 
-            act.save()
-    context["activities"] = Activity.objects.all()
+                if map := a.get("map"):
+                    act.polyline = map.get("polyline", None)
+                    act.summary_polyline = map.get("summary_polyline", None)
+                try:
+                    act.save()
+                except Exception as e:
+                    logger.error(e)
+                logger.info(f"Activity {act.strava_id} | {act.name} | saved")
+
+        if len(activities) < 50:
+            break
+        page += 1
+        logger.info(f"Page {page} of Strava activities")
+        activities = get_strava_activities(
+            request.user, tour, access_token, page=page, last_timestamp=last_timestamp
+        )
+    if tour.end_date:
+        context["activities"] = Activity.objects.filter(
+            user=tour.user,
+            start_date__gte=tour.start_date,
+            start_date__lte=tour.end_date + timedelta(seconds=3600 * 24 - 1),
+        ).order_by("-start_date")
+    else:
+        context["activities"] = Activity.objects.filter(
+            user=tour.user, start_date__gte=tour.start_date
+        ).order_by("-start_date")
     return render(request, "cycletourmap/activity-table.html", context)
