@@ -157,6 +157,7 @@ AUTH_USER_MODEL = "authentication.Athlete"
 # Strava details
 STRAVA_CLIENTID = os.getenv("STRAVA_CLIENTID")
 STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
+STRAVA_VERIFY_TOKEN = os.getenv("STRAVA_VERIFY_TOKEN")
 
 # Crispy Forms Config
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

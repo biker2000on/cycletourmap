@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 
-<form hx-post="{% url 'tour_create' %}" class="modal-content p-4">
+<form hx-post="{% url 'cycletourmap:tour_create' %}" class="modal-content p-4">
     {% csrf_token %}
     <div class="modal-header">
         <h5 class="modal-title">Create Tour</h5>

@@ -2,9 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.urls import reverse
 import requests as r
 from .models import StravaAuth
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @login_required(login_url="/login/")
@@ -51,3 +56,55 @@ def exchange_token(request):
     auth.save()
 
     return redirect("/map/")
+
+
+@login_required(login_url="/login/")
+def webhook_setup(request):
+    context = {}
+    res = r.get(
+        "https://www.strava.com/api/v3/push_subscriptions",
+        params={
+            "client_id": settings.STRAVA_CLIENTID,
+            "client_secret": settings.STRAVA_CLIENT_SECRET,
+        },
+    )
+    data = r.json()
+    if len(data):
+        context["webhooks"] = data
+
+
+def create_subscription(request):
+    context = {}
+    context["verify_token"] = settings.STRAVA_VERIFY_TOKEN
+    context["client_id"] = settings.STRAVA_CLIENTID
+    context["client_secret"] = settings.STRAVA_CLIENT_SECRET
+    res = r.get(
+        "https://www.strava.com/api/v3/push_subscriptions",
+        params={
+            "client_id": settings.STRAVA_CLIENTID,
+            "client_secret": settings.STRAVA_CLIENT_SECRET,
+            "callback_url": "https://cycletourmap.com/" + reverse("strava:listener"),
+            "verify_token": settings.STRAVA_VERIFY_TOKEN,
+        },
+    )
+
+    redirect("strava:webhook")
+
+
+def view_subscription(request):
+    pass
+
+
+def delete_subscription(request, id):
+    pass
+
+
+def listener(request):
+    if request.GET:
+        if "hub.challenge" in request.GET.keys():
+            logger.info(f"Subscription setup: {request.GET['hub.challenge']}")
+            return JsonResponse({"hub.challenge": request.GET["hub.challenge"]})
+        else:
+            return HttpResponse(status=500)
+    if request.POST:
+        pass

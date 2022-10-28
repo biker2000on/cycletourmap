@@ -15,7 +15,7 @@
                                 <th>Kilojoules</th>
                             </tr>
                         </thead>
-                        <tbody hx-trigger="activityListChanged from:body" hx-get="{% url 'tour_list' %}"
+                        <tbody hx-trigger="activityListChanged from:body" hx-get="{% url 'cycletourmap:tour_list' %}"
                             hx-target="this">
                             {% include 'components/activity-table-body.html' %}
                         </tbody>

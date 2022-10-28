@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+app_name = "cycletourmap"
 urlpatterns = [
     path("", views.TourList.as_view(), name="index"),
     path("tour/create", views.TourCreate.as_view(), name="tour_create"),

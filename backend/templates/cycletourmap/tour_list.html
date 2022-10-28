@@ -29,7 +29,8 @@
                             <th>Options</th>
                         </tr>
                     </thead>
-                    <tbody hx-trigger="tourListChanged from:body" hx-get="{% url 'tour_list' %}" hx-target="this">
+                    <tbody hx-trigger="tourListChanged from:body" hx-get="{% url 'cycletourmap:tour_list' %}"
+                        hx-target="this">
                         {% include 'components/tour-table-body.html' %}
                     </tbody>
                 </table>
@@ -37,7 +38,7 @@
                 <p>No tours created yet.</p>
                 <p>Create your first tour now!</p>
                 {% endif %}
-                <button hx-get="{% url 'tour_create' %}" hx-target="#dialog" class="btn btn-primary">
+                <button hx-get="{% url 'cycletourmap:tour_create' %}" hx-target="#dialog" class="btn btn-primary">
                     Create Tour
                 </button>
             </div>
