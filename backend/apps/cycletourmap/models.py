@@ -61,6 +61,7 @@ class Activity(TimeStampedModel, models.Model):
 
     class Meta:
         db_table = "activity"
+        ordering = ["start_date"]
 
 
 class Tour(TimeStampedModel, models.Model):
@@ -77,3 +78,30 @@ class Tour(TimeStampedModel, models.Model):
 
     class Meta:
         db_table = "tour"
+
+
+class Activity_Detail(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    time = models.IntegerField(help_text="Time in seconds since activity start")
+    distance = models.FloatField()
+    latlng = models.PointField(null=True, blank=True)
+    altitude = models.IntegerField(null=True, blank=True)
+    velocity_smooth = models.FloatField(null=True, blank=True)
+    heartrate = models.IntegerField(null=True, blank=True)
+    cadence = models.IntegerField(null=True, blank=True)
+    watts = models.IntegerField(null=True, blank=True)
+    temperature = models.IntegerField(help_text="Temperature in Celcius")
+    moving = models.BooleanField(default=True)
+    grade_smooth = models.FloatField(null=True, blank=True)
+    strava_detail = models.BooleanField(
+        default=True,
+        help_text="This is to denote the values came from the Strava Streamset API",
+    )
+    fit_file_detail = models.BooleanField(
+        default=False,
+        help_text="This is to denote direct parsing of FIT/activity files",
+    )
+
+    class Meta:
+        db_table = "activity_detail"
