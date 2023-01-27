@@ -205,3 +205,22 @@ logging.config.dictConfig(
         },
     }
 )
+
+LEAFLET_CONFIG = {
+    "TILES": [
+        (
+            "OpenStreetMaps",
+            "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                "attribution": '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            },
+        ),
+        (
+            "OpenCycleMaps",
+            "https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3d3c357594e04c67a183d3c95a1792c0",
+            {
+                "attribution": '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            },
+        ),
+    ]
+}
