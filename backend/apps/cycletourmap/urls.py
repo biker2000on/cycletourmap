@@ -16,4 +16,6 @@ urlpatterns = [
         name="activity_detail",
     ),
     path("msg", views.send_message, name="message"),
+    path("<tour_id>/map/activities", views.map_activity_data, name="map_activities"),
+    path("<tour_id>/map", views.tourmap, name="map"),
 ]

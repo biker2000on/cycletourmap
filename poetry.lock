@@ -147,6 +147,20 @@ python-versions = ">=3.6"
 Django = ">=3.2"
 
 [[package]]
+name = "django-leaflet"
+version = "0.28.3"
+description = "Use Leaflet in your django projects"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "*"
+
+[package.extras]
+docs = ["sphinx", "sphinx-autobuild"]
+
+[[package]]
 name = "django-mathfilters"
 version = "1.0.0"
 description = "A set of simple math filters for Django"
@@ -389,7 +403,7 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "4494d854a6446ce156ab644187ee6b813b86f9bc3344726be40215881199aedf"
+content-hash = "9483fe1b293dc17d73873fff04484d19e2f73e3c98fa1d255e6c3a1aa97d9b1f"
 
 [metadata.files]
 asgiref = [
@@ -460,6 +474,10 @@ django-environ = [
 django-extensions = [
     {file = "django-extensions-3.2.0.tar.gz", hash = "sha256:7dc7cd1da50d83b76447a58f5d7e5c8e6cd83f21e9b7e5f97e6b644f4d4e21a6"},
     {file = "django_extensions-3.2.0-py3-none-any.whl", hash = "sha256:4c234a7236e9e41c17d9036f6dae7a3a9b212527105b8a0d24b2459b267825f0"},
+]
+django-leaflet = [
+    {file = "django-leaflet-0.28.3.tar.gz", hash = "sha256:073c10c1629b9427a54f7259468c76ad4bbf3295bc37f4c33fe6a9d871b63692"},
+    {file = "django_leaflet-0.28.3-py3-none-any.whl", hash = "sha256:529b88f149c81bd8dda1e34692dcb7c86597483f2e8b86353bf56ebc0f5e01d9"},
 ]
 django-mathfilters = [
     {file = "django-mathfilters-1.0.0.tar.gz", hash = "sha256:c9b892ef6dfc893683e75cfd0279c187a601ca68f4684c38f9da44657fb64b07"},

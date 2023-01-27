@@ -4,6 +4,6 @@
 <p>Start: {{ object.start_date }}</p>
 <p>End: {{ object.end_date }}</p>
 <p>Is Public: {{ object.is_public }}</p>
-<a href="#">Map View</a>
+<a href="{% url 'cycletourmap:map' object.id %}">Map View</a>
 <div hx-get="{% url 'cycletourmap:tour_activities' object.id %}" hx-trigger="load"></div>
 {% endif %}

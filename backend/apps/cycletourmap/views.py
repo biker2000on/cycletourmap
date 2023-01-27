@@ -1,7 +1,7 @@
 from multiprocessing import context
 from django.shortcuts import render
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -10,6 +10,7 @@ from django.contrib.messages import get_messages
 from .models import Tour, Activity, Activity_Detail
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.core.serializers import serialize
 import json
 from apps.strava.utils import (
     get_new_strava_activities,
@@ -129,6 +130,37 @@ def get_activities(request, tour_id):
 
     context["activities"] = tour.activities.all()
     return render(request, "cycletourmap/activity-table.html", context)
+
+
+def tourmap(request, tour_id):
+    context = {}
+    tour = Tour.objects.get(id=tour_id)
+    context["tour"] = tour
+
+    return render(request, "cycletourmap/map.html", context)
+
+
+def map_activity_data(request, tour_id):
+    context = {}
+    tour = Tour.objects.get(id=tour_id)
+    activities = tour.activities.all()
+    act_json = [
+        {"id": a.id, "polyline": a.summary_polyline, "a.start_latlng": a.start_latlng}
+        for a in activities
+    ]
+    test = serialize(
+        "geojson",
+        activities,
+        geometry_field="start_latlng",
+        fields=(
+            "id",
+            "summary_polyline",
+            "start_date",
+            "name",
+        ),
+    )
+
+    return JsonResponse(json.loads(test), safe=False)
 
 
 def get_activity_detail(request, activity_id):
