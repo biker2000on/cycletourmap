@@ -11,6 +11,7 @@ from .models import Tour, Activity, Activity_Detail
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.core.serializers import serialize
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from apps.strava.utils import (
     get_new_strava_activities,
@@ -33,9 +34,11 @@ def index(request):
     return render(request, "cycletourmap/index.html", context)
 
 
-class TourList(ListView):
+class TourList(LoginRequiredMixin, ListView):
     model = Tour
     allow_empty = True
+    login_url = "/login/"
+    redirect_field_name = "redirect_to"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -157,6 +160,9 @@ def map_activity_data(request, tour_id):
             "summary_polyline",
             "start_date",
             "name",
+            "distance",
+            "moving_time",
+            "elapsed_time",
         ),
     )
 
