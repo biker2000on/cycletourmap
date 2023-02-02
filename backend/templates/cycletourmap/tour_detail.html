@@ -1,0 +1,39 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ object.name }}{% endblock %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+{% block content %}
+    <div class="py-4">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h2>{{ object.name }}</h2>
+                <div class="card border-0 shadow p-4" id="card">
+                    <ul class="list-unstyled">
+                        <li>{{ object.description }}</li>
+                        <li>Start: {{ object.start_date }}</li>
+                        <li>End: {{ object.end_date }}</li>
+                        <li>Is Public: {{ object.is_public }}</li>
+                        <a href="{% url 'cycletourmap:map' object.id %}" class="btn btn-success">Map View</a>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h2>
+                Activities <a hx-get="{% url 'cycletourmap:tour_activities_edit' tour.id %}"
+    hx-target="#activities"
+    hx-swap="innerHTML"
+    hx-trigger="activities_updated from:body, click"><i class="bi bi-pencil-fill"></i></a>
+            </h2>
+            <div class="row" id="activities">
+                <div hx-get="{% url 'cycletourmap:tour_activities' object.id %}"
+                     hx-trigger="load"></div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %}
+{% if object %}{% endif %}

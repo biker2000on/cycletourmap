@@ -1,0 +1,31 @@
+{% load mathfilters %}
+<div class="card border-0 shadow p-4" id="card">
+    <div class="table-fixed">
+        <table class="table table-responsive mb-4">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Distance</th>
+                    <th>Moving Time</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                    <tr>
+                        <td>{{ activity.start_date | date:'D n/j/Y' }}</td>
+                        <td>{{ activity.name }}</td>
+                        <td>{{ activity.distance | mul:0.000621371 | floatformat }} mi</td>
+                        <td>{{ activity.moving_time|div:3600 | floatformat }} h</td>
+                        <td>
+                            <a hx-delete="{% url 'cycletourmap:tour_activities_update' tour.id activity.id %}">
+                                <i class="bi bi-trash-fill text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+{% load mathfilters %}
+
+{% for act in activities %}
+<tr>
+    <td>{{ act.start_date | date:'D n/j/Y' }}</td>
+    <td>{{act.name}}</td>
+    <td>{{act.distance | mul:0.000621371 | floatformat}} mi</td>
+    <td>{{act.moving_time|div:3600 | floatformat}} h</td>
+    <td>{{act.elapsed_time|div:3600 | floatformat}} h</td>
+    <td>{{act.average_watts}} W</td>
+    <td>{{act.kilojoules}} kJ</td>
+    <td>
+        <a hx-get="{% url 'cycletourmap:activity_detail' act.id %}" hx-target="#dialog"><i class="bi bi-pencil-fill"></i></a>
+    </td>
+</tr>
+{% endfor %}

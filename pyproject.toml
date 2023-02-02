@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "cycletourmap"
+version = "0.1.0"
+description = "Aggregated maps of GPS routes."
+authors = ["Justin Crawford <bikerhiker10@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.1"
+psycopg2-binary = "^2.9.3"
+django-environ = "^0.9.0"
+django-extensions = "^3.2.0"
+whitenoise = "^6.2.0"
+requests = "^2.28.1"
+django-crispy-forms = "^1.14.0"
+crispy-bootstrap5 = "^0.6"
+django-mathfilters = "^1.0.0"
+django-leaflet = "^0.28.3"
+
+[tool.poetry.dev-dependencies]
+black = "^22.8.0"
+flake8 = "^5.0.4"
+pytest-django = "^4.5.2"
+djlint = "^1.19.13"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

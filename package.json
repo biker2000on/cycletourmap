@@ -6,7 +6,7 @@
     "serve": "vite preview --host",
     "build": "vite build",
     "dev": "vite --host",
-    "app": "concurrently -n vue,amplify \"npm run serve\" \"npm run api\"",
+    "app": "concurrently -n vue,graphql \"npm run dev\" \"npm run graphql\"",
     "lint": "vue-cli-service lint",
     "graphql": "npx postgraphile -c postgresql://cyclist:cyclist@192.168.4.134:5432/cycletourmap?schema=public --enhance-graphiql --default-role anon --jwt-secret myverysecurestring --jwt-token-identifier public.jwt_token"
   },

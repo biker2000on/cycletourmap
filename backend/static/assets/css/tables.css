@@ -1,0 +1,11 @@
+.table-fixed {
+    overflow: auto;
+    height: 90vh;
+}
+
+.table-fixed thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #fff;
+}

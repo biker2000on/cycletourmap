@@ -1,11 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../components/Home.vue'
+import ProfileNav from '../components/ProfileNav.vue'
+import GettingStarted from '../components/GettingStarted.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     component: Home
+  },
+  {
+    path: '/auth',
+    name: 'auth',
+    component: Home  // needs new flow since the deprecation of Amplify
+  },
+  {
+    path: '/faq',
+    name: 'faq',
+    components: {
+      drawer: ProfileNav,
+      default: GettingStarted,
+    }
   },
   {
     path: '/about',

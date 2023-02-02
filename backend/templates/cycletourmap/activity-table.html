@@ -1,0 +1,21 @@
+<div class="card border-0 shadow p-4" id="card">
+    <div class="table-fixed">
+        <table class="table table-responsive mb-4">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Distance</th>
+                    <th>Moving Time</th>
+                    <th>Elapsed Time</th>
+                    <th>Avg Watts</th>
+                    <th>Kilojoules</th>
+                </tr>
+            </thead>
+            <tbody hx-trigger="activityListChanged from:body" hx-get="{% url 'cycletourmap:tour_list' %}"
+                hx-target="this">
+                {% include 'components/activity-table-body.html' %}
+            </tbody>
+        </table>
+    </div>
+</div>

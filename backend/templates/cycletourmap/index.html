@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="py-4">
+    <a href="http://www.strava.com/oauth/authorize?client_id={{client_id}}&response_type=code&redirect_uri=http://localhost:8000/strava/exchange_token&approval_prompt=auto&scope=read,activity:read_all"
+        class="btn btn-primary mb-4">Strava Auth</a>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow p-4" id="card">
+                <table class="table table-responsive mb-4">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Public</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody hx-trigger="tourListChanged from:body" hx-get="{% url 'cycletourmap:tour_list' %}"
+                        hx-target="this">
+                        {% include 'components/tour-table-body.html' %}
+                    </tbody>
+                </table>
+                <button hx-get="{% url 'cycletourmap:tour_create' %}" hx-target="#dialog" class="btn btn-primary">
+                    Create Tour
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
