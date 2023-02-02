@@ -11,7 +11,7 @@ class Activity(TimeStampedModel, models.Model):
     achievement_count = models.IntegerField(blank=True, null=True)
     athlete_count = models.IntegerField(blank=True, null=True)
     average_heartrate = models.IntegerField(blank=True, null=True)
-    average_speed = models.IntegerField(blank=True, null=True)
+    average_speed = models.FloatField(blank=True, null=True)
     average_temp = models.FloatField(blank=True, null=True)
     average_watts = models.IntegerField(blank=True, null=True)
     comment_count = models.IntegerField(blank=True, null=True)
