@@ -21,6 +21,7 @@ django-leaflet = "^0.28.3"
 black = "^22.8.0"
 flake8 = "^5.0.4"
 pytest-django = "^4.5.2"
+djlint = "^1.19.13"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
