@@ -11,6 +11,7 @@ from .models import Tour, Activity, Activity_Detail
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.core.serializers import serialize
+from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from apps.strava.utils import (
@@ -135,6 +136,45 @@ def get_activities(request, tour_id):
     return render(request, "cycletourmap/activity-table.html", context)
 
 
+def tour_activities_edit(request, tour_id):
+    context = {}
+    # TODO handle request.DELETE
+    # TODO handle request.POST
+    try:
+        tour = Tour.objects.get(id=tour_id)
+        context["tour"] = tour
+    except Tour.DoesNotExist:
+        return
+
+    activities = tour.activities.all()
+    query = Q(id__in=[a.id for a in activities])
+    context["activities"] = activities
+    context["unused"] = Activity.objects.filter(
+        ~query,
+        user=request.user,
+        start_date__gte=tour.start_date,
+        start_date__lte=tour.end_date,
+    )
+    return render(request, "cycletourmap/tour-activity-edit.html", context)
+
+
+def tour_activity_update(request, tour_id, activity_id):
+    try:
+        tour = Tour.objects.get(id=tour_id)
+    except Tour.DoesNotExist:
+        return
+    try:
+        act = Activity.objects.get(id=activity_id)
+    except Activity.DoesNotExist:
+        return
+    if request.method == "POST":
+        tour.activities.add(act)
+
+    if request.method == "DELETE":
+        tour.activities.remove(act)
+    return HttpResponse(status=204, headers={"HX-Trigger": "activities_updated"})
+
+
 def tourmap(request, tour_id):
     context = {}
     tour = Tour.objects.get(id=tour_id)
@@ -163,6 +203,7 @@ def map_activity_data(request, tour_id):
             "distance",
             "moving_time",
             "elapsed_time",
+            "average_speed",
         ),
     )
 
@@ -189,3 +230,8 @@ def get_activity_detail(request, activity_id):
     #     detail.distance = streamset.get('distance').data[i]
     #     detail.heartrate = streamset.get('heartrate').data[i]
     #     detail.altitude = streamset.get('altitude').data[i]
+
+
+# TODO view to remove items from tour
+# this view should also work from the map view on singles.
+# TODO add google mutant for Google map layers https://gitlab.com/IvanSanchez/Leaflet.GridLayer.GoogleMutant

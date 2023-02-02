@@ -1,12 +1,11 @@
 {% extends "layouts/base.html" %}
 {% load leaflet_tags %}
 {% load static %}
-
+{% block title %}{{ tour.name }}{% endblock %}
 {% block stylesheets %}
-{% leaflet_js %}
-{% leaflet_css %}
-<style>
-
+    {% leaflet_js %}
+    {% leaflet_css %}
+    <style>
     .leaflet-container {  /* all maps */
         width:  100%;
         height: 90vh;
@@ -21,15 +20,15 @@
         width: 100%;
     }
 
-</style>
+    </style>
 {% endblock stylesheets %}
-
-
 {% block content %}
-{% leaflet_map "cycletourmap" callback="window.map_init_basic" %}
+    {% leaflet_map "cycletourmap" callback="window.map_init_basic" %}
 {% endblock content %}
-
 {% block javascripts %}
-<script src="{{ ASSETS_ROOT }}/js/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-polyline/1.1.1/polyline.min.js"
+            integrity="sha512-h0jE7xF1y22knnDOFnxjBHrj7w63Fa/iCSaWHncG2AMKGWXX/46ltEKeVYudHYEzP5WcPChRTlhWAeYPnMKGFA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="{{ ASSETS_ROOT }}/js/leaflet.js"></script>
 {% endblock javascripts %}
-
