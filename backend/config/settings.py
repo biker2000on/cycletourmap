@@ -159,6 +159,7 @@ AUTH_USER_MODEL = "authentication.Athlete"
 STRAVA_CLIENTID = os.getenv("STRAVA_CLIENTID")
 STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 STRAVA_VERIFY_TOKEN = os.getenv("STRAVA_VERIFY_TOKEN")
+MAPBOX_ACCESS_TOKEN = os.getenv("MAPBOX_ACCESS_TOKEN")
 
 # Crispy Forms Config
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -208,6 +209,30 @@ logging.config.dictConfig(
 
 LEAFLET_CONFIG = {
     "TILES": [
+        (
+            "Mapbox Streets",
+            "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+            {
+                "attribution": '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+                "tileSize": 512,
+                "maxZoom": 18,
+                "zoomOffset": -1,
+                "id": "mapbox/streets-v12",
+                "accessToken": MAPBOX_ACCESS_TOKEN,
+            },
+        ),
+        (
+            "Mapbox Outdoors",
+            "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+            {
+                "attribution": '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+                "tileSize": 512,
+                "maxZoom": 18,
+                "zoomOffset": -1,
+                "id": "mapbox/outdoors-v12",
+                "accessToken": MAPBOX_ACCESS_TOKEN,
+            },
+        ),
         (
             "OpenStreetMaps",
             "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
