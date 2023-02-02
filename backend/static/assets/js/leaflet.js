@@ -5,7 +5,19 @@ function map_init_basic(map, options) {
         })
         .then((response) => response.json())
         .then((data) => {
-            L.geoJSON(data.features, {
+            console.log(data);
+            data.features = data.features.map(c => {
+                console.log(c);
+                let line = polyline.toGeoJSON(c.properties.summary_polyline)
+                console.log(line);
+                geocoll = {
+                    type: 'GeometryCollection',
+                    geometries: [c.geometry, line]
+                }
+                c.geometry = geocoll
+                return c
+            })
+            var geo = L.geoJSON(data.features, {
                 onEachFeature: function (feature, layer) {
                     let d = new Date(feature.properties.start_date)
                     layer.bindPopup(`
@@ -15,11 +27,12 @@ function map_init_basic(map, options) {
                         <li>Distance: ${(feature.properties.distance / 1609.34).toFixed(2)} mi</li>
                         <li>Moving Time: ${(feature.properties.moving_time / 3600).toFixed(2)} hrs</li>
                         <li>Elapsed Time: ${(feature.properties.elapsed_time / 3600).toFixed(2)} hrs</li>
+                        <li>Avg Speed: ${(feature.properties.average_speed * 2.23694).toFixed(2)} mph</li>
                         </ul>
                         `)
                 }
             }).addTo(map)
-            console.log(data.features)
+            map.fitBounds(geo.getBounds())
         });
 
 
