@@ -1,5 +1,0 @@
-mutation DeleteTour($input: DeleteTourInput!) {
-  deleteTour(input: $input) {
-    id
-  }
-}

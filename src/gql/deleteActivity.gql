@@ -1,5 +1,0 @@
-mutation DeleteActivity($input: DeleteActivityInput!) {
-  deleteActivity(input: $input) {
-    id
-  }
-}

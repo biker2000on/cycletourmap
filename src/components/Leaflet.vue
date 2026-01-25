@@ -119,7 +119,7 @@ export default {
       computedHeight: { height: 600 },
       isFullscreen: false,
       ready: false,
-      googleAPIKey: process.env.VUE_APP_GOOGLE_MAPS_APIKEY,
+      googleAPIKey: import.meta.env.VITE_GOOGLE_MAPS_APIKEY,
       googleMapTypes: [
         { type: "roadmap", name: "Google" },
         { type: "satellite", name: "Satellite" },

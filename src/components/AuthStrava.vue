@@ -1,237 +1,157 @@
 <template>
-  <ApolloQuery :query="require('../gql/listAuthsAthletes.gql')" ref="auth" @result="getTokens($event)">
-    <template slot-scope="{ result: { loading, data, error }}">
-      <div v-if="loading">Loading...</div>
-      <div v-else-if="data">
-        <a
-          v-if="!data.listAuths.items.length"
-          :href="'https://www.strava.com/oauth/authorize?client_id=28538' +
-          '&redirect_uri=' + redirect_uri +
-          '&response_type=' + 'code' +
-          '&approval_prompt=' + 'auto' + // could be 'force'
-          '&scope=' + 'read,profile:read_all,activity:read'"
-        >
-          <img src="/strava/btn_strava_connectwith_orange.svg" height="48" />
-        </a>
-      </div>
-      <div v-else>{{ error }}</div>
-    </template>
-  </ApolloQuery>
+  <div>
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="!isAuthenticated">
+      <a :href="stravaAuthUrl">
+        <img src="/strava/btn_strava_connectwith_orange.svg" height="48" />
+      </a>
+    </div>
+    <div v-else-if="error">{{ error }}</div>
+    <!-- User is authenticated, nothing to show -->
+  </div>
 </template>
 
 <script>
-import axios from "axios";
-import uuidv4 from "uuid/v4";
-import CREATE_AUTH from "../gql/createAuth.gql";
-import UPDATE_AUTH from "../gql/updateAuth.gql";
-import LIST_AUTHS from "../gql/listAuths.gql";
-import LIST_ATHLETES from "../gql/listAthletes.gql";
-import CREATE_ATHLETE from "../gql/createAthlete.gql";
-import UPDATE_ATHLETE from "../gql/updateAthlete.gql";
-import pick from "lodash.pick";
-import { athleteKeys } from "../utilities/athleteKeys";
+import { authApi, athletesApi } from '../api/client'
 
 export default {
   data() {
     return {
-      athlete: null,
-      refresh: null, // timer for refreshing tokens
-      stravaScope: null,
-      redirect_uri: process.env.VUE_APP_REDIRECTURI,
-      client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-      client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-      auth: null,
-      newAuthId: null, 
-      params: null //temporary for windows parameters
+      loading: false,
+      error: null,
+      redirect_uri: import.meta.env.VITE_REDIRECTURI || window.location.origin,
+      client_id: import.meta.env.VITE_STRAVA_CLIENTID || '28538',
     };
   },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.hasStravaAuth;
+    },
+    token() {
+      return this.$store.state.token;
+    },
+    stravaAuthUrl() {
+      return 'https://www.strava.com/oauth/authorize?client_id=' + this.client_id +
+        '&redirect_uri=' + this.redirect_uri +
+        '&response_type=code' +
+        '&approval_prompt=auto' +
+        '&scope=read,profile:read_all,activity:read';
+    }
+  },
   methods: {
-    createAuth: async function() {
-      this.newAuthId = uuidv4();
-      const input = {
-        id: this.newAuthId,
-        access_token: this.auth.access_token,
-        expires_at: this.auth.expires_at,
-        refresh_token: this.auth.refresh_token,
-        token_type: this.auth.token_type,
-        strava_scope: this.stravaScope
-      };
-      this.$apollo.mutate({
-        mutation: CREATE_AUTH,
-        variables: { input }
-      });
-      this.$store.commit("setHasStravaAuth", true);
-    },
-    updateAuth: async function() {
-      const input = {
-        id: this.$refs.auth.result.data.listAuths.items[0].id,
-        access_token: this.auth.access_token,
-        expires_at: this.auth.expires_at,
-        refresh_token: this.auth.refresh_token,
-        token_type: this.auth.token_type,
-        strava_scope: this.stravaScope
-      };
-      this.$apollo.mutate({
-        mutation: UPDATE_AUTH,
-        variables: { input },
-        update: (store, { data: { updateAuth } }) => {
-          const data = store.readQuery({ query: LIST_AUTHS });
-          let updatedIndex = data.listAuths.items.findIndex(
-            c => c.id == updateAuth.id
-          );
-          data.listAuths.items[updatedIndex] = updateAuth;
-          store.writeQuery({ query: LIST_AUTHS, data });
-        },
-        optimisticResponse: {
-          __typename: "Mutation",
-          updateAuth: {
-            __typename: "Auth",
-            ...input
-          }
+    async handleStravaCallback() {
+      if (!window.location.search) {
+        // No callback params, check if we're already authenticated
+        if (this.token) {
+          await this.checkAuthStatus();
         }
-      });
-      this.$store.commit("setHasStravaAuth", true);
-    },
-    createAthlete(athlete) {
-      const input = {
-        ...athlete,
-        id: uuidv4()
-      };
-      this.$apollo.mutate({
-        mutation: CREATE_ATHLETE,
-        variables: { input }
-      });
-    },
-    updateAthlete(athlete) {
-      const input = {
-        ...athlete,
-        id: this.$refs.auth.result.data.listAthletes.items[0].id,
-      };
-      // console.log(input)
-      this.$apollo.mutate({
-        mutation: UPDATE_ATHLETE,
-        variables: { input },
-        update: (store, { data: { updateAthlete } }) => {
-          const data = store.readQuery({ query: LIST_ATHLETES });
-          // console.log("listed athletes", data.listAthletes)
-          let updatedIndex = data.listAthletes.items.findIndex(
-            c => {
-              console.log("athlete", c)
-              c.id == updateAthlete.id
-            }
-          );
-          data.listAthletes.items[updatedIndex] = updateAthlete;
-          store.writeQuery({ query: LIST_ATHLETES, data });
-        }
-      });
-    },
-    getAthlete: async function() {
-      try {
-        const res2 = await axios.get("https://www.strava.com/api/v3/athlete", {
-          headers: {
-            Authorization: "Bearer " + this.auth.access_token
-          }
-        });
-        this.athlete = res2.data;
-        const pickedAthleteProps = pick(this.athlete, athleteKeys);
-        pickedAthleteProps['strava_id'] = pickedAthleteProps.id
-        pickedAthleteProps['athleteAuthId'] = this.newAuthId
-          ? this.newAuthId
-          : this.auth.id
-          ? this.auth.id
-          : null
-        console.log('picked athlete', pickedAthleteProps)
-        if (this.$refs.auth.result.data.listAthletes.items.length) {
-          console.log("updating athlete")
-          this.updateAthlete(pickedAthleteProps);
-        } else {
-          console.log("creating athlete")
-          this.createAthlete(pickedAthleteProps);
-        }
-      } catch (error) {
-        console.warn("not able to retrieve athlete data", error);
-      }
-    },
-    refreshAuth: async function() {
-      const data = {
-        client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-        client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-        refresh_token: this.auth.refresh_token,
-        grant_type: "refresh_token"
-      };
-      let res = await axios.post("https://www.strava.com/oauth/token", data);
-      let { athlete, expires_in, ...auth } = res.data;
-      auth["id"] = this.auth.id;
-      this.$apollo.mutate({
-        mutation: UPDATE_AUTH,
-        variables: { input: auth },
-        update: (store, { data: { updateAuth } }) => {
-          const data = store.readQuery({ query: LIST_AUTHS });
-          data.listAuths.items = [updateAuth];
-          store.writeQuery({ query: LIST_AUTHS, data });
-        },
-        optimisticResponse: {
-          __typename: "Mutation",
-          updateAuth: {
-            __typename: "Auth",
-            ...auth
-          }
-        }
-      });
-      // console.log('successful submission of new auth', auths)
-      this.auth = auth;
-      return auth;
-    },
-    getTokens: async function(result) {
-      let data;
-      console.log("data: ", data)
-      const results = result.data;
-      console.log("results: ", results)
-      console.log(window.location.search)
-      if (window.location.search) {
-        const params = new window.URLSearchParams(window.location.search);
-        this.params = params
-        console.log("params: ", params)
-        // window.history.replaceState({}, document.title, "/"); // removes query string from URL
-        if (params.has("error")) {
-          console.error("You didn't give us the right permissions");
-          return;
-        }
-        const code = params.get("code");
-        if (params.has("scope")) {
-          this.stravaScope = params.get("scope").split(",");
-        }
-        data = {
-          client_id: process.env.VUE_APP_STRAVA_CLIENTID,
-          client_secret: process.env.VUE_APP_STRAVA_CLIENT_SECRET,
-          code: code,
-          grant_type: "authorization_code"
-        };
-      }
-      if (!data) {
-        this.$store.commit("setHasStravaAuth", true);
-        this.auth = results.listAuths.items.length
-          ? results.listAuths.items[0]
-          : null;
-        if (
-          this.auth !== null &&
-          new Date(this.auth.expires_at * 1000 - 1800 * 1000) < new Date()
-        )
-          await this.refreshAuth();
-        this.athlete = results.listAthletes.items.length
-          ? results.listAthletes.items[0]
-          : null;
-        if (this.athlete == null) this.getAthlete();
-        console.log("ended with blank !data", data)
         return;
       }
-      let res = await axios.post("https://www.strava.com/oauth/token", data);
-      let { athlete, ...auth } = res.data;
-      this.auth = auth;
-      results.listAuths.items.length ? this.updateAuth() : this.createAuth();
-      this.athlete = athlete;
-      this.getAthlete();
+
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.has("error")) {
+        this.error = "You didn't give us the right permissions";
+        console.error("Strava auth error:", params.get("error"));
+        return;
+      }
+
+      const code = params.get("code");
+      if (!code) {
+        // No code, might be already authenticated
+        if (this.token) {
+          await this.checkAuthStatus();
+        }
+        return;
+      }
+
+      // Exchange code for token via our backend
+      this.loading = true;
+      try {
+        const response = await authApi.stravaCallback(code);
+
+        // Store authentication data
+        this.$store.commit('setToken', response.token);
+        this.$store.commit('setUser', response.user);
+        this.$store.commit('setHasStravaAuth', true);
+
+        if (response.athlete) {
+          // Fetch full athlete profile
+          await this.loadAthleteProfile(response.token);
+        }
+
+        // Clear URL params
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (err) {
+        console.error('Strava callback failed:', err);
+        this.error = err.message || 'Authentication failed';
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async checkAuthStatus() {
+      if (!this.token) return;
+
+      try {
+        const meResponse = await authApi.me(this.token);
+        this.$store.commit('setUser', meResponse.user);
+        this.$store.commit('setHasStravaAuth', meResponse.stravaConnected);
+
+        if (meResponse.athlete) {
+          await this.loadAthleteProfile(this.token);
+        }
+
+        // If token is about to expire, refresh it
+        if (meResponse.stravaConnected && !meResponse.stravaTokenValid) {
+          await this.refreshStravaToken();
+        }
+      } catch (err) {
+        console.warn('Auth check failed:', err);
+        // Token might be invalid, clear auth state
+        if (err.status === 401) {
+          this.$store.commit('logout');
+        }
+      }
+    },
+
+    async loadAthleteProfile(token) {
+      try {
+        const athlete = await athletesApi.me(token);
+
+        // Convert to legacy format for compatibility
+        const legacyAthlete = {
+          id: athlete.id,
+          strava_id: athlete.stravaId,
+          firstname: athlete.firstname,
+          lastname: athlete.lastname,
+          profile: athlete.profile,
+          profile_medium: athlete.profileMedium,
+          sex: athlete.sex,
+          city: athlete.city,
+          state: athlete.state,
+          country: athlete.country,
+          date_preference: athlete.datePreference,
+          measurement_preference: athlete.measurementPreference,
+          weight: athlete.weight,
+        };
+
+        this.$store.commit('setAthlete', legacyAthlete);
+      } catch (err) {
+        console.warn('Failed to load athlete profile:', err);
+      }
+    },
+
+    async refreshStravaToken() {
+      try {
+        await this.$store.dispatch('refreshStravaToken');
+      } catch (err) {
+        console.warn('Failed to refresh Strava token:', err);
+      }
     }
+  },
+  async mounted() {
+    await this.handleStravaCallback();
   }
 };
 </script>
