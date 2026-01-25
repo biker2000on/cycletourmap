@@ -1,3 +1,7 @@
+# DEPRECATED: This file is kept for reference only.
+# We now use Drizzle ORM for database migrations and schema management.
+# See drizzle.config.ts and db/ directory.
+
 [schema]
 filename = "*.sql"
 
@@ -5,4 +9,5 @@ filename = "*.sql"
 filename = "migrations/*.sql"
 
 [database]
-url = "postgresql://cyclist:cyclist@192.168.4.134:5432/cycletourmap"
+# Connection string has been moved to .env as DATABASE_URL
+# url = "postgresql://cyclist:cyclist@192.168.4.134:5432/cycletourmap"

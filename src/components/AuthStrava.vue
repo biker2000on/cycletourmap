@@ -20,7 +20,7 @@ export default {
       loading: false,
       error: null,
       redirect_uri: import.meta.env.VITE_REDIRECTURI || window.location.origin,
-      client_id: import.meta.env.VITE_STRAVA_CLIENTID || '28538',
+      client_id: import.meta.env.VITE_STRAVA_CLIENTID,
     };
   },
   computed: {

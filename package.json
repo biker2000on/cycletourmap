@@ -2,6 +2,9 @@
   "name": "cycletourmap",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "serve": "vite preview --host",
     "build": "vite build",
@@ -29,7 +32,6 @@
     "leaflet.fullscreen": "^2.2.0",
     "leaflet.gridlayer.googlemutant": "^0.13.4",
     "lodash.pick": "^4.4.0",
-    "moment": "^2.29.1",
     "pg": "^8.17.2",
     "roboto-fontface": "*",
     "uuid": "^9.0.0",

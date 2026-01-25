@@ -1,16 +1,26 @@
-.DS_Store
-node_modules
-/dist
+# Dependencies
+node_modules/
 
-# local env files
+# Build outputs
+/dist
+dist/
+build/
+
+# Environment files
+.env
 .env.local
 .env.*.local
-.env
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+*.log
 
 # Editor directories and files
 .idea
@@ -19,16 +29,13 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-*.sw*
+*.sw?
 
-#amplify
+# Legacy amplify (kept for reference)
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/backend/amplify-meta.json
 amplify/backend/awscloudformation
-build/
-dist/
-node_modules/
 aws-exports.js
 awsconfiguration.json
 amplify\mock-data
