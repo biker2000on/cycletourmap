@@ -1,8 +1,9 @@
 <template></template>
 
 <script>
-import L from "leaflet";
-import "leaflet.fullscreen";
+// DISABLED - Vue 2 component not compatible with Vue 3
+// import L from "leaflet";
+// import "leaflet.fullscreen";
 export default {
   name: "LFullscreen",
   props: {

@@ -9,10 +9,6 @@
       @update:zoom="zoomUpdated"
       :inertia="false"
     >
-      <l-fullscreen
-        @enter-fullscreen="isFullscreen = true"
-        @exit-fullscreen="isFullscreen = false"
-      />
       <l-control-layers position="topright" class="text-left"></l-control-layers>
       <l-control-scale position="bottomright" :imperial="true" :metric="true"></l-control-scale>
       <l-control position="bottomleft">
@@ -35,16 +31,6 @@
         :url="tileProvider.url"
         :attribution="tileProvider.attribution"
         layer-type="base"
-      />
-      <l-tile-layer-googlemutant
-        v-for="type in googleMapTypes"
-        :key="type.type"
-        :apikey="googleAPIKey"
-        :name="type.name"
-        :visible="false"
-        lang="en-US"
-        :options="{ type: type.type }"
-        :ready="ready"
       />
       <l-polyline
         v-for="(start, idx) in popups"
@@ -72,21 +58,22 @@ import {
   LControlLayers,
   LControlScale,
   LControl
-} from "vue2-leaflet";
-import LTileLayerGooglemutant from "./LTileLayerGooglemutant";
-import LFullscreen from "./Vue2LeafletFullscreen";
+} from "@vue-leaflet/vue-leaflet";
 import Popups from "./Popups";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import omnivore from "@mapbox/leaflet-omnivore";
-import { isNullOrUndefined } from "util";
 import { lightFormat } from "date-fns";
+
+import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
+import iconUrl from "leaflet/dist/images/marker-icon.png";
+import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png")
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl
 });
 
 export default {
@@ -98,10 +85,8 @@ export default {
     LPopup,
     LControlLayers,
     LControlScale,
-    LFullscreen,
     Popups,
-    LControl,
-    LTileLayerGooglemutant
+    LControl
   },
   props: {
     activities: {
@@ -231,11 +216,11 @@ export default {
       this.zoomAll(vals);
     },
     windowHeight() {
-      // (new, old)
-      const top = this.$vuetify.application.top;
-      const bottom = this.$vuetify.application.footer || 0;
+      // Subtract app bar (64px) and footer (36px) from total height
+      const top = 64;
+      const bottom = 36;
       const total = this.windowHeight;
-      this.computedHeight = { height: total - top - bottom };
+      this.computedHeight = { height: total - top - bottom + 'px' };
     }
   },
   methods: {
@@ -251,7 +236,7 @@ export default {
           a = [c, c];
           return a;
         }
-        if (isNullOrUndefined(c)) return a;
+        if (c == null) return a;
         let minLat = a[0][0];
         let maxLat = a[1][0];
         let minLong = a[0][1];
@@ -306,7 +291,7 @@ export default {
       this.zoomAll();
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("resize", () => {
       this.windowHeight = window.innerHeight;
     });

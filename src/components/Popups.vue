@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { LPopup } from 'vue2-leaflet'
+import { LPopup } from '@vue-leaflet/vue-leaflet'
 
 export default {
   components: {

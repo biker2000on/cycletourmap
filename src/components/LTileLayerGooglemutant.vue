@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import L from 'leaflet'
-import 'leaflet.gridlayer.googlemutant'
-
-import { findRealParent, propsBinder } from 'vue2-leaflet'
+// DISABLED - Vue 2 component not compatible with Vue 3
+// import L from 'leaflet'
+// import 'leaflet.gridlayer.googlemutant'
+// import { findRealParent, propsBinder } from 'vue2-leaflet'
 
 const props = {
   options: {

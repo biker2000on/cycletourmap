@@ -20,24 +20,30 @@
       <v-list-item-content>
         <v-card elevation="12">
           <v-card-title class="text-center">Share Your Tourmap</v-card-title>
-          <v-card-text v-if="tourData.isPublic" >
-            <vue-goodshare-facebook
-              :page_url="pageUrl"
-              title_social="Facebook"
-              has_counter
-              has_icon
-            ></vue-goodshare-facebook>
-            <vue-goodshare-twitter
-              :page_url="pageUrl"
-              title_social="Twitter"
-              has_counter
-              has_icon
-            ></vue-goodshare-twitter>
-            <vue-goodshare-email
-              :page_url="pageUrl"
-              title_social="Email"
-              has_icon
-            ></vue-goodshare-email>
+          <v-card-text v-if="tourData.isPublic" class="d-flex justify-center ga-2">
+            <v-btn
+              color="blue"
+              :href="`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`"
+              target="_blank"
+              icon
+            >
+              <v-icon>mdi-facebook</v-icon>
+            </v-btn>
+            <v-btn
+              color="light-blue"
+              :href="`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(tourData.name)}`"
+              target="_blank"
+              icon
+            >
+              <v-icon>mdi-twitter</v-icon>
+            </v-btn>
+            <v-btn
+              color="grey"
+              :href="`mailto:?subject=${encodeURIComponent(tourData.name)}&body=${encodeURIComponent(pageUrl)}`"
+              icon
+            >
+              <v-icon>mdi-email</v-icon>
+            </v-btn>
           </v-card-text>
           <v-card-text v-else>
             Please make your tourmap public if you want to share.
@@ -66,20 +72,12 @@
 </template>
 
 <script>
-import VueGoodshareFacebook from 'vue-goodshare/src/providers/Facebook'
-import VueGoodshareTwitter from 'vue-goodshare/src/providers/Twitter'
-import VueGoodshareEmail from 'vue-goodshare/src/providers/Email'
-import { isNumber } from 'util'
-
 export default {
   props: {
     tourData: {
       type: Object,
       default: null,
     }
-  },
-  components: {
-    VueGoodshareFacebook, VueGoodshareTwitter, VueGoodshareEmail
   },
   data() {
     return {
@@ -110,7 +108,7 @@ export default {
     },
     totalDistance() {
       return this.tourData.activities.items.reduce((a,c) => {
-        if (isNumber(c.distance)) {
+        if (typeof c.distance === 'number') {
           return a += c.distance
         } else {
           return a
@@ -119,7 +117,7 @@ export default {
     },
     totalTime() {
       return this.tourData.activities.items.reduce((a,c) => {
-        if (isNumber(c.moving_time)) {
+        if (typeof c.moving_time === 'number') {
           return a += c.moving_time
         } else {
           return a
