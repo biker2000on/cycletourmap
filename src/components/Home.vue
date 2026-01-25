@@ -1,124 +1,137 @@
 <template>
   <div style="width: 100%">
+    <!-- Hero Section -->
     <div
-      class="text-center white--text home-background d-flex flex-column justify-center align-center"
-      :style="style"
+      class="text-center text-white home-background d-flex flex-column justify-center align-center"
+      :style="heroStyle"
     >
-      <h1 class="display-4 font-weight-bold pa-4" :style="{zIndex: 1}">Cycle Tourmap</h1>
-      <h2
-        class="display-1 font-italic mb-4"
-        :style="{zIndex: 1}"
-      >Your #1 Place to Build and Share Tourmaps</h2>
-      <v-btn :to="{name: 'auth'}" color="green" dark>Sign Up</v-btn>
+      <h1 class="text-h2 text-md-h1 font-weight-bold pa-4" style="z-index: 1">Cycle Tourmap</h1>
+      <h2 class="text-h5 text-md-h4 font-italic mb-4" style="z-index: 1">
+        Your #1 Place to Build and Share Tourmaps
+      </h2>
+      <v-btn :to="{ name: 'auth' }" color="success" size="large">Sign Up</v-btn>
     </div>
-    <div class="pa-md-10 title">
-      <h2 class="headline-3 mb-6">Getting Started</h2>
-      <p>Head on over to our Getting Started and FAQ page to learn how to get started building your new maps.</p>
-      <v-btn x-large color="primary" dark class="elevation-8" :to="{name: 'faq'}"><v-icon>question_answer</v-icon>Getting Started</v-btn>
+
+    <!-- Getting Started Section -->
+    <div class="pa-6 pa-md-10 text-center">
+      <h2 class="text-h4 mb-6">Getting Started</h2>
+      <p class="mb-4">Head on over to our Getting Started and FAQ page to learn how to get started building your new maps.</p>
+      <v-btn size="x-large" color="primary" elevation="8" :to="{ name: 'faq' }">
+        <v-icon start>mdi-frequently-asked-questions</v-icon>
+        Getting Started
+      </v-btn>
     </div>
-    <div class="pa-md-10 title white">
+
+    <!-- Features Section -->
+    <div class="pa-6 pa-md-10 bg-white">
       <v-row
+        v-for="(row, i) in features"
+        :key="i"
         align="center"
         justify="center"
-        class="d-flex flex-row"
-        v-for="(row, i) in text"
-        :key="i"
+        class="mb-8"
       >
-        <v-col sm="6" cols="12" :order="i % 2 == 0 ? 2 : 1">
-          <v-hover>
-            <template v-slot="{ hover }">
-              <div
-                :class="`elevation-${hover ? 24 : 6}`"
-                class="ma-md-6 pa-5 transition-swing"
-              >{{row[0]}}</div>
-            </template>
+        <v-col cols="12" sm="6" :order="i % 2 === 0 ? 2 : 1">
+          <v-hover v-slot="{ isHovering, props }">
+            <v-card
+              v-bind="props"
+              :elevation="isHovering ? 16 : 4"
+              class="pa-6 transition-swing"
+            >
+              <p class="text-body-1">{{ row.text }}</p>
+            </v-card>
           </v-hover>
         </v-col>
-        <v-col sm="6" cols="12" :order="i % 2 == 0 ? 1 : 2">
-          <v-hover>
-            <template v-slot="{ hover }">
-              <v-img
-                :src="row[1]"
-                :class="`elevation-${hover ? 24 : 6}`"
-                class="ma-md-6 transition-swing"
-              ></v-img>
-            </template>
+        <v-col cols="12" sm="6" :order="i % 2 === 0 ? 1 : 2">
+          <v-hover v-slot="{ isHovering, props }">
+            <v-img
+              v-bind="props"
+              :src="row.image"
+              :elevation="isHovering ? 16 : 4"
+              class="transition-swing rounded"
+              max-height="300"
+              cover
+            ></v-img>
           </v-hover>
         </v-col>
-        <v-responsive></v-responsive>
       </v-row>
-    <div>
-      <p class="display-3">Get Mapping Now</p>
-      <v-btn :to="{name: 'auth'}" color="green" dark class="headline" x-large>Sign Up</v-btn>
-    </div>
+
+      <!-- CTA Section -->
+      <div class="text-center mt-10">
+        <p class="text-h3 mb-6">Get Mapping Now</p>
+        <v-btn :to="{ name: 'auth' }" color="success" size="x-large">Sign Up</v-btn>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+
 export default {
-  data() {
+  name: 'Home',
+  setup() {
+    const windowHeight = ref(600)
+
+    const heroStyle = computed(() => ({
+      width: '100%',
+      minHeight: '400px',
+      height: `${Math.max(windowHeight.value - 128, 400)}px`
+    }))
+
+    const features = [
+      {
+        text: "Use Cycle Tourmaps to show to all your friends and family your longer tours. Keep them up to date with your travels, not by just showing them individual rides, but by showing them altogether.",
+        image: "/images/map_screenshot.png"
+      },
+      {
+        text: "Share your maps on all your social media and embed on your websites",
+        image: "/images/social.jpg"
+      },
+      {
+        text: "Make public maps for all to see or keep them private for just you.",
+        image: "/images/pin.svg"
+      },
+      {
+        text: "Plus, it's free today and every day!",
+        image: "/images/money.svg"
+      },
+      {
+        text: "Enjoy sharing your adventures with the world.",
+        image: "/tour.jpg"
+      }
+    ]
+
+    const handleResize = () => {
+      windowHeight.value = window.innerHeight
+    }
+
+    onMounted(() => {
+      windowHeight.value = window.innerHeight
+      window.addEventListener('resize', handleResize)
+    })
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', handleResize)
+    })
+
     return {
-      windowHeight: 300,
-      computedHeight: 600,
-      text: [
-        [
-          "Use Cycle Tourmaps to show to all your friends and family your longer tours. Keep them up to date with your travels, not by just showing them individual rides, but by showing them altogether.",
-          "/images/map_screenshot.png"
-        ],
-        [
-          "Share your maps on all your social media and embed on your websites",
-          "/images/social.jpg"
-        ],
-        [
-          "Make public maps for all to see or keep them private for just you.",
-          "/images/pin.svg"
-        ],
-        [`Plus, it's free today and every day!`, "/images/money.svg"],
-        ["Enjoy sharing your adventures with the world.", "tour.jpg"]
-      ]
-    };
-  },
-  computed: {
-    style() {
-      return {
-        width: "100%",
-        height: this.computedHeight
-      };
+      heroStyle,
+      features
     }
-  },
-  watch: {
-    windowHeight() {
-      // (new, old)
-      const top = this.$vuetify.application.top;
-      const bottom = this.$vuetify.application.footer || 0;
-      const total = this.windowHeight;
-      this.computedHeight = total - top - bottom;
-    }
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", () => {
-        this.windowHeight = window.innerHeight;
-      });
-      this.windowHeight = window.innerHeight;
-    });
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", () => {
-      this.windowHeight = window.innerHeight;
-    });
   }
-};
+}
 </script>
 
-<style>
+<style scoped>
 .home-background {
-  background-image: url(/tour.jpg);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/tour.jpg);
   background-position: center center;
   background-repeat: no-repeat;
-  background-color: rgba(0, 0, 0, 0.3);
-  background-blend-mode: saturation;
-  width: 100%;
+  background-size: cover;
+}
+
+.transition-swing {
+  transition: all 0.3s ease-in-out;
 }
 </style>
