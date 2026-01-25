@@ -1,30 +1,70 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <v-toolbar-title>
+        <router-link to="/" class="text-white text-decoration-none">
+          Cycle Tourmap
+        </router-link>
+      </v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn text :to="{ name: 'home' }">Home</v-btn>
+      <v-btn text :to="{ name: 'faq' }">FAQ</v-btn>
+
+      <template v-if="isAuthenticated">
+        <v-btn text :to="{ name: 'profile' }">Dashboard</v-btn>
+        <v-btn text @click="logout">Logout</v-btn>
+      </template>
+      <template v-else>
+        <v-btn text :to="{ name: 'auth' }">Sign In</v-btn>
+      </template>
+    </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" app temporary>
+      <router-view name="drawer"></router-view>
+    </v-navigation-drawer>
+
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+
+    <v-footer app color="primary" dark>
+      <span class="white--text">&copy; {{ new Date().getFullYear() }} Cycle Tourmap</span>
+    </v-footer>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
-#nav {
-  padding: 30px;
+export default {
+  name: 'App',
+  setup() {
+    const store = useStore()
+    const router = useRouter()
+    const drawer = ref(false)
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+    const isAuthenticated = computed(() => !!store.state.token)
 
-    &.router-link-exact-active {
-      color: #42b983;
+    const logout = () => {
+      store.commit('logout')
+      router.push({ name: 'home' })
+    }
+
+    return {
+      drawer,
+      isAuthenticated,
+      logout
     }
   }
+}
+</script>
+
+<style>
+html {
+  overflow-y: auto !important;
 }
 </style>
