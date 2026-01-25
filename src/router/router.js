@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 // components
 import LeafletData from '../components/LeafletData'
@@ -13,8 +12,6 @@ import ProfileNav from '../components/ProfileNav'
 import Error404 from '../components/Error404'
 import Home from '../components/Home'
 import GettingStarted from '../components/GettingStarted'
-
-Vue.use(VueRouter)
 
 const routes = [
   {
@@ -84,32 +81,13 @@ const routes = [
   // },
 ]
 
-const router = new VueRouter({
-  mode: 'history',
+const router = createRouter({
+  history: createWebHistory(),
   routes,
 })
 
 router.beforeResolve((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    // let user;
-    Vue.prototype.$Amplify.Auth.currentAuthenticatedUser().then(() => {
-      // if (data && data.signInUserSession) {
-      //   user = data;
-      // }
-      next()
-    }).catch(() => {
-      next({
-        name: 'auth'
-      });
-    });
-  }
-  if (to.name === 'home') {
-    Vue.prototype.$Amplify.Auth.currentAuthenticatedUser().then(() => {
-      next({
-        name: 'profile'
-      })
-    })
-  }
+  // Auth guard temporarily disabled - will be reimplemented with Strava OAuth
   next()
 })
 

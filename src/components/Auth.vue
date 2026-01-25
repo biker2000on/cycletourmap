@@ -1,6 +1,13 @@
 <template>
   <div>
-    <amplify-authenticator class="mx-auto text-center" :authConfig="authConfig" ></amplify-authenticator>
+    <v-container>
+      <v-row justify="center">
+        <v-col cols="12" md="6" class="text-center">
+          <h1 class="mb-4">Authentication</h1>
+          <p class="text-h6">Authentication coming soon - Strava OAuth only</p>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -8,23 +15,6 @@
 
 export default {
   name: 'auth',
-  data() {
-    return {
-      authConfig: {
-        signUpConfig: {
-          hiddenDefaults: ['phone_number']
-        }
-      }
-    }
-  },
-  methods: {
-    handleSignin(val) {
-      // console.log(val)
-      if (val == 'signedIn') {
-        this.$router.push({name: 'profile'})
-      }
-    },
-  }
 }
 </script>
 
