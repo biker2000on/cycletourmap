@@ -12,18 +12,23 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "server": "tsx watch server/index.ts",
+    "server:prod": "tsx server/index.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.5.6",
     "@mapbox/leaflet-omnivore": "^0.3.4",
     "@mdi/font": "5.9.55",
     "axios": "^0.24.0",
+    "cors": "^2.8.6",
     "date-fns": "^2.28.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
+    "express": "^5.2.1",
     "graphql": "^16.2.0",
     "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.3",
     "leaflet": "^1.7.1",
     "leaflet.fullscreen": "^2.2.0",
     "leaflet.gridlayer.googlemutant": "^0.13.4",
@@ -39,6 +44,9 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.16.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
