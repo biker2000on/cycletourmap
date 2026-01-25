@@ -19,7 +19,6 @@ export default {
     return {
       loading: false,
       error: null,
-      redirect_uri: import.meta.env.VITE_REDIRECTURI || window.location.origin,
       client_id: import.meta.env.VITE_STRAVA_CLIENTID,
     };
   },
@@ -30,9 +29,13 @@ export default {
     token() {
       return this.$store.state.token;
     },
+    redirect_uri() {
+      // Use current origin + /auth for OAuth callback
+      return window.location.origin + '/auth';
+    },
     stravaAuthUrl() {
       return 'https://www.strava.com/oauth/authorize?client_id=' + this.client_id +
-        '&redirect_uri=' + this.redirect_uri +
+        '&redirect_uri=' + encodeURIComponent(this.redirect_uri) +
         '&response_type=code' +
         '&approval_prompt=auto' +
         '&scope=read,profile:read_all,activity:read';
