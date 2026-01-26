@@ -1,0 +1,1 @@
+ALTER TABLE "Activity" ALTER COLUMN "strava_id" SET DATA TYPE bigint;

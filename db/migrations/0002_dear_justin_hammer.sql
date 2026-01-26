@@ -1,0 +1,1 @@
+ALTER TABLE "Activity" ALTER COLUMN "average_speed" SET DATA TYPE double precision;

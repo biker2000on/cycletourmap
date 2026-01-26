@@ -3,24 +3,34 @@
     <v-layout v-if="loading" justify-center align-center fill-height>
       <v-progress-circular color="primary" indeterminate />
     </v-layout>
-    <strava
+    <edit-panel
       v-else-if="isEdit && athlete"
-      :tourData="tour ? { getTour: tour } : {}"
+      :tour="tour"
       :athlete="athlete"
+      :auto-fetch="autoFetch"
+      @activities-fetched="onActivitiesFetched"
     />
     <view-nav v-else-if="tour && !isEdit" :tourData="tour" />
-    <div v-else-if="error">{{ error }}</div>
+    <div v-else-if="error" class="pa-4 text-center">
+      <v-alert type="error">{{ error }}</v-alert>
+    </div>
+    <div v-else-if="isEdit && !athlete" class="pa-4 text-center">
+      <v-alert type="warning">
+        Please sign in with Strava to edit tours.
+      </v-alert>
+      <v-btn color="primary" class="mt-4" to="/auth">Sign In</v-btn>
+    </div>
   </div>
 </template>
 
 <script>
-import Strava from "./Strava.vue";
+import EditPanel from "./EditPanel.vue";
 import ViewNav from "./ViewNav.vue";
 import { toursApi, athletesApi } from "../api/client";
 
 export default {
   components: {
-    Strava,
+    EditPanel,
     ViewNav
   },
   data() {
@@ -34,6 +44,9 @@ export default {
   computed: {
     isEdit() {
       return this.$route.name == "edit";
+    },
+    autoFetch() {
+      return this.$route.query.autoFetch === 'true';
     },
     signedIn() {
       return this.$store.state.signedIn;
@@ -60,14 +73,13 @@ export default {
               lastname: athleteData.lastname,
               profile: athleteData.profile,
               profile_medium: athleteData.profileMedium,
-              // Note: auth is managed separately now via store
             };
           } catch (err) {
             console.warn('Failed to load athlete profile:', err);
           }
         }
 
-        // Load tour if not new
+        // Load tour data
         const mapId = this.$route.params.mapId;
         if (mapId && mapId !== "new") {
           const result = await toursApi.getLegacy(mapId, this.token);
@@ -79,6 +91,10 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    onActivitiesFetched(activities) {
+      // Update store with fetched activities for map display
+      this.$store.commit('setActivities', activities);
     }
   },
   watch: {

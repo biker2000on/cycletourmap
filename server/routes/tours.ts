@@ -91,9 +91,15 @@ router.get('/:id', optionalAuth, async (req: AuthenticatedRequest, res: Response
     }
 
     // Transform tourActivities to activities array for cleaner response
+    const activitiesArray = tour.tourActivities.map(ta => ta.activity)
+    console.log(`Tour ${id}: found ${activitiesArray.length} activities via tourActivities`)
+    if (activitiesArray.length > 0) {
+      console.log('First activity:', JSON.stringify(activitiesArray[0], null, 2).substring(0, 500))
+    }
+
     const tourWithActivities = {
       ...tour,
-      activities: tour.tourActivities.map(ta => ta.activity),
+      activities: activitiesArray,
       tourActivities: undefined,
     }
 

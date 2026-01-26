@@ -1,8 +1,11 @@
 import { Router, Response } from 'express'
 import { db } from '../../db'
-import { activities, tourActivities } from '../../db/schema'
-import { eq } from 'drizzle-orm'
+import { activities, tourActivities, auths } from '../../db/schema'
+import { eq, and, gte, lte, notInArray } from 'drizzle-orm'
 import { AuthenticatedRequest, requireAuth, optionalAuth } from '../middleware/auth'
+
+// Background sync jobs in progress (keyed by uniqueId)
+const activeSyncJobs = new Map<string, { status: string; progress: number; total: number; error?: string }>()
 
 const router = Router()
 
@@ -108,6 +111,321 @@ router.get('/', optionalAuth, async (req: AuthenticatedRequest, res: Response) =
     res.status(500).json({ error: 'Failed to fetch activities' })
   }
 })
+
+/**
+ * GET /api/activities/by-date-range - Get user's existing activities in a date range
+ * Query params:
+ *   - startDate: ISO date string (required)
+ *   - endDate: ISO date string (required)
+ */
+router.get('/by-date-range', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user!.userId
+    const { startDate, endDate } = req.query
+
+    if (!startDate || !endDate) {
+      res.status(400).json({ error: 'startDate and endDate are required' })
+      return
+    }
+
+    const start = new Date(startDate as string)
+    const end = new Date(endDate as string)
+
+    // Query activities in date range, handling nullable startDateLocal
+    const result = await db.query.activities.findMany({
+      where: eq(activities.userId, userId),
+      orderBy: (activities, { asc }) => [asc(activities.startDateLocal)],
+    })
+
+    // Filter by date range in JavaScript to handle nulls safely
+    const filtered = result.filter(activity => {
+      if (!activity.startDateLocal) return false
+      const actDate = new Date(activity.startDateLocal)
+      return actDate >= start && actDate <= end
+    })
+
+    res.json(filtered)
+  } catch (error) {
+    console.error('Error fetching activities by date range:', error)
+    res.status(500).json({ error: 'Failed to fetch activities' })
+  }
+})
+
+/**
+ * POST /api/activities/sync - Start background sync from Strava for a date range
+ * Body: { startDate, endDate, tourId?, existingStravaIds? }
+ */
+router.post('/sync', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user!.userId
+    const { startDate, endDate, tourId, existingStravaIds = [] } = req.body
+
+    if (!startDate || !endDate) {
+      res.status(400).json({ error: 'startDate and endDate are required' })
+      return
+    }
+
+    // Get user's Strava access token
+    const auth = await db.query.auths.findFirst({
+      where: eq(auths.userId, userId),
+    })
+
+    if (!auth || !auth.accessToken) {
+      res.status(400).json({ error: 'No Strava connection found' })
+      return
+    }
+
+    // Check if token needs refresh
+    const now = new Date()
+    let accessToken = auth.accessToken
+
+    if (auth.expiresAt && auth.expiresAt < now) {
+      // Token expired - would need to refresh
+      // For now, return error - client should refresh first
+      res.status(401).json({ error: 'Strava token expired. Please reconnect.' })
+      return
+    }
+
+    // Create a unique job ID
+    const jobId = `sync-${userId}-${Date.now()}`
+
+    // Initialize job status
+    activeSyncJobs.set(jobId, { status: 'started', progress: 0, total: 0 })
+
+    // Start background sync (don't await)
+    syncStravaActivities(jobId, userId, accessToken, startDate, endDate, tourId, existingStravaIds)
+      .catch(err => {
+        console.error('Background sync error:', err)
+        const job = activeSyncJobs.get(jobId)
+        if (job) {
+          job.status = 'error'
+          job.error = err.message
+        }
+      })
+
+    res.json({ jobId, status: 'started' })
+  } catch (error) {
+    console.error('Error starting sync:', error)
+    res.status(500).json({ error: 'Failed to start sync' })
+  }
+})
+
+/**
+ * GET /api/activities/sync/:jobId - Check sync job status
+ */
+router.get('/sync/:jobId', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  const { jobId } = req.params
+  const job = activeSyncJobs.get(jobId)
+
+  if (!job) {
+    res.status(404).json({ error: 'Sync job not found' })
+    return
+  }
+
+  res.json(job)
+
+  // Clean up completed jobs after reporting
+  if (job.status === 'completed' || job.status === 'error') {
+    setTimeout(() => activeSyncJobs.delete(jobId), 60000) // Clean up after 1 minute
+  }
+})
+
+/**
+ * Background function to sync activities from Strava
+ */
+async function syncStravaActivities(
+  jobId: string,
+  userId: string,
+  accessToken: string,
+  startDate: string,
+  endDate: string,
+  tourId?: string,
+  existingStravaIds: number[] = []
+) {
+  const job = activeSyncJobs.get(jobId)!
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  const startTimestamp = Math.floor(start.getTime() / 1000) - 43200 // -12h for timezone
+  const endTimestamp = Math.floor(end.getTime() / 1000)
+
+  let page = 1
+  const perPage = 50
+  let totalFetched = 0
+  let totalSaved = 0
+
+  // Build set of existing stravaIds - combine passed IDs with database query
+  const existingSet = new Set(existingStravaIds)
+
+  try {
+    // Query database for any existing stravaIds for this user to prevent duplicates
+    const existingActivities = await db.query.activities.findMany({
+      where: eq(activities.userId, userId),
+      columns: { stravaId: true },
+    })
+    existingActivities.forEach(a => {
+      if (a.stravaId) existingSet.add(a.stravaId)
+    })
+
+    let hasMore = true
+    let tourRangeCovered = false
+
+    while (hasMore) {
+      // Fetch from Strava
+      const response = await fetch(
+        `https://www.strava.com/api/v3/athlete/activities?per_page=${perPage}&page=${page}&after=${startTimestamp}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`Strava API error: ${response.status}`)
+      }
+
+      const stravaActivities = await response.json()
+      const rawCount = stravaActivities.length
+
+      // Filter to date range for the tour
+      const filtered = stravaActivities.filter((a: any) => {
+        const actDate = new Date(a.start_date_local)
+        return actDate >= start && actDate <= end
+      })
+
+      // Filter out activities we already have
+      const newActivities = filtered.filter((a: any) => !existingSet.has(a.id))
+
+      // Also save activities outside tour range for future use (but don't link to tour)
+      const outsideRangeActivities = stravaActivities.filter((a: any) => {
+        const actDate = new Date(a.start_date_local)
+        return actDate < start && !existingSet.has(a.id)
+      })
+
+      // Save new activities within tour range to database
+      if (newActivities.length > 0) {
+        const toInsert = newActivities.map((a: any) => ({
+          activityType: 'STRAVA',
+          userId,
+          stravaId: a.id,
+          name: a.name,
+          type: a.type,
+          distance: a.distance,
+          movingTime: a.moving_time,
+          elapsedTime: a.elapsed_time,
+          totalElevationGain: a.total_elevation_gain,
+          startDate: new Date(a.start_date),
+          startDateLocal: new Date(a.start_date_local),
+          timezone: a.timezone,
+          summaryPolyline: a.map?.summary_polyline,
+          averageSpeed: a.average_speed,
+          maxSpeed: a.max_speed,
+          averageHeartrate: a.average_heartrate != null ? Math.round(a.average_heartrate) : null,
+          maxHeartrate: a.max_heartrate != null ? Math.round(a.max_heartrate) : null,
+          startLatitude: a.start_latlng?.[0],
+          startLongitude: a.start_latlng?.[1],
+        }))
+
+        try {
+          const inserted = await db.insert(activities).values(toInsert).returning()
+          totalSaved += inserted.length
+
+          // Link to tour if provided
+          if (tourId && inserted.length > 0) {
+            const links = inserted.map(act => ({ tourId, activityId: act.id }))
+            await db.insert(tourActivities).values(links)
+          }
+
+          // Add to existing set to avoid duplicates in subsequent pages
+          newActivities.forEach((a: any) => existingSet.add(a.id))
+        } catch (insertErr: any) {
+          console.error('Error inserting activities batch:', insertErr)
+          console.error('Failed data sample:', JSON.stringify(toInsert[0], null, 2))
+          throw new Error(`Database insert failed: ${insertErr.message}`)
+        }
+      }
+
+      totalFetched += filtered.length
+
+      // Update job progress
+      job.progress = totalSaved
+      job.total = totalFetched
+
+      // Check if we've covered the tour date range
+      const oldestInBatch = stravaActivities[stravaActivities.length - 1]
+      if (oldestInBatch) {
+        const oldestDate = new Date(oldestInBatch.start_date_local)
+        if (oldestDate < start && !tourRangeCovered) {
+          // Tour range is fully covered - mark as completed for the client
+          tourRangeCovered = true
+          job.status = 'completed'
+          console.log(`Tour sync completed with ${totalSaved} activities. Continuing background sync...`)
+        }
+      }
+
+      // Check if we should stop fetching entirely
+      if (rawCount < perPage) {
+        hasMore = false
+      } else {
+        // Continue fetching older activities in background (for future tours)
+        // But only continue for a reasonable amount (e.g., 1 year back from tour start)
+        if (oldestInBatch) {
+          const oldestDate = new Date(oldestInBatch.start_date_local)
+          const oneYearBeforeStart = new Date(start)
+          oneYearBeforeStart.setFullYear(oneYearBeforeStart.getFullYear() - 1)
+
+          if (oldestDate < oneYearBeforeStart) {
+            hasMore = false // Stop - we've gone far enough back
+          }
+        }
+        page++
+      }
+
+      // Save outside-range activities in background (don't link to tour)
+      if (outsideRangeActivities.length > 0 && tourRangeCovered) {
+        const toInsertBg = outsideRangeActivities.map((a: any) => ({
+          activityType: 'STRAVA',
+          userId,
+          stravaId: a.id,
+          name: a.name,
+          type: a.type,
+          distance: a.distance,
+          movingTime: a.moving_time,
+          elapsedTime: a.elapsed_time,
+          totalElevationGain: a.total_elevation_gain,
+          startDate: new Date(a.start_date),
+          startDateLocal: new Date(a.start_date_local),
+          timezone: a.timezone,
+          summaryPolyline: a.map?.summary_polyline,
+          averageSpeed: a.average_speed,
+          maxSpeed: a.max_speed,
+          averageHeartrate: a.average_heartrate != null ? Math.round(a.average_heartrate) : null,
+          maxHeartrate: a.max_heartrate != null ? Math.round(a.max_heartrate) : null,
+          startLatitude: a.start_latlng?.[0],
+          startLongitude: a.start_latlng?.[1],
+        }))
+
+        try {
+          await db.insert(activities).values(toInsertBg)
+          outsideRangeActivities.forEach((a: any) => existingSet.add(a.id))
+        } catch (bgErr) {
+          console.warn('Background activity insert failed:', bgErr)
+          // Don't throw - this is background work
+        }
+      }
+
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+
+    // If we never hit an activity before the start date, mark as completed now
+    if (!tourRangeCovered) {
+      job.status = 'completed'
+    }
+  } catch (error: any) {
+    job.status = 'error'
+    job.error = error.message
+    throw error
+  }
+}
 
 /**
  * GET /api/activities/:id - Get single activity
@@ -226,12 +544,12 @@ router.post('/', requireAuth, async (req: AuthenticatedRequest, res: Response) =
 })
 
 /**
- * POST /api/activities/batch - Create multiple activities
+ * POST /api/activities/batch - Create multiple activities and link to a tour
  */
 router.post('/batch', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user!.userId
-    const { activities: activitiesData } = req.body as { activities: ActivityInput[] }
+    const { activities: activitiesData, tourId } = req.body as { activities: ActivityInput[], tourId?: string }
 
     if (!Array.isArray(activitiesData) || activitiesData.length === 0) {
       res.status(400).json({ error: 'activities array is required and must not be empty' })
@@ -297,6 +615,16 @@ router.post('/batch', requireAuth, async (req: AuthenticatedRequest, res: Respon
     const newActivities = await db.insert(activities)
       .values(activitiesToInsert)
       .returning()
+
+    // If tourId provided, link activities to the tour
+    if (tourId && newActivities.length > 0) {
+      const tourActivityLinks = newActivities.map(activity => ({
+        tourId,
+        activityId: activity.id,
+      }))
+
+      await db.insert(tourActivities).values(tourActivityLinks)
+    }
 
     res.status(201).json(newActivities)
   } catch (error) {

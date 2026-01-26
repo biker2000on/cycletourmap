@@ -1,11 +1,12 @@
 <template>
   <div>
-    <leaflet v-if="$route.params.mapId == 'new'" :activities="$store.state.activities" />
-    <leaflet v-else-if="tour" :activities="tour.activities.items" />
-    <v-layout v-else-if="loading" justify-center align-center fill-height>
-      <v-progress-circular color="primary" indeterminate />
-    </v-layout>
-    <div v-else-if="error">{{ error }}</div>
+    <!-- Show map with activities from store (edit mode) or tour data (view mode) -->
+    <leaflet v-if="displayActivities.length > 0" :activities="displayActivities" />
+    <leaflet v-else-if="!loading && !error" :activities="[]" />
+    <v-overlay v-if="loading" contained class="align-center justify-center">
+      <v-progress-circular color="primary" indeterminate size="64" />
+    </v-overlay>
+    <v-alert v-if="error" type="error" class="ma-4">{{ error }}</v-alert>
   </div>
 </template>
 
@@ -30,6 +31,23 @@ export default {
     },
     token() {
       return this.$store.state.token;
+    },
+    isEditMode() {
+      return this.$route.name === 'edit';
+    },
+    storeActivities() {
+      return this.$store.state.activities || [];
+    },
+    tourActivities() {
+      return this.tour?.activities?.items || [];
+    },
+    displayActivities() {
+      // In edit mode, prefer store activities (freshly fetched from Strava)
+      // Otherwise show saved tour activities
+      if (this.isEditMode && this.storeActivities.length > 0) {
+        return this.storeActivities;
+      }
+      return this.tourActivities;
     }
   },
   methods: {

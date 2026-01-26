@@ -1,80 +1,66 @@
 <template>
-  <v-list dense >
-    <v-list-item dense>
-      <v-list-item-content>
-        <v-text-field label="Tour Name" v-model="name"></v-text-field>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item dense>
-      <v-list-item-content>
-        <v-menu
-          ref="menu"
-          :close-on-content-click="false"
-          v-model="menu"
-          transition="scale-transition"
-          offset-y
-          :nudge-right="40"
-          max-width="290px"
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              label="Start Date"
-              v-model="startdate"
-              prepend-icon="event"
-              v-on="on"
-              readonly></v-text-field>
-          </template>
-          <v-date-picker v-model="startdate" no-title scrollable @input="menu = false" >
-          </v-date-picker>
-        </v-menu>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item dense>
-      <v-list-item-content>
-        <v-menu
-          ref="menu2"
-          :close-on-content-click="false"
-          v-model="menu2"
-          transition="scale-transition"
-          offset-y
-          :nudge-right="40"
-          max-width="290px"
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field label="End Date" v-model="enddate" prepend-icon="event" v-on="on" readonly></v-text-field>
-          </template>
-          <v-date-picker v-model="enddate" no-title scrollable @input="menu2 = false" >
-          </v-date-picker>
-        </v-menu>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item >
-      <v-list-item-content class="my-0 py-0" >
-        <v-textarea label="Description" v-model="description" rows="5"></v-textarea>
-      </v-list-item-content>
+  <v-list density="compact">
+    <v-list-item>
+      <v-text-field label="Tour Name" v-model="name" density="compact"></v-text-field>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content class="my-0 py-0">
-        <v-switch label="Public" class="mx-auto" v-model="isPublic" ></v-switch>
-        <br>
-      </v-list-item-content>
+      <v-menu
+        ref="menu"
+        :close-on-content-click="false"
+        v-model="menu"
+        transition="scale-transition"
+      >
+        <template v-slot:activator="{ props }">
+          <v-text-field
+            label="Start Date"
+            v-model="startdate"
+            prepend-icon="mdi-calendar"
+            v-bind="props"
+            readonly
+            density="compact"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="startdateObj" @update:model-value="onStartDateSelect" hide-header>
+        </v-date-picker>
+      </v-menu>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content>
-        <v-btn @click="getAllActivities" color="primary" :loading="fetchingActivities">Fetch All Activities</v-btn>
-      </v-list-item-content>
+      <v-menu
+        ref="menu2"
+        :close-on-content-click="false"
+        v-model="menu2"
+        transition="scale-transition"
+      >
+        <template v-slot:activator="{ props }">
+          <v-text-field
+            label="End Date"
+            v-model="enddate"
+            prepend-icon="mdi-calendar"
+            v-bind="props"
+            readonly
+            density="compact"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="enddateObj" @update:model-value="onEndDateSelect" hide-header>
+        </v-date-picker>
+      </v-menu>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content>
-        <v-btn @click="submitTour" color="primary" :loading="isSaving">Save</v-btn>
-      </v-list-item-content>
+      <v-textarea label="Description" v-model="description" rows="5" density="compact"></v-textarea>
+    </v-list-item>
+    <v-list-item>
+      <v-switch label="Public" v-model="isPublic" color="primary" hide-details></v-switch>
+    </v-list-item>
+    <v-list-item>
+      <v-btn @click="getAllActivities" color="primary" :loading="fetchingActivities" block>Fetch All Activities</v-btn>
+    </v-list-item>
+    <v-list-item>
+      <v-btn @click="submitTour" color="primary" :loading="isSaving" block>Save</v-btn>
     </v-list-item>
 
     <v-dialog v-model="dialog" max-width="290">
       <v-card :loading="isSaving">
-        <v-card-title class="headline" >Successfully Saved Tourmap</v-card-title>
+        <v-card-title>Successfully Saved Tourmap</v-card-title>
         <v-card-text>
           <p><a :href="'/tourmap/' + tourId">View your tourmap here</a></p>
           <p>or click outside the dialog to continue editing your tourmap.</p>
@@ -110,6 +96,8 @@ export default {
       description: null,
       startdate: null,
       enddate: null,
+      startdateObj: null,
+      enddateObj: null,
       menu: false,
       menu2: false,
       isPublic: false,
@@ -125,6 +113,22 @@ export default {
     }
   },
   methods: {
+    formatDate(date) {
+      if (!date) return null;
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+    onStartDateSelect(date) {
+      this.startdate = this.formatDate(date);
+      this.menu = false;
+    },
+    onEndDateSelect(date) {
+      this.enddate = this.formatDate(date);
+      this.menu2 = false;
+    },
     async loadAuth() {
       // Try to get Strava access token from our backend
       if (!this.token) return;
@@ -143,6 +147,8 @@ export default {
           this.name = this.tourData.getTour.name;
           this.startdate = this.tourData.getTour.start_date;
           this.enddate = this.tourData.getTour.end_date;
+          this.startdateObj = this.startdate ? new Date(this.startdate) : null;
+          this.enddateObj = this.enddate ? new Date(this.enddate) : null;
           this.description = this.tourData.getTour.description;
           this.isPublic = this.tourData.getTour.isPublic;
         }
@@ -284,7 +290,7 @@ export default {
         let page = 1;
         const per_page = 50;
         let acts = [];
-        let activities = [];
+        let rawCount = 0;
 
         await this.loadAuth();
 
@@ -307,15 +313,16 @@ export default {
               }
             }
           );
-          activities = strava.data;
+          const activities = strava.data;
+          rawCount = activities.length;
 
-          activities = activities.filter(c => {
+          const filtered = activities.filter(c => {
             const rideStart = new Date(c.start_date_local);
             return rideStart >= start && rideStart <= end;
           });
-          acts = acts.concat(activities);
+          acts = acts.concat(filtered);
           page++;
-        } while (activities.length == per_page);
+        } while (rawCount === per_page);
 
         if (this.$route.params.mapId == 'new') {
           this.$store.commit('setActivities', acts.map(c => {

@@ -79,11 +79,14 @@ export default {
       return window.location.origin + '/auth';
     },
     stravaAuthUrl() {
-      return 'https://www.strava.com/oauth/authorize?client_id=' + this.client_id +
-        '&redirect_uri=' + encodeURIComponent(this.redirect_uri) +
-        '&response_type=code' +
-        '&approval_prompt=auto' +
-        '&scope=read,profile:read_all,activity:read';
+      const params = new URLSearchParams({
+        client_id: this.client_id,
+        redirect_uri: this.redirect_uri,
+        response_type: 'code',
+        approval_prompt: 'auto',
+        scope: 'read,profile:read_all,activity:read'
+      });
+      return 'https://www.strava.com/oauth/authorize?' + params.toString();
     }
   },
   methods: {

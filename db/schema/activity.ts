@@ -1,14 +1,14 @@
-import { pgTable, uuid, text, integer, doublePrecision, boolean, timestamp, index } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, integer, bigint, doublePrecision, boolean, timestamp, index } from 'drizzle-orm/pg-core'
 import { users } from './users'
 
 export const activities = pgTable('Activity', {
   id: uuid('id').primaryKey().defaultRandom(),
   activityType: text('activity_type').notNull(),
-  stravaId: integer('strava_id'),
+  stravaId: bigint('strava_id', { mode: 'number' }),
   achievementCount: integer('achievement_count'),
   athleteCount: integer('athlete_count'),
   averageHeartrate: integer('average_heartrate'),
-  averageSpeed: integer('average_speed'),
+  averageSpeed: doublePrecision('average_speed'),
   averageTemp: doublePrecision('average_temp'),
   averageWatts: integer('average_watts'),
   commentCount: integer('comment_count'),

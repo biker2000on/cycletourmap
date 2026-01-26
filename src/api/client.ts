@@ -46,6 +46,7 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    credentials: 'include',
   })
 
   if (!response.ok) {
@@ -145,8 +146,24 @@ export const activitiesApi = {
     return api<Activity>('/activities', { method: 'POST', body: data, token })
   },
 
-  createBatch: async (data: CreateActivity[], token: string): Promise<Activity[]> => {
-    return api<Activity[]>('/activities/batch', { method: 'POST', body: { activities: data }, token })
+  createBatch: async (data: CreateActivity[], token: string, tourId?: string): Promise<Activity[]> => {
+    return api<Activity[]>('/activities/batch', { method: 'POST', body: { activities: data, tourId }, token })
+  },
+
+  getByDateRange: async (startDate: string, endDate: string, token: string): Promise<Activity[]> => {
+    return api<Activity[]>(`/activities/by-date-range?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`, { token })
+  },
+
+  startSync: async (startDate: string, endDate: string, token: string, tourId?: string, existingStravaIds?: number[]): Promise<{ jobId: string; status: string }> => {
+    return api<{ jobId: string; status: string }>('/activities/sync', {
+      method: 'POST',
+      body: { startDate, endDate, tourId, existingStravaIds },
+      token
+    })
+  },
+
+  getSyncStatus: async (jobId: string, token: string): Promise<{ status: string; progress: number; total: number; error?: string }> => {
+    return api<{ status: string; progress: number; total: number; error?: string }>(`/activities/sync/${jobId}`, { token })
   },
 
   update: async (id: string, data: UpdateActivity, token: string): Promise<Activity> => {
